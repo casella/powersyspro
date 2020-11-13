@@ -3826,7 +3826,7 @@ and can be compared to the required one")}),        experiment(StopTime=400,
       Documentation(info = "<html><head></head><body>
     <p>PowerSysPro is a Modelica library dedicated to the load flow calculation of Distribution grids.</p>
     <p>PowerSysPro is been developed at EDF Lab Paris-Saclay.</p>
-    <p>Version 1.1 October 20th, 2020.</p>
+    <p>Version 1.2 November 13th, 2020.</p>
     <p></p><p>-------------------------------------------------------------------------------------------------------------</p>
     </body></html>"));
   end Information;
