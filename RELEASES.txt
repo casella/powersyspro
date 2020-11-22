@@ -6,4 +6,5 @@ Release 1.3 (Nov. 22th 2020): refer to ticket #6224 from OM
 							* --tearingMethod=minimalTearing must be set in OMEdit (Tools | Options | Simulation)
 							Also see ticket #6232 on improvement required on the tearing algorithm
 							* causal connectors are defined without flow attribute to be compatible with OM
+							Possible issue with future FMI 3.0 and flow connectors
 								
