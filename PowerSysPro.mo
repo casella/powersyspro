@@ -2,8 +2,18 @@ package PowerSysPro
   package Components "Components for load flow calculations"
     model mySource "Perfect voltage source"
       extends Icons.mySource;
-      Interfaces.myTerminal terminal(v(re(start = UNom / sqrt(3), nominal = UNom / sqrt(3)), im(start = 0))) "Terminal of the node" annotation (
-        Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Interfaces.myAcausalTerminal terminal(v(re(start=UNom/sqrt(3), nominal=
+                UNom/sqrt(3)), im(start=0))) "Terminal of the node" annotation (
+         Placement(
+          visible=true,
+          transformation(
+            origin={0,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={0,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
     public
       parameter Types.myVoltage UNom "Reference voltage of the source";
       parameter Types.myAngle theta = 0 "Phase shift of voltage phasor";
@@ -21,8 +31,18 @@ package PowerSysPro
 
     model myPVNode "PV node for islanding"
       extends Icons.myPV;
-      Interfaces.myTerminal terminal(v(re(start = UNom / sqrt(3), nominal = UNom / sqrt(3)), im(start = 0))) "Terminal of the node" annotation (
-        Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Interfaces.myAcausalTerminal terminal(v(re(start=UNom/sqrt(3), nominal=
+                UNom/sqrt(3)), im(start=0))) "Terminal of the node" annotation (
+         Placement(
+          visible=true,
+          transformation(
+            origin={0,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={0,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
     public
       parameter Types.myVoltage UNom "Reference voltage of the PV node";
       parameter Types.myActivePower Pstart "Active power to provide (<0)";
@@ -39,7 +59,7 @@ package PowerSysPro
       terminal.v = CM.fromPolar(UNom / sqrt(3), theta);
       theta = atan(Q / P);
       annotation (
-        Icon(coordinateSystem(grid = {0.1, 0.1}, initialScale = 0.1), graphics = {Text(origin = {60.1, -63.1}, lineColor = {0, 0, 255}, extent = {{-124, 11}, {124, -11}}, textString = if OnePhaseLoad then "1" else "3", textStyle = {TextStyle.Bold}), coordinateSystem(preserveAspectRatio = false), Text(extent = {{-40.5, -6}, {41.5, -46}}, lineColor = {0, 0, 0}, textStyle = {TextStyle.Bold}, textString = "~")}),
+        Icon(coordinateSystem(grid = {0.1, 0.1}, initialScale = 0.1, preserveAspectRatio = false), graphics={  Text(origin = {60.1, -63.1}, lineColor = {0, 0, 255}, extent = {{-124, 11}, {124, -11}}, textString = if OnePhaseLoad then "1" else "3", textStyle = {TextStyle.Bold}), Text(extent = {{-40.5, -6}, {41.5, -46}}, lineColor = {0, 0, 0}, textStyle = {TextStyle.Bold}, textString = "~")}),
         Documentation(info = "<html>
     <p>This node prescribes the constant active power <code>P</code> entering the PV bus.</p>
     </html>"),
@@ -48,8 +68,18 @@ package PowerSysPro
 
     model myVariablePVNode "variable PV node for islanding"
       extends Icons.myPV;
-      Interfaces.myTerminal terminal(v(re(start = UNom / sqrt(3), nominal = UNom / sqrt(3)), im(start = 0))) "Terminal of the node" annotation (
-        Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Interfaces.myAcausalTerminal terminal(v(re(start=UNom/sqrt(3), nominal=
+                UNom/sqrt(3)), im(start=0))) "Terminal of the node" annotation (
+         Placement(
+          visible=true,
+          transformation(
+            origin={0,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={0,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
       Modelica.Blocks.Interfaces.RealInput Qreg annotation (
         Placement(transformation(extent = {{-85.8, 47.2}, {-63.4, 69.6}}), iconTransformation(extent = {{-85.8, 47.2}, {-63.4, 69.6}})));
       Modelica.Blocks.Interfaces.RealOutput Uout = U annotation (
@@ -66,7 +96,7 @@ package PowerSysPro
       //terminal.i = CM.conj(Complex(-sqrt(Pstart^2 - Qreg^2), Qreg) / (3 * terminal.v));
       terminal.i = CM.conj(Complex(Pstart, Qreg) / (3 * terminal.v));
       annotation (
-        Icon(coordinateSystem(grid = {0.1, 0.1}, initialScale = 0.1), graphics = {Text(origin = {60.1, -63.1}, lineColor = {0, 0, 255}, extent = {{-124, 11}, {124, -11}}, textString = if OnePhaseLoad then "1" else "3", textStyle = {TextStyle.Bold}), Text(extent = {{-40.5, -5.7}, {41.5, -45.7}}, lineColor = {0, 0, 0}, textStyle = {TextStyle.Bold}, textString = "~")}),
+        Icon(coordinateSystem(grid = {0.1, 0.1}, initialScale = 0.1), graphics={  Text(origin = {60.1, -63.1}, lineColor = {0, 0, 255}, extent = {{-124, 11}, {124, -11}}, textString = if OnePhaseLoad then "1" else "3", textStyle = {TextStyle.Bold}), Text(extent = {{-40.5, -5.7}, {41.5, -45.7}}, lineColor = {0, 0, 0}, textStyle = {TextStyle.Bold}, textString = "~")}),
         Documentation(info = "<html>
     <p>This node prescribes the variable active power <code>P</code> entering the PV bus.</p>
     </html>"));
@@ -120,8 +150,18 @@ package PowerSysPro
     model myCapacitorBank "Capacitor bank with fixed capacitance"
       extends Icons.myCapacitorBank;
       extends Icons.myOnePortAC;
-      Interfaces.myTerminal terminal(v(re(start = UNom / sqrt(3), nominal = UNom / sqrt(3)), im(start = 0))) "Terminal of the node" annotation (
-        Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Interfaces.myAcausalTerminal terminal(v(re(start=UNom/sqrt(3), nominal=
+                UNom/sqrt(3)), im(start=0))) "Terminal of the node" annotation (
+         Placement(
+          visible=true,
+          transformation(
+            origin={0,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={0,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
     public
       parameter Types.myVoltage UNom "Reference voltage of the capacitor bank";
       parameter Types.myConductance G = 0 "Capacitor bank conductance";
@@ -143,10 +183,29 @@ package PowerSysPro
     model myLine "MV or LV line with constant impedance"
       extends Icons.myLine;
       extends Icons.myTwoPortsAC;
-      Interfaces.myTerminal terminalA(i(re(start = 0), im(start = 0))) "Terminal A of the node" annotation (
-        Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Interfaces.myTerminal terminalB(v(re(start = UNom / sqrt(3), nominal = UNom / sqrt(3)), im(start = 0))) "Terminal B of the node" annotation (
-        Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Interfaces.myAcausalTerminal terminalA(i(re(start=0), im(start=0)))
+        "Terminal A of the node" annotation (Placement(
+          visible=true,
+          transformation(
+            origin={-100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={-100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
+      Interfaces.myAcausalTerminal terminalB(v(re(start=UNom/sqrt(3), nominal=
+                UNom/sqrt(3)), im(start=0))) "Terminal B of the node"
+        annotation (Placement(
+          visible=true,
+          transformation(
+            origin={100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
     public
       parameter Types.myVoltage UNom "Reference voltage of the line";
       parameter Types.myResistance R "Series resistance of phase conductor";
@@ -180,10 +239,29 @@ package PowerSysPro
     model myLightLine "MV or LV line without possible check of the maximum admissible current"
       extends Icons.myLine;
       extends Icons.myTwoPortsAC;
-      Interfaces.myTerminal terminalA(i(re(start = 0), im(start = 0))) "Terminal A of the node" annotation (
-        Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Interfaces.myTerminal terminalB(v(re(start = UNom / sqrt(3), nominal = UNom / sqrt(3)), im(start = 0))) "Terminal B of the node" annotation (
-        Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Interfaces.myAcausalTerminal terminalA(i(re(start=0), im(start=0)))
+        "Terminal A of the node" annotation (Placement(
+          visible=true,
+          transformation(
+            origin={-100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={-100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
+      Interfaces.myAcausalTerminal terminalB(v(re(start=UNom/sqrt(3), nominal=
+                UNom/sqrt(3)), im(start=0))) "Terminal B of the node"
+        annotation (Placement(
+          visible=true,
+          transformation(
+            origin={100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
     public
       parameter Types.myVoltage UNom "Reference voltage of the line";
       parameter Types.myResistance R "Series resistance of phase conductor";
@@ -214,10 +292,29 @@ package PowerSysPro
       extends Icons.myLine;
       extends Icons.myTwoPortsAC;
       extends Icons.myFault;
-      Interfaces.myTerminal terminalA(i(re(start = 0), im(start = 0))) "Terminal A of the node" annotation (
-        Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Interfaces.myTerminal terminalB(v(re(start = UNom / sqrt(3), nominal = UNom / sqrt(3)), im(start = 0))) "Terminal B of the node" annotation (
-        Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Interfaces.myAcausalTerminal terminalA(i(re(start=0), im(start=0)))
+        "Terminal A of the node" annotation (Placement(
+          visible=true,
+          transformation(
+            origin={-100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={-100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
+      Interfaces.myAcausalTerminal terminalB(v(re(start=UNom/sqrt(3), nominal=
+                UNom/sqrt(3)), im(start=0))) "Terminal B of the node"
+        annotation (Placement(
+          visible=true,
+          transformation(
+            origin={100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
       myLightLine lineA(UNom = UNom, R = faultLocationPu * l * R, X = faultLocationPu * l * X, B = faultLocationPu * l * B, G = faultLocationPu * l * G) annotation (
         Placement(visible = true, transformation(origin = {-40, 2.44249e-15}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
       myLightLine lineB(UNom = UNom, R = (1 - faultLocationPu) * l * R, X = (1 - faultLocationPu) * l * X, B = (1 - faultLocationPu) * l * B, G = (1 - faultLocationPu) * l * G) annotation (
@@ -333,10 +430,28 @@ package PowerSysPro
     model myBreaker "Perfect breaker"
       extends Icons.myBreaker;
       extends Icons.myTwoPortsAC;
-      Interfaces.myTerminal terminalA(i(re(start = 0), im(start = 0))) "Terminal A of the node" annotation (
-        Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Interfaces.myTerminal terminalB "Terminal B of the node" annotation (
-        Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Interfaces.myAcausalTerminal terminalA(i(re(start=0), im(start=0)))
+        "Terminal A of the node" annotation (Placement(
+          visible=true,
+          transformation(
+            origin={-100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={-100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
+      Interfaces.myAcausalTerminal terminalB "Terminal B of the node"
+        annotation (Placement(
+          visible=true,
+          transformation(
+            origin={100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
       Modelica.Blocks.Interfaces.BooleanInput BrkOpen(start = false) "Breaker start position is false (closed)" annotation (
         Placement(visible = true, transformation(origin = {0, -40}, extent = {{-20, -20}, {20, 20}}, rotation = 90), iconTransformation(origin = {0, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
       Types.myCurrent IA = CM.'abs'(terminalA.i) "Current flowing port A";
@@ -353,7 +468,7 @@ package PowerSysPro
         terminalA.i + terminalB.i = Complex(0);
       end if;
       annotation (
-        Icon(graphics = {Line(points = {{-90, 0}, {-40, 0}}, color = {0, 0, 0}, thickness = 0.5), Line(points = {{90, 0}, {40, 0}}, color = {0, 0, 0}, thickness = 0.5), Line(points = DynamicSelect({{-40, 0}, {20, 40}}, if not BrkOpen then {{-40, 0}, {20, 40}} else {{-40, 0}, {40, 0}}), color = {0, 0, 0}, thickness = 0.5)}),
+        Icon(graphics={  Line(points = {{-90, 0}, {-40, 0}}, color = {0, 0, 0}, thickness = 0.5), Line(points = {{90, 0}, {40, 0}}, color = {0, 0, 0}, thickness = 0.5), Line(points = DynamicSelect({{-40, 0}, {20, 40}}, if not BrkOpen then {{-40, 0}, {20, 40}} else {{-40, 0}, {40, 0}}), color = {0, 0, 0}, thickness = 0.5)}),
         Documentation(info = "<html>
      <p>This node prescribes a perfect breaker.</p>
     </html>"));
@@ -361,8 +476,17 @@ package PowerSysPro
 
     model myGround "Ground"
       extends Icons.myGround;
-      Interfaces.myTerminal terminal "Terminal of the ground" annotation (
-        Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Interfaces.myAcausalTerminal terminal "Terminal of the ground"
+        annotation (Placement(
+          visible=true,
+          transformation(
+            origin={0,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={0,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
       Types.myCurrent I = CM.'abs'(terminal.i) "Current flowing the ground";
     equation
       terminal.v = Complex(0);
@@ -380,8 +504,18 @@ package PowerSysPro
       partial model myPartialLoad "Partial model for loads"
         extends Icons.myLoad;
         extends Icons.myOnePortAC;
-        Interfaces.myTerminal terminal(v(re(start = UNom / sqrt(3), nominal = UNom / sqrt(3)), im(start = 0))) "Terminal of the node" annotation (
-          Placement(visible = true, transformation(origin = {-0.4, 0.2}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-0.4, 0.2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Interfaces.myAcausalTerminal terminal(v(re(start=UNom/sqrt(3), nominal=
+                  UNom/sqrt(3)), im(start=0))) "Terminal of the node"
+          annotation (Placement(
+            visible=true,
+            transformation(
+              origin={-0.4,0.2},
+              extent={{-10,-10},{10,10}},
+              rotation=0),
+            iconTransformation(
+              origin={-0.4,0.2},
+              extent={{-10,-10},{10,10}},
+              rotation=0)));
       public
         parameter Types.myVoltage UNom "Reference voltage of the load";
         parameter Types.myPerUnit lowVoltage(min = 0, max = 1) = if UNom <= 1000 then 0.9 else 0.95 "Lower percentage limit for acceptable voltage";
@@ -404,10 +538,29 @@ package PowerSysPro
       partial model myPartialTransformer "Partial model for transformers"
         extends Icons.myTransformer;
         extends Icons.myTwoPortsAC;
-        Interfaces.myTerminal terminalA(i(re(start = 0), im(start = 0))) "Terminal A of the node" annotation (
-          Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Interfaces.myTerminal terminalB(v(re(start = UNomB / sqrt(3), nominal = UNomB / sqrt(3)), im(start = 0))) "Terminal B of the node" annotation (
-          Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Interfaces.myAcausalTerminal terminalA(i(re(start=0), im(start=0)))
+          "Terminal A of the node" annotation (Placement(
+            visible=true,
+            transformation(
+              origin={-100,0},
+              extent={{-10,-10},{10,10}},
+              rotation=0),
+            iconTransformation(
+              origin={-100,0},
+              extent={{-10,-10},{10,10}},
+              rotation=0)));
+        Interfaces.myAcausalTerminal terminalB(v(re(start=UNomB/sqrt(3),
+                nominal=UNomB/sqrt(3)), im(start=0))) "Terminal B of the node"
+          annotation (Placement(
+            visible=true,
+            transformation(
+              origin={100,0},
+              extent={{-10,-10},{10,10}},
+              rotation=0),
+            iconTransformation(
+              origin={100,0},
+              extent={{-10,-10},{10,10}},
+              rotation=0)));
       public
         parameter Types.myVoltage UNomA "Reference voltage at primary side";
         parameter Types.myVoltage UNomB "Reference voltage at secondary side";
@@ -436,8 +589,17 @@ package PowerSysPro
       end myPartialTransformer;
 
       model myFault "Modeling a fault during a time interval"
-        Interfaces.myTerminal terminal "Port terminal" annotation (
-          Placement(visible = true, transformation(origin = {-1.42109e-14, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-1.42109e-14, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Interfaces.myAcausalTerminal terminal "Port terminal" annotation (
+            Placement(
+            visible=true,
+            transformation(
+              origin={-1.42109e-14,0},
+              extent={{-10,-10},{10,10}},
+              rotation=0),
+            iconTransformation(
+              origin={-1.42109e-14,0},
+              extent={{-10,-10},{10,10}},
+              rotation=0)));
         parameter Types.myResistance R = 0 "Series resistance to ground during fault";
         parameter Types.myReactance X = 0 "Series reactance to ground during fault";
         parameter Types.myTime startTime "Start time of the fault";
@@ -550,26 +712,25 @@ package PowerSysPro
       Types.myVoltage Umes[10];
       Types.myVoltage Umoy;
       Types.myReactivePower Qref(start = 0);
-    algorithm
+    equation
       when Clock(1) then
         for i in 0:8 loop
-          Umes[10 - i] := Umes[10 - i - 1];
+          Umes[10 - i] = Umes[10 - i - 1];
         end for;
-        Umes[1] := sample(U);
-        Umoy := sum(Umes) / 10;
-        if Umoy < 0.96 * UNom then
-          Qref := Qmax;
-        elseif Umoy > 0.96 * UNom and Umoy < 0.9725 * UNom then
-          Qref := -(Umoy - 0.9725 * UNom) / (0.0125 * UNom) * Qmax;
-        elseif Umoy > 1.0375 * UNom and Umoy < 1.05 * UNom then
-          Qref := (Umoy - 1.0375 * UNom) / (0.0125 * UNom) * Qmin;
-        elseif Umoy > 1.05 * UNom then
-          Qref := Qmin;
-        else
-          Qref := 0;
-        end if;
+        Umes[1] = sample(U);
+        Umoy = sum(Umes) / 10;
         if sample(time) < 10 then
-          Qref := 0;
+          Qref = 0;
+        elseif Umoy < 0.96 * UNom then
+          Qref = Qmax;
+        elseif Umoy > 0.96 * UNom and Umoy < 0.9725 * UNom then
+          Qref = -(Umoy - 0.9725 * UNom) / (0.0125 * UNom) * Qmax;
+        elseif Umoy > 1.0375 * UNom and Umoy < 1.05 * UNom then
+          Qref = (Umoy - 1.0375 * UNom) / (0.0125 * UNom) * Qmin;
+        elseif Umoy > 1.05 * UNom then
+          Qref = Qmin;
+        else
+          Qref = 0;
         end if;
       end when;
       annotation (
@@ -587,55 +748,80 @@ package PowerSysPro
   end Regulations;
 
   package Buses "Bus for causal connections"
-    model myCausalBus_in "Causal input bus"
+    model myCausalBusVInput "Causal input bus"
       extends Icons.myBus;
-      Interfaces.myTerminal terminal annotation (
-        Placement(visible = true, transformation(origin = {-1.42109e-14, 98}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {30, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Interfaces.myAcausalTerminal terminal annotation (Placement(
+          visible=true,
+          transformation(
+            origin={-1.42109e-14,98},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={30,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
       Modelica.Blocks.Interfaces.RealInput v_re(final unit = "V", displayUnit = "V") annotation (
         Placement(transformation(extent = {{-120, 44}, {-100, 64}}), iconTransformation(extent = {{-8, 8}, {8, -8}}, rotation = 0, origin = {-18, -40})));
       Modelica.Blocks.Interfaces.RealInput v_im(final unit = "V", displayUnit = "V") annotation (
         Placement(transformation(extent = {{-120, 16}, {-100, 36}}), iconTransformation(extent = {{-8, -8}, {8, 8}}, rotation = 0, origin = {-18, -80})));
-      flow Modelica.Blocks.Interfaces.RealOutput i_re(final unit = "A", displayUnit = "A") annotation (
+      Modelica.Blocks.Interfaces.RealOutput i_re(final unit = "A", displayUnit = "A") annotation (
         Placement(transformation(extent = {{-110, -22}, {-90, -2}}), iconTransformation(extent = {{-8, -8}, {8, 8}}, rotation = 180, origin = {-18, 80})));
-      flow Modelica.Blocks.Interfaces.RealOutput i_im(final unit = "A", displayUnit = "A") annotation (
+      Modelica.Blocks.Interfaces.RealOutput i_im(final unit = "A", displayUnit = "A") annotation (
         Placement(transformation(extent = {{-110, -52}, {-90, -32}}), iconTransformation(extent = {{-8, -8}, {8, 8}}, rotation = 180, origin = {-18, 40})));
     equation
       v_re = terminal.v.re;
       v_im = terminal.v.im;
-      i_re + terminal.i.re = 0;
-      i_im + terminal.i.im = 0;
+      // two equations when i_re and i_im are not flow variables (accepted both by Dymola and OM)
+      i_re = terminal.i.re;
+      i_im = terminal.i.im;
+      // two equations when i_re and i_im are flow variables (accepted by Dymola, refused by OM)
+      //i_re + terminal.i.re = 0;
+      //i_im + terminal.i.im = 0;
+
       annotation (
         Documentation(info = "<html>
     <p> Causal input connector, with complex voltage as input and complex current as output.</p>    
     </html>"),
         Icon(graphics={  Text(origin = {73, 97}, lineColor = {0, 0, 255}, extent = {{-131, 11}, {131, -11}}, textString = "%name"), Polygon(origin = {-6, -1}, fillColor = {70, 70, 70}, pattern = LinePattern.None,
                 fillPattern =                                                                                                                                                                                                      FillPattern.Solid, points = {{0, 19}, {40, 0}, {0, -21}, {0, 19}}, rotation = 180), Text(extent = {{-10, -12}, {72, -52}}, lineColor = {0, 0, 0}, textStyle = {TextStyle.Bold}, textString = "~")}));
-    end myCausalBus_in;
+    end myCausalBusVInput;
 
-    model myCausalBus_out "Causal output bus"
+    model myCausalBusVOutput "Causal output bus"
       extends Icons.myBus;
-      Interfaces.myTerminal terminal annotation (
-        Placement(visible = true, transformation(origin = {-1.42109e-14, 98}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-30, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Interfaces.myAcausalTerminal terminal annotation (Placement(
+          visible=true,
+          transformation(
+            origin={-1.42109e-14,98},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={-30,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
       Modelica.Blocks.Interfaces.RealOutput v_re(final unit = "V", displayUnit = "V") annotation (
         Placement(transformation(extent = {{-110, 44}, {-90, 64}}), iconTransformation(extent = {{12, -32}, {28, -48}})));
       Modelica.Blocks.Interfaces.RealOutput v_im(final unit = "V", displayUnit = "V") annotation (
         Placement(transformation(extent = {{-110, 16}, {-90, 36}}), iconTransformation(extent = {{12, -88}, {28, -72}})));
-      flow Modelica.Blocks.Interfaces.RealInput i_re(final unit = "A", displayUnit = "A") annotation (
+      Modelica.Blocks.Interfaces.RealInput i_re(final unit = "A", displayUnit = "A") annotation (
         Placement(transformation(extent = {{-120, -22}, {-100, -2}}), iconTransformation(extent = {{-8, -8}, {8, 8}}, rotation = 180, origin = {20, 80})));
-      flow Modelica.Blocks.Interfaces.RealInput i_im(final unit = "A", displayUnit = "A") annotation (
+      Modelica.Blocks.Interfaces.RealInput i_im(final unit = "A", displayUnit = "A") annotation (
         Placement(transformation(extent = {{-120, -52}, {-100, -32}}), iconTransformation(extent = {{-8, -8}, {8, 8}}, rotation = 180, origin = {20, 40})));
     equation
       v_re = terminal.v.re;
       v_im = terminal.v.im;
-      i_re + terminal.i.re = 0;
-      i_im + terminal.i.im = 0;
+      // two equations when i_re and i_im are not flow variables (accepted both by Dymola and OM)
+      i_re = terminal.i.re;
+      i_im = terminal.i.im;
+      // two equations when i_re and i_im are flow variables (accepted by Dymola, refused by OM)
+      //i_re + terminal.i.re = 0;
+      //i_im + terminal.i.im = 0;
       annotation (
         Documentation(info = "<html>
     <p> Causal output connector, with complex voltage as output and complex current as input.</p>
     </html>"),
         Icon(graphics={  Text(origin = {-79, 97}, lineColor = {0, 0, 255}, extent = {{-131, 11}, {131, -11}}, textString = "%name"), Polygon(origin = {8, -1}, fillColor = {70, 70, 70}, pattern = LinePattern.None,
                 fillPattern =                                                                                                                                                                                                      FillPattern.Solid, points = {{0, 19}, {40, 0}, {0, -21}, {0, 19}}), Text(extent = {{-70, -10}, {12, -50}}, lineColor = {0, 0, 0}, textStyle = {TextStyle.Bold}, textString = "~")}));
-    end myCausalBus_out;
+    end myCausalBusVOutput;
     annotation (
       Icon(coordinateSystem(grid = {0.1, 0.1}), graphics={  Rectangle(lineColor = {200, 200, 200}, fillColor = {248, 248, 248},
               fillPattern =                                                                                                                   FillPattern.HorizontalCylinder, extent = {{-100, -101.1}, {100, 98.9}}, radius = 25.0), Rectangle(lineColor = {128, 128, 128}, extent = {{-100, -101.1}, {100, 98.9}}, radius = 25.0), Text(extent = {{-78, 52.9}, {72, -59.1}}, lineColor = {28, 108, 200}, fontName = "Segoe Print", textString = "B")}),
@@ -645,7 +831,6 @@ package PowerSysPro
     <p>Causal connectors are to be used when the model must be split before exporting as FMUs.</p>
 </body></html>"));
   end Buses;
-
   //Copyright 2020 EDF
   extends Modelica.Icons.Package;
   import CM = Modelica.ComplexMath;
@@ -655,8 +840,17 @@ package PowerSysPro
 
     model VoltMeter "Ideal voltmeter"
       extends Icons.mySensor;
-      Interfaces.myTerminal terminal "Terminal of the sensor" annotation (
-        Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Interfaces.myAcausalTerminal terminal "Terminal of the sensor"
+        annotation (Placement(
+          visible=true,
+          transformation(
+            origin={-100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={-100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
       Modelica.Blocks.Interfaces.RealOutput Umes(unit = "V", displayUnit = "kV") "Measured voltage" annotation (
         Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {-80, 90}), iconTransformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {0, 90})));
     equation
@@ -671,10 +865,28 @@ package PowerSysPro
 
     model AmMeter "Ideal ammeter"
       extends Icons.mySensor;
-      Interfaces.myTerminal terminalA "Terminal A of the node" annotation (
-        Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Interfaces.myTerminal terminalB "Terminal B of the node" annotation (
-        Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Interfaces.myAcausalTerminal terminalA "Terminal A of the node"
+        annotation (Placement(
+          visible=true,
+          transformation(
+            origin={-100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={-100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
+      Interfaces.myAcausalTerminal terminalB "Terminal B of the node"
+        annotation (Placement(
+          visible=true,
+          transformation(
+            origin={100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
       Modelica.Blocks.Interfaces.RealOutput Imes(unit = "A", displayUnit = "A") "Measured flowing current at port A" annotation (
         Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {-40, 90}), iconTransformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {0, 90})));
     equation
@@ -689,10 +901,28 @@ package PowerSysPro
 
     model WattMeter "Versatile sensor"
       extends Icons.mySensor;
-      Interfaces.myTerminal terminalA "Terminal A of the node" annotation (
-        Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Interfaces.myTerminal terminalB "Terminal B of the node" annotation (
-        Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Interfaces.myAcausalTerminal terminalA "Terminal A of the node"
+        annotation (Placement(
+          visible=true,
+          transformation(
+            origin={-100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={-100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
+      Interfaces.myAcausalTerminal terminalB "Terminal B of the node"
+        annotation (Placement(
+          visible=true,
+          transformation(
+            origin={100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0),
+          iconTransformation(
+            origin={100,0},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
       Modelica.Blocks.Interfaces.RealOutput Umes(unit = "V", displayUnit = "kV") "Measured voltage at port A" annotation (
         Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {-80, 90}), iconTransformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {-40, 90})));
       Modelica.Blocks.Interfaces.RealOutput Imes(unit = "A", displayUnit = "A") "Measured flowing current at port A" annotation (
@@ -749,7 +979,8 @@ package PowerSysPro
   package Interfaces "Interfaces for connecting the components"
     extends Icons.myInterfacesPackage;
 
-    connector myTerminal "Non-causal terminal for phasor-based AC connections"
+    connector myAcausalTerminal
+      "Non-causal terminal for phasor-based AC connections"
       Modelica.SIunits.ComplexVoltage v "Phase-to-ground voltage phasor";
       flow Modelica.SIunits.ComplexCurrent i "Line current phasor";
       annotation (
@@ -760,7 +991,8 @@ package PowerSysPro
 <p>
 The myTerminal connector represents an AC terminal with voltage and flow current.
 </body></html>"));
-    end myTerminal;
+    end myAcausalTerminal;
+
     annotation (
       Documentation(info = "<html>
     <p>Each interface in this package is composed of a complex voltage v (phase-to-ground voltage phasor) and a flow complex current i (line current phasor).</p>
@@ -801,7 +1033,7 @@ The myTerminal connector represents an AC terminal with voltage and flow current
 
     model myPV "Icon for PV node"
       annotation (
-        Icon(graphics = {Ellipse(origin = {0, -1}, extent = {{-60, 61}, {60, -59}}, endAngle = 360), Text(origin = {0, 96}, lineColor = {0, 0, 255}, extent = {{-118, 12}, {118, -12}}, textString = "%name"), Text(origin = {-138.43, -89.33}, lineColor = {28, 108, 200}, extent = {{-53.57, 7.33}, {331.14, -14.66}}, textStyle = {TextStyle.Bold}, textString = "%UNom")}, coordinateSystem(initialScale = 0.1)));
+        Icon(graphics={  Ellipse(origin = {0, -1}, extent = {{-60, 61}, {60, -59}}, endAngle = 360), Text(origin = {0, 96}, lineColor = {0, 0, 255}, extent = {{-118, 12}, {118, -12}}, textString = "%name"), Text(origin = {-138.43, -89.33}, lineColor = {28, 108, 200}, extent = {{-53.57, 7.33}, {331.14, -14.66}}, textStyle = {TextStyle.Bold}, textString = "%UNom")}, coordinateSystem(initialScale = 0.1)));
     end myPV;
 
     model myLoad "Icon for load node"
@@ -829,14 +1061,14 @@ The myTerminal connector represents an AC terminal with voltage and flow current
 
     model myBreaker "Icon for breaker"
       annotation (
-        Icon(graphics = {Line(points = {{90, 0}, {40, 0}}, color = {0, 0, 0}, thickness = 0.5), Text(origin = {0, 68}, lineColor = {0, 0, 255}, extent = {{-118, 12}, {118, -12}}, textString = "%name"), Line(points = {{-40, 0}, {-90, 0}}, color = {0, 0, 0}, thickness = 0.5)}));
+        Icon(graphics={  Line(points = {{90, 0}, {40, 0}}, color = {0, 0, 0}, thickness = 0.5), Text(origin = {0, 68}, lineColor = {0, 0, 255}, extent = {{-118, 12}, {118, -12}}, textString = "%name"), Line(points = {{-40, 0}, {-90, 0}}, color = {0, 0, 0}, thickness = 0.5)}));
     end myBreaker;
 
     model myGround "Icon for ground"
     equation
 
       annotation (
-        Icon(graphics = {Line(origin = {0, -20}, points = {{0, 20}, {0, -20}, {0, -20}}), Line(origin = {0, -40}, points = {{-40, 0}, {40, 0}, {40, 0}, {40, 0}}), Line(origin = {0, -60}, points = {{-20, 0}, {20, 0}, {20, 0}}), Line(origin = {0, -80}, points = {{-4, 0}, {4, 0}})}, coordinateSystem(initialScale = 0.1)));
+        Icon(graphics={  Line(origin = {0, -20}, points = {{0, 20}, {0, -20}, {0, -20}}), Line(origin = {0, -40}, points = {{-40, 0}, {40, 0}, {40, 0}, {40, 0}}), Line(origin = {0, -60}, points = {{-20, 0}, {20, 0}, {20, 0}}), Line(origin = {0, -80}, points = {{-4, 0}, {4, 0}})}, coordinateSystem(initialScale = 0.1)));
     end myGround;
 
     model myBus "Icon for causal bus"
@@ -854,7 +1086,8 @@ The myTerminal connector represents an AC terminal with voltage and flow current
     equation
 
       annotation (
-        Icon(graphics = {Rectangle(origin = {-1, -1}, fillColor = {238, 46, 47}, fillPattern = FillPattern.Solid, extent = {{-59, 11}, {61, -11}}, lineColor = {238, 46, 47})}, coordinateSystem(initialScale = 0.1)));
+        Icon(graphics={  Rectangle(origin = {-1, -1}, fillColor = {238, 46, 47},
+                fillPattern =                                                                  FillPattern.Solid, extent = {{-59, 11}, {61, -11}}, lineColor = {238, 46, 47})}, coordinateSystem(initialScale = 0.1)));
     end myFault;
 
     model mySensor "Icon for sensor"
@@ -943,7 +1176,11 @@ The myTerminal connector represents an AC terminal with voltage and flow current
 
     partial class myReleaseNotes "Icon for general information"
       annotation (
-        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Polygon(points = {{-80, -100}, {-80, 100}, {0, 100}, {0, 20}, {80, 20}, {80, -100}, {-80, -100}}, fillColor = {245, 245, 245}, fillPattern = FillPattern.Solid), Polygon(points = {{0, 100}, {80, 20}, {0, 20}, {0, 100}}, fillColor = {215, 215, 215}, fillPattern = FillPattern.Solid), Line(points = {{2, -12}, {50, -12}}), Ellipse(extent = {{-56, 2}, {-28, -26}}, fillColor = {215, 215, 215}, fillPattern = FillPattern.Solid), Line(points = {{2, -60}, {50, -60}}), Ellipse(extent = {{-56, -46}, {-28, -74}}, fillColor = {215, 215, 215}, fillPattern = FillPattern.Solid)}),
+        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics={  Polygon(points = {{-80, -100}, {-80, 100}, {0, 100}, {0, 20}, {80, 20}, {80, -100}, {-80, -100}}, fillColor = {245, 245, 245},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Polygon(points = {{0, 100}, {80, 20}, {0, 20}, {0, 100}}, fillColor = {215, 215, 215},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Line(points = {{2, -12}, {50, -12}}), Ellipse(extent = {{-56, 2}, {-28, -26}}, fillColor = {215, 215, 215},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Line(points = {{2, -60}, {50, -60}}), Ellipse(extent = {{-56, -46}, {-28, -74}}, fillColor = {215, 215, 215},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid)}),
         Documentation(info = "<html>
 <p>This icon indicates release notes and the revision history of a library.</p>
 </html>"));
@@ -951,7 +1188,11 @@ The myTerminal connector represents an AC terminal with voltage and flow current
 
     partial class myContact "Icon for contact information"
       annotation (
-        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, 70}, {100, -72}}, fillColor = {235, 235, 235}, fillPattern = FillPattern.Solid), Polygon(points = {{-100, -72}, {100, -72}, {0, 20}, {-100, -72}}, fillColor = {215, 215, 215}, fillPattern = FillPattern.Solid), Polygon(points = {{22, 0}, {100, 70}, {100, -72}, {22, 0}}, fillColor = {235, 235, 235}, fillPattern = FillPattern.Solid), Polygon(points = {{-100, 70}, {100, 70}, {0, -20}, {-100, 70}}, fillColor = {241, 241, 241}, fillPattern = FillPattern.Solid)}),
+        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics={  Rectangle(extent = {{-100, 70}, {100, -72}}, fillColor = {235, 235, 235},
+                fillPattern =                                                                                                                                                                        FillPattern.Solid), Polygon(points = {{-100, -72}, {100, -72}, {0, 20}, {-100, -72}}, fillColor = {215, 215, 215},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Polygon(points = {{22, 0}, {100, 70}, {100, -72}, {22, 0}}, fillColor = {235, 235, 235},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Polygon(points = {{-100, 70}, {100, 70}, {0, -20}, {-100, 70}}, fillColor = {241, 241, 241},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid)}),
         Documentation(info = "<html>
 <p>This icon shall be used for the contact information of the library developers.</p>
 </html>"));
@@ -969,11 +1210,11 @@ The myTerminal connector represents an AC terminal with voltage and flow current
       extends Modelica.Icons.Example;
       Components.mySource src(UNom = 10000, theta = 0.5235987755983) annotation (
         Placement(visible = true, transformation(origin = {-52, -6}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Buses.myCausalBus_out Bout annotation (
-        Placement(transformation(extent = {{-26, -16}, {-6, 4}})));
-      flow Modelica.Blocks.Interfaces.RealInput i_re(start = -30) annotation (
+      Buses.myCausalBusVOutput Bout
+        annotation (Placement(transformation(extent={{-26,-16},{-6,4}})));
+      Modelica.Blocks.Interfaces.RealInput i_re(start = 30) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {100, 24})));
-      flow Modelica.Blocks.Interfaces.RealInput i_im(start = -40) annotation (
+      Modelica.Blocks.Interfaces.RealInput i_im(start = 40) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {100, -8})));
     equation
       connect(i_re, Bout.i_re) annotation (
@@ -983,17 +1224,19 @@ The myTerminal connector represents an AC terminal with voltage and flow current
       connect(i_im, Bout.i_im) annotation (
         Line(points = {{100, -8}, {22, -8}, {22, -2}, {-14, -2}}, color = {0, 0, 127}));
       annotation (
-        Diagram(graphics={Text(lineColor = {28, 108, 200}, extent = {{-108, 24}, {34, 14}}, fontSize = 12, textString = "U = 10 kV, theta = 30°"), Text(lineColor = {28, 108, 200}, extent = {{-94, -20}, {106, -60}}, fontSize = 12, textString = "current in the source is 50 A
-apparent power flowing the source is 866 kVA"),     Text(lineColor = {28, 108, 200}, extent = {{10, 48}, {152, 38}}, fontSize = 12, textString = "i_re = -30, i_im = -40")}, coordinateSystem(initialScale = 0.1)),
-          experiment(StopTime = 1));
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-108, 24}, {34, 14}}, fontSize = 12, textString = "U = 10 kV, theta = 30°"), Text(lineColor = {28, 108, 200}, extent = {{-94, -20}, {106, -60}}, fontSize = 12, textString = "current in the source is 50 A
+apparent power flowing the source is 866 kVA"), Text(lineColor={28,108,200},     extent = {{10, 48}, {152, 38}}, fontSize=
+                  12,
+              textString="i_re = 30, i_im = 40")},                                                                                                                       coordinateSystem(initialScale = 0.1)),
+        experiment(StopTime = 1));
     end OneSource;
 
     model OneLoad "Testing a load"
       extends Modelica.Icons.Example;
       Components.myLoad load(UNom = 5000, P = 4000, Q = 3000) annotation (
         Placement(visible = true, transformation(origin = {66, 6}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Buses.myCausalBus_in Bin annotation (
-        Placement(transformation(extent = {{18, -4}, {38, 16}})));
+      Buses.myCausalBusVInput Bin
+        annotation (Placement(transformation(extent={{18,-4},{38,16}})));
       Modelica.Blocks.Interfaces.RealInput v_re(start = 4000 / sqrt(3)) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 0, origin = {-100, 26})));
       Modelica.Blocks.Interfaces.RealInput v_im(start = 3000 / sqrt(3)) annotation (
@@ -1009,20 +1252,20 @@ apparent power flowing the source is 866 kVA"),     Text(lineColor = {28, 108, 2
         Diagram(graphics={  Text(extent = {{-106, -22}, {106, -64}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "voltage at the load is 5 kV
 and current is 0.577 A
 apparent power flowing the load is 5 kVA"), Text(extent = {{10, 54}, {140, 12}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "P = 4 kW, Q = 3 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-220, 58}, {48, 52}}, fontSize = 12, textString = "v_re = 4000/sqrt(3), v_im = 3000/sqrt(3)")}, coordinateSystem(initialScale = 0.1)),
-          experiment(StopTime = 1));
+        experiment(StopTime = 1));
     end OneLoad;
 
     model OnePerfectLine "Testing a perfect line"
       extends Modelica.Icons.Example;
       Components.myLine line(UNom = 5000, Imax = 60, R = 1e-9, X = 0) annotation (
         Placement(visible = true, transformation(origin = {-4, 14}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Buses.myCausalBus_in Bin annotation (
-        Placement(transformation(extent = {{-46, 4}, {-26, 24}})));
-      Buses.myCausalBus_out Bout annotation (
-        Placement(transformation(extent = {{16, 4}, {36, 24}})));
-      flow Modelica.Blocks.Interfaces.RealInput i_re(start = -30) annotation (
+      Buses.myCausalBusVInput Bin
+        annotation (Placement(transformation(extent={{-46,4},{-26,24}})));
+      Buses.myCausalBusVOutput Bout
+        annotation (Placement(transformation(extent={{16,4},{36,24}})));
+      Modelica.Blocks.Interfaces.RealInput i_re(start = 30) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {104, 34})));
-      flow Modelica.Blocks.Interfaces.RealInput i_im(start = -40) annotation (
+      Modelica.Blocks.Interfaces.RealInput i_im(start = 40) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {104, -2})));
       Modelica.Blocks.Interfaces.RealInput v_re(start = 4000 / sqrt(3)) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 0, origin = {-110, 40})));
@@ -1045,21 +1288,23 @@ apparent power flowing the load is 5 kVA"), Text(extent = {{10, 54}, {140, 12}},
         Diagram(graphics={  Text(extent = {{-58, -12}, {70, -62}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "current in the line is 50 A and voltage is 5 kV 
 no voltage drop as the line is perfect
 apparent power flowing the line is 433 kVA"), Text(origin = {42.8, 22.3078}, lineColor = {28, 108, 200}, extent = {{-76.8, 19.6922}, {-12.8, 35.6922}}, fontSize = 12, textString = "perfect line:
-R very low, and X=G=B=0"), Text(lineColor = {28, 108, 200}, extent = {{30, 60}, {172, 50}}, fontSize = 12, textString = "i_re = -30, i_im = -40"), Text(lineColor = {28, 108, 200}, extent = {{-208, 74}, {20, 66}}, fontSize = 12, textString = "v_re = 4000/sqrt(3), v_im = 3000/sqrt(3)")}, coordinateSystem(initialScale = 0.1)),
-          experiment(StopTime = 1));
+R very low, and X=G=B=0"), Text(lineColor={28,108,200},     extent = {{30, 60}, {172, 50}}, fontSize=
+                  12,
+              textString="i_re = 30, i_im = 40"),                                                                                                  Text(lineColor = {28, 108, 200}, extent = {{-208, 74}, {20, 66}}, fontSize = 12, textString = "v_re = 4000/sqrt(3), v_im = 3000/sqrt(3)")}, coordinateSystem(initialScale = 0.1)),
+        experiment(StopTime = 1));
     end OnePerfectLine;
 
     model OneLine "Testing a normal line"
       extends Modelica.Icons.Example;
       Components.myLine line(UNom = 5000, Imax = 60, R = 10, X = 0) annotation (
         Placement(visible = true, transformation(origin = {-4, 12}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Buses.myCausalBus_in Bin annotation (
-        Placement(transformation(extent = {{-46, 2}, {-26, 22}})));
-      Buses.myCausalBus_out Bout annotation (
-        Placement(transformation(extent = {{18, 2}, {38, 22}})));
-      flow Modelica.Blocks.Interfaces.RealInput i_re(start = -30) annotation (
+      Buses.myCausalBusVInput Bin
+        annotation (Placement(transformation(extent={{-46,2},{-26,22}})));
+      Buses.myCausalBusVOutput Bout
+        annotation (Placement(transformation(extent={{18,2},{38,22}})));
+      Modelica.Blocks.Interfaces.RealInput i_re(start = 30) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {100, 40})));
-      flow Modelica.Blocks.Interfaces.RealInput i_im(start = -40) annotation (
+      Modelica.Blocks.Interfaces.RealInput i_im(start = 40) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {100, 4})));
       Modelica.Blocks.Interfaces.RealInput v_re(start = 5000 / sqrt(3)) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 0, origin = {-112, 34})));
@@ -1082,21 +1327,23 @@ R very low, and X=G=B=0"), Text(lineColor = {28, 108, 200}, extent = {{30, 60}, 
         Diagram(graphics={  Text(origin = {38.8, 18.3078}, lineColor = {28, 108, 200}, extent = {{-76.8, 19.6922}, {-12.8, 35.6922}}, fontSize = 12, textString = "resistive line:
 R = 10 ohms, and X=G=B=0"), Text(extent = {{-58, -18}, {70, -68}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "current in the line is 50 A and voltage is 5 kV 
 voltage drop is 466 V
-apparent power flowing the line is 433 kVA"), Text(lineColor = {28, 108, 200}, extent = {{26, 66}, {168, 56}}, fontSize = 12, textString = "i_re = -30, i_im = -40"), Text(lineColor = {28, 108, 200}, extent = {{-188, 64}, {-46, 54}}, fontSize = 12, textString = "v_re = 5000/sqrt(3), v_im = 0")}, coordinateSystem(initialScale = 0.1)),
-          experiment(StopTime = 1));
+apparent power flowing the line is 433 kVA"), Text(lineColor={28,108,200},     extent = {{26, 66}, {168, 56}}, fontSize=
+                  12,
+              textString="i_re = 30, i_im = 40"),                                                                                                                     Text(lineColor = {28, 108, 200}, extent = {{-188, 64}, {-46, 54}}, fontSize = 12, textString = "v_re = 5000/sqrt(3), v_im = 0")}, coordinateSystem(initialScale = 0.1)),
+        experiment(StopTime = 1));
     end OneLine;
 
     model OneperfectTransfo "Testing a perfect transformer"
       extends Modelica.Icons.Example;
       Components.myTransformer tra(UNomA = 63000, UNomB = 20000, SNom = 36000, R = 1e-9) annotation (
         Placement(visible = true, transformation(origin = {-4, 16}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Buses.myCausalBus_in Bin annotation (
-        Placement(transformation(extent = {{-46, 6}, {-26, 26}})));
-      Buses.myCausalBus_out Bout annotation (
-        Placement(transformation(extent = {{16, 6}, {36, 26}})));
-      flow Modelica.Blocks.Interfaces.RealInput i_re(start = -30) annotation (
+      Buses.myCausalBusVInput Bin
+        annotation (Placement(transformation(extent={{-46,6},{-26,26}})));
+      Buses.myCausalBusVOutput Bout
+        annotation (Placement(transformation(extent={{16,6},{36,26}})));
+      Modelica.Blocks.Interfaces.RealInput i_re(start = 30) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {100, 42})));
-      flow Modelica.Blocks.Interfaces.RealInput i_im(start = -40) annotation (
+      Modelica.Blocks.Interfaces.RealInput i_im(start = 40) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {100, 6})));
       Modelica.Blocks.Interfaces.RealInput v_re(start = 63000 / sqrt(3)) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 0, origin = {-106, 40})));
@@ -1120,21 +1367,24 @@ apparent power flowing the line is 433 kVA"), Text(lineColor = {28, 108, 200}, e
 R very low, and X=G=B=0
 ratio=20/63"), Text(extent = {{-66, -14}, {62, -64}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "voltage at port A is 63 kV and is 20 kV at port B
 current in port A is 15.9 A and is 50 A in port B
-apparent power flowing the transformer is 1732 kVA"), Text(lineColor = {28, 108, 200}, extent = {{26, 68}, {168, 58}}, fontSize = 12, textString = "i_re = -30, i_im = -40"), Text(lineColor = {28, 108, 200}, extent = {{-200, 66}, {-6, 62}}, fontSize = 12, textString = "v_re = 63000/sqrt(3), v_im = 0")}, coordinateSystem(initialScale = 0.1)),
-          experiment(StopTime = 1));
+apparent power flowing the transformer is 1732 kVA"), Text(lineColor={28,108,
+                  200},                                                                extent = {{26, 68}, {168, 58}}, fontSize=
+                  12,
+              textString="i_re = 30, i_im = 40"),                                                                                                                             Text(lineColor = {28, 108, 200}, extent = {{-200, 66}, {-6, 62}}, fontSize = 12, textString = "v_re = 63000/sqrt(3), v_im = 0")}, coordinateSystem(initialScale = 0.1)),
+        experiment(StopTime = 1));
     end OneperfectTransfo;
 
     model OneTransfo "Testing a normal transformer"
       extends Modelica.Icons.Example;
       Components.myTransformer tra(UNomA = 63000, UNomB = 20000, SNom = 36000, R = 10, X = 0) annotation (
         Placement(visible = true, transformation(origin = {-4, 16}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Buses.myCausalBus_in Bin annotation (
-        Placement(transformation(extent = {{-46, 6}, {-26, 26}})));
-      Buses.myCausalBus_out Bout annotation (
-        Placement(transformation(extent = {{16, 6}, {36, 26}})));
-      flow Modelica.Blocks.Interfaces.RealInput i_re(start = -50) annotation (
+      Buses.myCausalBusVInput Bin
+        annotation (Placement(transformation(extent={{-46,6},{-26,26}})));
+      Buses.myCausalBusVOutput Bout
+        annotation (Placement(transformation(extent={{16,6},{36,26}})));
+      Modelica.Blocks.Interfaces.RealInput i_re(start = 50) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {100, 50})));
-      flow Modelica.Blocks.Interfaces.RealInput i_im(start = 0) annotation (
+      Modelica.Blocks.Interfaces.RealInput i_im(start = 0) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {100, 14})));
       Modelica.Blocks.Interfaces.RealInput v_re(start = 63000 / sqrt(3)) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 0, origin = {-104, 44})));
@@ -1159,16 +1409,18 @@ R=10 ohms, and X=G=B=0
 ratio=20/63"), Text(extent = {{-132, -8}, {142, -58}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "voltage at port A is 63 kV
 voltage drop at port B is 87 V bellow 20 kV
 current in port A is 15.9 A and is 50 A in port B
-apparent power flowing the transformer is 1732 kVA"), Text(lineColor = {28, 108, 200}, extent = {{24, 76}, {166, 66}}, fontSize = 12, textString = "i_re = -50, i_im = 0"), Text(lineColor = {28, 108, 200}, extent = {{-198, 70}, {-4, 66}}, fontSize = 12, textString = "v_re = 63000/sqrt(3), v_im = 0")}, coordinateSystem(initialScale = 0.1)),
-          experiment(StopTime = 1));
+apparent power flowing the transformer is 1732 kVA"), Text(lineColor={28,108,200},     extent = {{24, 76}, {166, 66}}, fontSize=
+                  12,
+              textString="i_re = 50, i_im = 0"),                                                                                                                            Text(lineColor = {28, 108, 200}, extent = {{-198, 70}, {-4, 66}}, fontSize = 12, textString = "v_re = 63000/sqrt(3), v_im = 0")}, coordinateSystem(initialScale = 0.1)),
+        experiment(StopTime = 1));
     end OneTransfo;
 
     model OneBank "Testing a capacitor bank"
       extends Modelica.Icons.Example;
       Components.myCapacitorBank bank(UNom = 5000, B = 1) annotation (
         Placement(transformation(extent = {{50, 2}, {70, 22}})));
-      Buses.myCausalBus_in Bin annotation (
-        Placement(transformation(extent = {{20, 2}, {40, 22}})));
+      Buses.myCausalBusVInput Bin
+        annotation (Placement(transformation(extent={{20,2},{40,22}})));
       Modelica.Blocks.Interfaces.RealInput v_re(start = 4000 / sqrt(3)) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 0, origin = {-90, 44})));
       Modelica.Blocks.Interfaces.RealInput v_im(start = 3000 / sqrt(3)) annotation (
@@ -1185,7 +1437,7 @@ apparent power flowing the transformer is 1732 kVA"), Text(lineColor = {28, 108,
         Diagram(coordinateSystem(preserveAspectRatio = false), graphics={  Text(lineColor = {28, 108, 200}, extent = {{28, 44}, {104, 22}}, fontSize = 12, textString = "B = 1 S"), Text(extent = {{-38, -22}, {36, -66}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "voltage at the bank is 5 kV
 current is 2887 A
 apparent power flowing the bank is 25 MVAR"), Text(lineColor = {28, 108, 200}, extent = {{-242, 74}, {62, 66}}, fontSize = 12, textString = "v_re = 4000/sqrt(3), v_im = 3000/sqrt(3)")}),
-          experiment(StopTime = 1));
+        experiment(StopTime = 1));
     end OneBank;
 
     model VoltageRegulation1 "Testing the voltage regulation"
@@ -1297,7 +1549,7 @@ depending on the variable input voltage")}),
       connect(src.terminal, load.terminal) annotation (
         Line(points = {{-26, 18}, {4, 18}, {4, 18.02}, {35.96, 18.02}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-34, -10}, {40, -54}}, fontSize = 12, textString = "voltage is 10 kV
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-34, -10}, {40, -54}}, fontSize = 12, textString = "voltage is 10 kV
 current is 0,289 A
 apparent power flowing the components is 5 kVA"), Text(lineColor = {28, 108, 200}, extent = {{-30, 54}, {134, 28}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
@@ -1309,10 +1561,10 @@ apparent power flowing the components is 5 kVA"), Text(lineColor = {28, 108, 200
         Placement(visible = true, transformation(origin = {-52, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Components.myLoad load(UNom = 10000, P = 4000, Q = 3000) annotation (
         Placement(visible = true, transformation(origin = {54, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Buses.myCausalBus_out bout annotation (
-        Placement(transformation(extent = {{-22, 0}, {-2, 20}})));
-      Buses.myCausalBus_in bin annotation (
-        Placement(visible = true, transformation(extent = {{2, 0}, {22, 20}}, rotation = 0)));
+      Buses.myCausalBusVOutput bout
+        annotation (Placement(transformation(extent={{-22,0},{-2,20}})));
+      Buses.myCausalBusVInput bin annotation (Placement(visible=true,
+            transformation(extent={{2,0},{22,20}}, rotation=0)));
     equation
       connect(src.terminal, bout.terminal) annotation (
         Line(points = {{-52, 10}, {-15, 10}}, color = {0, 0, 0}));
@@ -1327,7 +1579,7 @@ apparent power flowing the components is 5 kVA"), Text(lineColor = {28, 108, 200
       connect(bin.terminal, load.terminal) annotation (
         Line(points = {{15, 10}, {34, 10}, {34, 10.02}, {53.96, 10.02}}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{26, 42}, {102, 20}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-34, -20}, {40, -64}}, fontSize = 12, textString = "same results as previous model
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{26, 42}, {102, 20}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-34, -20}, {40, -64}}, fontSize = 12, textString = "same results as previous model
 voltage is 10 kV
 current is 0,289 A
 apparent power flowing the components is 5 kVA")}, coordinateSystem(initialScale = 0.1)),
@@ -1675,29 +1927,104 @@ and 0.046 A in the source")}, coordinateSystem(initialScale = 0.1)),
       connect(tra1.terminalB, line1.terminalA) annotation (
         Line(points = {{-42, 22}, {-24, 22}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-4, 62}, {168, 40}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-32, -4}, {42, -48}}, fontSize = 12, textString = "current is 7.46 A in the load
-and 0.047 A in the source")}, coordinateSystem(initialScale = 0.1)),
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-4, 62}, {168, 40}}, textString = "P=5 kW and Q=0 kvar", fontSize = 12), Text(origin = {-15.7297, 7.27273}, lineColor = {28, 108, 200}, extent = {{-94.2703, -5.27273}, {123.73, -63.2727}}, textString = "current is 7.46 A in the load
+and 0.047 A in the source", fontSize = 12)}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
     end OneSourceOneTransfoOneLineOneTransfoOneLineOneLoad;
 
-    model OneSourceOneTransfoOneLineOneTransfoOneLineOneLoadWithBuses
+    model OneSourceOneTransfoOneLineOneTransfoOneLineOneLoadWithBuses1
       extends Modelica.Icons.Example;
-      Buses.myCausalBus_out bout2 annotation (
-        Placement(visible = true, transformation(origin = {56, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Buses.myCausalBus_in bin2 annotation (
-        Placement(visible = true, transformation(origin = {82, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Buses.myCausalBus_out bout1 annotation (
-        Placement(visible = true, transformation(origin = {-76, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Buses.myCausalBus_in bin1 annotation (
-        Placement(visible = true, transformation(origin = {-50, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Buses.myCausalBusVOutput bout1 annotation (Placement(visible=true,
+            transformation(
+            origin={-78,20},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
+      Buses.myCausalBusVInput bin1 annotation (Placement(visible=true,
+            transformation(
+            origin={-54,20},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
+      Components.myTransformer tra1(
+        UNomA=63000,
+        UNomB=20000,
+        SNom=70,
+        R=0.2,
+        X=1e-6)                                                                                 annotation (
+        Placement(visible = true, transformation(origin={-106,20},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Components.mySource src(UNom=63000)   annotation (
+        Placement(visible = true, transformation(origin={-132,20},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Components.myTransformer tra2(
+        UNomA=20000,
+        UNomB=400,
+        SNom=0.25,
+        R=1e-6,
+        X=1e-6)                                                                                  annotation (
+        Placement(visible = true, transformation(origin={4,20},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Components.myLine line2(
+        UNom=400,
+        Imax=60,
+        R=1,
+        X=2.657870e-02)                                                       annotation (
+        Placement(visible = true, transformation(origin={32,20},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Components.myLine line1(
+        UNom=20000,
+        Imax=60,
+        R=1,
+        X=125e-4)                                                         annotation (
+        Placement(visible = true, transformation(origin={-30,20},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Components.myLoad load(UNom=400, P=5000)     annotation (
+        Placement(visible = true, transformation(origin={100,20},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    equation
+      connect(bout1.i_re, bin1.i_re) annotation (
+        Line(points={{-76,28},{-55.8,28}},      color = {0, 0, 127}));
+      connect(bout1.i_im, bin1.i_im) annotation (
+        Line(points={{-76,24},{-55.8,24}},      color = {0, 0, 127}));
+      connect(bin1.v_re, bout1.v_re) annotation (
+        Line(points={{-55.8,16},{-76,16}},      color = {0, 0, 127}));
+      connect(bout1.v_im, bin1.v_im) annotation (
+        Line(points={{-76,12},{-55.8,12}},      color = {0, 0, 127}));
+      connect(src.terminal, tra1.terminalA)
+        annotation (Line(points={{-132,20},{-116,20}}, color={0,0,0}));
+      connect(tra1.terminalB, bout1.terminal)
+        annotation (Line(points={{-96,20},{-81,20}}, color={0,0,0}));
+      connect(line1.terminalB,tra2. terminalA) annotation (
+        Line(points={{-20,20},{-6,20}}));
+      connect(tra2.terminalB,line2. terminalA) annotation (
+        Line(points={{14,20},{22,20}}));
+      connect(bin1.terminal, line1.terminalA)
+        annotation (Line(points={{-51,20},{-40,20}}, color={0,0,0}));
+      connect(line2.terminalB, load.terminal) annotation (Line(points={{42,20},
+              {70,20},{70,20.02},{99.96,20.02}}, color={0,0,0}));
+      annotation (
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent={{-28,58},{
+                  174,34}},                                                                 fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-38, -16}, {36, -60}}, fontSize = 12, textString = "same results as previous model
+current is 7.46 A in the load
+and 0.047 A in the source")}, coordinateSystem(initialScale = 0.1)),
+        experiment(StopTime = 1));
+    end OneSourceOneTransfoOneLineOneTransfoOneLineOneLoadWithBuses1;
+
+    model OneSourceOneTransfoOneLineOneTransfoOneLineOneLoadWithBuses2
+      extends Modelica.Icons.Example;
+      Buses.myCausalBusVOutput bout2 annotation (Placement(visible=true,
+            transformation(
+            origin={56,20},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
+      Buses.myCausalBusVInput bin2 annotation (Placement(visible=true,
+            transformation(
+            origin={82,20},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
       Components.myTransformer tra2(UNomA = 20000, UNomB = 400, SNom = 0.25, R = 1e-6, X = 1e-6) annotation (
         Placement(visible = true, transformation(origin = {4, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Components.myLine line2(UNom = 400, Imax = 60, R = 1, X = 2.657870e-02) annotation (
+      Components.myLine line2(
+        UNom=400,                         Imax = 60, R = 1,
+        X=2.657870e-02)                                                       annotation (
         Placement(visible = true, transformation(origin = {32, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Components.myLoad load(UNom = 400, P = 5000) annotation (
         Placement(visible = true, transformation(origin = {100, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Components.myLine line1(UNom = 20000, Imax = 60, R = 1, X = 125e-4) annotation (
-        Placement(visible = true, transformation(origin = {-26, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Placement(visible = true, transformation(origin={-30,20},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Components.myTransformer tra1(UNomA = 63000, UNomB = 20000, SNom = 70, R = 0.2, X = 1e-6) annotation (
         Placement(visible = true, transformation(origin = {-106, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Components.mySource src(UNom = 63000) annotation (
@@ -1711,16 +2038,8 @@ and 0.047 A in the source")}, coordinateSystem(initialScale = 0.1)),
         Line(points = {{80.2, 16}, {58, 16}}, color = {0, 0, 127}));
       connect(bout2.v_im, bin2.v_im) annotation (
         Line(points = {{58, 12}, {80.2, 12}}, color = {0, 0, 127}));
-      connect(bout1.i_re, bin1.i_re) annotation (
-        Line(points = {{-74, 28}, {-51.8, 28}}, color = {0, 0, 127}));
-      connect(bout1.i_im, bin1.i_im) annotation (
-        Line(points = {{-74, 24}, {-51.8, 24}}, color = {0, 0, 127}));
-      connect(bin1.v_re, bout1.v_re) annotation (
-        Line(points = {{-51.8, 16}, {-74, 16}}, color = {0, 0, 127}));
-      connect(bout1.v_im, bin1.v_im) annotation (
-        Line(points = {{-74, 12}, {-51.8, 12}}, color = {0, 0, 127}));
       connect(line1.terminalB, tra2.terminalA) annotation (
-        Line(points = {{-16, 20}, {-6, 20}}));
+        Line(points={{-20,20},{-6,20}}));
       connect(tra2.terminalB, line2.terminalA) annotation (
         Line(points = {{14, 20}, {22, 20}}));
       connect(src.terminal, tra1.terminalA) annotation (
@@ -1729,16 +2048,90 @@ and 0.047 A in the source")}, coordinateSystem(initialScale = 0.1)),
         Line(points = {{42, 20}, {53, 20}}, color = {0, 0, 0}));
       connect(bin2.terminal, load.terminal) annotation (
         Line(points = {{85, 20}, {92, 20}, {92, 20.02}, {99.96, 20.02}}, color = {0, 0, 0}));
-      connect(bin1.terminal, line1.terminalA) annotation (
-        Line(points = {{-47, 20}, {-36, 20}}, color = {0, 0, 0}));
-      connect(bout1.terminal, tra1.terminalB) annotation (
-        Line(points = {{-79, 20}, {-96, 20}}, color = {0, 0, 0}));
+      connect(tra1.terminalB, line1.terminalA)
+        annotation (Line(points={{-96,20},{-40,20}}, color={0,0,0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{22, 56}, {98, 34}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-38, -16}, {36, -60}}, fontSize = 12, textString = "same results as previous model
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent={{-28,58},{
+                  174,34}},                                                                 fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-38, -16}, {36, -60}}, fontSize = 12, textString = "same results as previous model
 current is 7.46 A in the load
 and 0.047 A in the source")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
-    end OneSourceOneTransfoOneLineOneTransfoOneLineOneLoadWithBuses;
+    end OneSourceOneTransfoOneLineOneTransfoOneLineOneLoadWithBuses2;
+
+    model OneSourceOneTransfoOneLineOneTransfoOneLineOneLoadWithBuses3
+      extends Modelica.Icons.Example;
+      Buses.myCausalBusVOutput bout2 annotation (Placement(visible=true,
+            transformation(
+            origin={56,20},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
+      Buses.myCausalBusVInput bin2 annotation (Placement(visible=true,
+            transformation(
+            origin={82,20},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
+      Components.myTransformer tra2(UNomA = 20000, UNomB = 400, SNom = 0.25, R = 1e-6, X = 1e-6) annotation (
+        Placement(visible = true, transformation(origin = {4, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Components.myLine line2(
+        UNom=400,                         Imax = 60, R = 1,
+        X=2.657870e-02)                                                       annotation (
+        Placement(visible = true, transformation(origin = {32, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Components.myLoad load(UNom = 400, P = 5000) annotation (
+        Placement(visible = true, transformation(origin = {100, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Components.myLine line1(UNom = 20000, Imax = 60, R = 1, X = 125e-4) annotation (
+        Placement(visible = true, transformation(origin={-30,20},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Components.myTransformer tra1(UNomA = 63000, UNomB = 20000, SNom = 70, R = 0.2, X = 1e-6) annotation (
+        Placement(visible = true, transformation(origin = {-106, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Components.mySource src(UNom = 63000) annotation (
+        Placement(visible = true, transformation(origin = {-132, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Buses.myCausalBusVOutput bout1 annotation (Placement(visible=true,
+            transformation(
+            origin={-78,20},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
+      Buses.myCausalBusVInput bin1 annotation (Placement(visible=true,
+            transformation(
+            origin={-54,20},
+            extent={{-10,-10},{10,10}},
+            rotation=0)));
+    equation
+      connect(bout2.i_re, bin2.i_re) annotation (
+        Line(points = {{58, 28}, {80.2, 28}}, color = {0, 0, 127}));
+      connect(bout2.i_im, bin2.i_im) annotation (
+        Line(points = {{58, 24}, {80.2, 24}}, color = {0, 0, 127}));
+      connect(bin2.v_re, bout2.v_re) annotation (
+        Line(points = {{80.2, 16}, {58, 16}}, color = {0, 0, 127}));
+      connect(bout2.v_im, bin2.v_im) annotation (
+        Line(points = {{58, 12}, {80.2, 12}}, color = {0, 0, 127}));
+      connect(line1.terminalB, tra2.terminalA) annotation (
+        Line(points={{-20,20},{-6,20}}));
+      connect(tra2.terminalB, line2.terminalA) annotation (
+        Line(points = {{14, 20}, {22, 20}}));
+      connect(src.terminal, tra1.terminalA) annotation (
+        Line(points = {{-132, 20}, {-116, 20}}, color = {0, 0, 0}));
+      connect(line2.terminalB, bout2.terminal) annotation (
+        Line(points = {{42, 20}, {53, 20}}, color = {0, 0, 0}));
+      connect(bin2.terminal, load.terminal) annotation (
+        Line(points = {{85, 20}, {92, 20}, {92, 20.02}, {99.96, 20.02}}, color = {0, 0, 0}));
+      connect(bout1.i_re,bin1. i_re) annotation (
+        Line(points={{-76,28},{-55.8,28}},      color = {0, 0, 127}));
+      connect(bout1.i_im,bin1. i_im) annotation (
+        Line(points={{-76,24},{-55.8,24}},      color = {0, 0, 127}));
+      connect(bin1.v_re,bout1. v_re) annotation (
+        Line(points={{-55.8,16},{-76,16}},      color = {0, 0, 127}));
+      connect(bout1.v_im,bin1. v_im) annotation (
+        Line(points={{-76,12},{-55.8,12}},      color = {0, 0, 127}));
+      connect(tra1.terminalB, bout1.terminal)
+        annotation (Line(points={{-96,20},{-81,20}}, color={0,0,0}));
+      connect(bin1.terminal, line1.terminalA)
+        annotation (Line(points={{-51,20},{-40,20}}, color={0,0,0}));
+      annotation (
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent={{-28,58},{
+                  174,34}},                                                                 fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-38, -16}, {36, -60}}, fontSize = 12, textString = "same results as previous model
+current is 7.46 A in the load
+and 0.047 A in the source")}, coordinateSystem(initialScale = 0.1)),
+        experiment(StopTime = 1));
+    end OneSourceOneTransfoOneLineOneTransfoOneLineOneLoadWithBuses3;
 
     model OneSourceOneLineOneLoadOneBank
       extends Modelica.Icons.Example;
@@ -1930,8 +2323,7 @@ simulation is done for 1-year duration")}),
 
     model QfURegulation "Testing the regulation Q=f(U)"
       extends Modelica.Icons.Example;
-      //Pracc_inj=1000
-      Components.myVariableLoad varLoad(UNom = 20000) annotation (
+      Components.myVariableLoad varLoad(UNom = 20000, switchToImpedanceMode = false) annotation (
         Placement(transformation(extent = {{28, 26}, {48, 46}})));
       Components.myLine line(UNom = 20000, R = 1, X = 0, Imax = 60) annotation (
         Placement(transformation(extent = {{-38, 18}, {-18, 38}})));
@@ -2030,8 +2422,16 @@ tap decrease at t=310 s, t=320 s, t=330 s, and t=340 s", fontSize = 12, horizont
         parameter Real theta(unit = "rad", displayUnit = "deg") = 0 "Phase of voltage phasor";
         Modelica.Blocks.Interfaces.RealInput UNom(unit = "V", displayUnit = "V") annotation (
           Placement(transformation(extent = {{-120, -20}, {-80, 20}}), iconTransformation(extent = {{-85.5, 41.5}, {-65.5, 61.5}})));
-        Interfaces.myTerminal terminal annotation (
-          Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Interfaces.myAcausalTerminal terminal annotation (Placement(
+            visible=true,
+            transformation(
+              origin={0,0},
+              extent={{-10,-10},{10,10}},
+              rotation=0),
+            iconTransformation(
+              origin={0,0},
+              extent={{-10,-10},{10,10}},
+              rotation=0)));
       equation
         terminal.v = CM.fromPolar(UNom * 2 / sqrt(3), theta) "Voltage of ideal generator, phase-to-ground";
         annotation (
@@ -2062,8 +2462,16 @@ and variable transformer with tap changer")}));
       model SlackBusRamp "Ramp as voltage"
         parameter Types.myVoltage UNom "Voltage magnitude, phase-to-phase";
         parameter Modelica.SIunits.Angle theta = 0 "Phase of voltage phasor";
-        Interfaces.myTerminal terminal annotation (
-          Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Interfaces.myAcausalTerminal terminal annotation (Placement(
+            visible=true,
+            transformation(
+              origin={0,0},
+              extent={{-10,-10},{10,10}},
+              rotation=0),
+            iconTransformation(
+              origin={0,0},
+              extent={{-10,-10},{10,10}},
+              rotation=0)));
         Types.myVoltage U(start = UNom);
       equation
         der(1000 * U) = if time < 1000 then -10 else 10;
@@ -2156,7 +2564,7 @@ the variable active power of the load")}),
           Diagram(coordinateSystem(preserveAspectRatio = false), graphics = {Text(lineColor = {28, 108, 200}, extent = {{-122, -2}, {118, -76}}, fontSize = 12, textString = "the positions of the circuit breakers are opposite
 breaker positions are changing at 0.5 s
 when a breaker is open a current is flowing into the ground")}),
-        experiment(StopTime = 1));
+          experiment(StopTime = 1));
       end BreakersWithLines;
 
       model Islanding1 "Two loads with opposite breakers"
@@ -2202,7 +2610,7 @@ when a breaker is open a current is flowing into the ground")}),
 consuming load is permanently supplied
 at the beginning by the source and then by the PV node"), Text(lineColor = {28, 108, 200}, extent = {{36, 78}, {112, 56}}, fontSize = 12, textString = "P=5 kW and Q=0.1 kvar for the load
 Pmax=-2 kW for the PV node")}),
-        experiment(StopTime = 1));
+          experiment(StopTime = 1));
       end Islanding1;
 
       model Islanding2 "Two loads with opposite breakers"
@@ -2268,7 +2676,7 @@ Pmax=-2 kW for the PV node")}),
 consuming loads are permanently supplied
 at the beginning by the source and then by the producing load"), Text(lineColor = {28, 108, 200}, extent = {{34, 2}, {110, -20}}, fontSize = 12, textString = "P=5 kW and Q=0.1 kvar for the loads
 Pstart=-2 kW for the PV node")}),
-        experiment(StopTime = 1));
+          experiment(StopTime = 1));
       end Islanding2;
 
       model Islanding3 "Two loads with opposite breakers"
@@ -2330,7 +2738,7 @@ Pstart=-2 kW for the PV node")}),
 Pstart=-5 kW and Qstart=0 kvar for the PV node"), Text(lineColor = {28, 108, 200}, extent = {{-118, -30}, {122, -104}}, fontSize = 12, textString = "the circuit breaker switches off at 0.5 s
 consuming loads are permanently supplied
 at the beginning by the source and then by the producing load")}),
-        experiment(StopTime = 1));
+          experiment(StopTime = 1));
       end Islanding3;
 
       model DistrictWithBreakers "District with two breakers"
@@ -2423,7 +2831,7 @@ at the beginning by the source and then by the producing load")}),
           Diagram(coordinateSystem(preserveAspectRatio = false), graphics = {Text(lineColor = {28, 108, 200}, extent = {{-160, -42}, {80, -116}}, fontSize = 12, textString = "the position of the circuit breakers are opposite
 breaker positions are changing at 0.5 s
 all loads are permanently supplied")}),
-        experiment(StopTime = 1));
+          experiment(StopTime = 1));
       end DistrictWithBreakers;
     end BreakerTests;
 
@@ -2472,9 +2880,9 @@ all loads are permanently supplied")}),
         connect(line1.terminalB, tra2.terminalA) annotation (
           Line(points = {{-34, 20}, {-28, 20}}, color = {0, 0, 0}));
         annotation (
-          Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{8, 42}, {186, 2}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-32, -8}, {42, -52}}, fontSize = 12, textString = "current is 7.22 A in each load
+          Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{8, 42}, {186, 2}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-32, -8}, {42, -52}}, fontSize = 12, textString = "current is 7.22 A in each load
 and 0.138 A in the source")}, coordinateSystem(initialScale = 0.1)),
-        experiment(StopTime = 1));
+          experiment(StopTime = 1));
       end MVLVNetwork;
 
       model MVLVNetworkWithBuses "Same network with buses"
@@ -2499,10 +2907,16 @@ and 0.138 A in the source")}, coordinateSystem(initialScale = 0.1)),
           Placement(visible = true, transformation(origin = {-84, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
         Components.myLine line3(UNom = 400, Imax = 60, R = 2.157870e-02, X = 2.657870e-02) annotation (
           Placement(visible = true, transformation(origin = {58, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Buses.myCausalBus_out bout annotation (
-          Placement(visible = true, transformation(origin = {14, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Buses.myCausalBus_in bin annotation (
-          Placement(visible = true, transformation(origin = {26, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Buses.myCausalBusVOutput bout annotation (Placement(visible=true,
+              transformation(
+              origin={14,20},
+              extent={{-10,-10},{10,10}},
+              rotation=0)));
+        Buses.myCausalBusVInput bin annotation (Placement(visible=true,
+              transformation(
+              origin={26,20},
+              extent={{-10,-10},{10,10}},
+              rotation=0)));
       equation
         connect(line1.terminalB, tra2.terminalA) annotation (
           Line(points = {{-28, 20}, {-22, 20}}));
@@ -2533,10 +2947,10 @@ and 0.138 A in the source")}, coordinateSystem(initialScale = 0.1)),
         connect(bin.terminal, line4.terminalA) annotation (
           Line(points = {{29, 20}, {42, 20}, {42, 2}, {48, 2}}, color = {0, 0, 0}));
         annotation (
-          Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-34, -14}, {40, -58}}, fontSize = 12, textString = "same results as previous model
+          Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-34, -14}, {40, -58}}, fontSize = 12, textString = "same results as previous model
 current is 7.22 A in each load
 and 0.138 A in the source"), Text(lineColor = {28, 108, 200}, extent = {{38, 46}, {236, -8}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar")}, coordinateSystem(initialScale = 0.1)),
-        experiment(StopTime = 1));
+          experiment(StopTime = 1));
       end MVLVNetworkWithBuses;
 
       model MVPartOfMVLVNetwork "MV part (ready for export as FMU)"
@@ -2549,11 +2963,14 @@ and 0.138 A in the source"), Text(lineColor = {28, 108, 200}, extent = {{38, 46}
           Placement(visible = true, transformation(origin = {-20, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
         Components.mySource src(UNom = 63000) annotation (
           Placement(visible = true, transformation(origin = {-96, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Buses.myCausalBus_out bout annotation (
-          Placement(visible = true, transformation(origin = {6, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        flow Modelica.Blocks.Interfaces.RealInput i_re(unit = "A", displayUnit = "A") annotation (
+        Buses.myCausalBusVOutput bout annotation (Placement(visible=true,
+              transformation(
+              origin={6,20},
+              extent={{-10,-10},{10,10}},
+              rotation=0)));
+        Modelica.Blocks.Interfaces.RealInput i_re(unit = "A", displayUnit = "A") annotation (
           Placement(transformation(extent = {{-11, -11}, {11, 11}}, rotation = 180, origin = {111, 53}), iconTransformation(extent = {{-11, -11}, {11, 11}}, rotation = 180, origin = {110, 50})));
-        flow Modelica.Blocks.Interfaces.RealInput i_im(unit = "A", displayUnit = "A") annotation (
+        Modelica.Blocks.Interfaces.RealInput i_im(unit = "A", displayUnit = "A") annotation (
           Placement(transformation(extent = {{-11, -11}, {11, 11}}, rotation = 180, origin = {111, 35}), iconTransformation(extent = {{-11, -11}, {11, 11}}, rotation = 180, origin = {110, 20})));
         Modelica.Blocks.Interfaces.RealOutput v_re(unit = "V", displayUnit = "V") annotation (
           Placement(transformation(extent = {{100, -20}, {120, 0}}), iconTransformation(extent = {{100, -20}, {120, 0}})));
@@ -2577,9 +2994,9 @@ and 0.138 A in the source"), Text(lineColor = {28, 108, 200}, extent = {{38, 46}
         connect(bout.i_re, i_re) annotation (
           Line(points = {{8, 28}, {68, 28}, {68, 53}, {111, 53}}, color = {0, 0, 127}));
         annotation (
-          Diagram(coordinateSystem(initialScale = 0.1), graphics = {Text(lineColor = {28, 108, 200}, extent = {{-124, -42}, {116, -86}}, fontSize = 12, textString = "first model to export as an FMU is
+          Diagram(coordinateSystem(initialScale = 0.1), graphics={  Text(lineColor = {28, 108, 200}, extent = {{-124, -42}, {116, -86}}, fontSize = 12, textString = "first model to export as an FMU is
 the MV part with causal inputs/outputs")}),
-        experiment(StopTime = 1));
+          experiment(StopTime = 1));
       end MVPartOfMVLVNetwork;
 
       model LVPartOfMVLVNetwork "LV part (ready for export as FMU)"
@@ -2596,15 +3013,18 @@ the MV part with causal inputs/outputs")}),
           Placement(visible = true, transformation(origin = {68, 2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
         Components.myLine line3(UNom = 400, Imax = 60, R = 2.157870e-02, X = 2.657870e-02) annotation (
           Placement(visible = true, transformation(origin = {48, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Buses.myCausalBus_in bin annotation (
-          Placement(visible = true, transformation(origin = {16, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Buses.myCausalBusVInput bin annotation (Placement(visible=true,
+              transformation(
+              origin={16,20},
+              extent={{-10,-10},{10,10}},
+              rotation=0)));
         Modelica.Blocks.Interfaces.RealInput v_re(unit = "V", displayUnit = "V", start = startValues.v_re) annotation (
           Placement(transformation(extent = {{-11, -11}, {11, 11}}, rotation = 0, origin = {-109, 1}), iconTransformation(extent = {{-123, -31}, {-101, -9}})));
         Modelica.Blocks.Interfaces.RealInput v_im(unit = "V", displayUnit = "V", start = startValues.v_im) annotation (
           Placement(transformation(extent = {{-11, -11}, {11, 11}}, rotation = 0, origin = {-109, -17}), iconTransformation(extent = {{-123, -61}, {-101, -39}})));
-        flow Modelica.Blocks.Interfaces.RealOutput i_re(unit = "A", displayUnit = "A") annotation (
+        Modelica.Blocks.Interfaces.RealOutput i_re(unit = "A", displayUnit = "A") annotation (
           Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 180, origin = {-110, 48}), iconTransformation(extent = {{-10, -10}, {10, 10}}, rotation = 180, origin = {-110, 50})));
-        flow Modelica.Blocks.Interfaces.RealOutput i_im(unit = "A", displayUnit = "A") annotation (
+        Modelica.Blocks.Interfaces.RealOutput i_im(unit = "A", displayUnit = "A") annotation (
           Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 180, origin = {-110, 34}), iconTransformation(extent = {{-10, -10}, {10, 10}}, rotation = 180, origin = {-110, 20})));
         parameter sV startValues annotation (
           Placement(transformation(extent = {{2, 40}, {22, 60}})));
@@ -2630,12 +3050,12 @@ the MV part with causal inputs/outputs")}),
         connect(v_re, bin.v_re) annotation (
           Line(points = {{-109, 1}, {-74, 1}, {-74, 16}, {14.2, 16}}, color = {0, 0, 127}));
         annotation (
-          Diagram(coordinateSystem(initialScale = 0.1), graphics = {Text(lineColor = {28, 108, 200}, extent = {{14, 38}, {248, 4}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-120, -32}, {120, -76}}, fontSize = 12, textString = "second model to export as an FMU is
+          Diagram(coordinateSystem(initialScale = 0.1), graphics={  Text(lineColor = {28, 108, 200}, extent = {{14, 38}, {248, 4}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-120, -32}, {120, -76}}, fontSize = 12, textString = "second model to export as an FMU is
 the LV part with causal inputs/outputs
 
 start value for v_re is set to 230 V
 before exporting as an FMU")}),
-        experiment(StopTime = 1));
+          experiment(StopTime = 1));
       end LVPartOfMVLVNetwork;
 
       record sV "start values for the causal input bus"
@@ -2706,7 +3126,7 @@ the same model is then cut in 2 parts to get FMUs")}));
           Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-14, 96}, {62, 74}}, fontSize = 10, textStyle = {TextStyle.Bold}, textString = "All residential loads
 36 kVA (Q=0.4*P)"), Text(lineColor = {28, 108, 200}, extent = {{-110, 42}, {-66, 28}}, textStyle = {TextStyle.Bold}, fontSize = 10, textString = "RTE"), Text(lineColor = {28, 108, 200}, extent = {{-42, -22}, {32, -66}}, fontSize = 12, textString = "low voltage is detected in 
 load1 and load4")}, coordinateSystem(initialScale = 0.1)),
-        experiment(StopTime = 1));
+          experiment(StopTime = 1));
       end Network;
 
       model DoubleNetwork "Same network with two LV feeders"
@@ -2796,7 +3216,7 @@ low voltage is detected in
 load1, load4, load5 and load8
 nominal power exceed detected in tra2"), Text(lineColor = {28, 108, 200}, extent = {{-24, 98}, {52, 76}}, fontSize = 10, textStyle = {TextStyle.Bold}, textString = "All residential loads
 36 kVA (Q=0.4*P)")}, coordinateSystem(initialScale = 0.1)),
-        experiment(StopTime = 1));
+          experiment(StopTime = 1));
       end DoubleNetwork;
     end MediumNetworks;
 
@@ -2881,10 +3301,10 @@ nominal power exceed detected in tra2"), Text(lineColor = {28, 108, 200}, extent
       connect(LVln11.terminalB, varLoad1.terminal) annotation (
         Line(points = {{42, 40}, {42, 80.02}, {53.96, 80.02}}, color = {0, 0, 0}));
       annotation (
-        Diagram(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics={  Text(lineColor = {28, 108, 200}, extent = {{-164, 80}, {-12, 58}}, fontSize = 12, textString = "all loads are variable
+        Diagram(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(lineColor = {28, 108, 200}, extent = {{-164, 80}, {-12, 58}}, fontSize = 12, textString = "all loads are variable
 simulation is done for 1-year duration")}),
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}})),
-              experiment(StopTime = 31532400));
+        experiment(StopTime = 31532400));
     end FourVariableLoadsOneLVFeeder;
 
     model LargerNetwork "This model has been partly generated by a Python tool"
@@ -3194,11 +3614,7 @@ simulation is done for 1-year duration")}),
       connect(line.terminalB, load.terminal) annotation (
         Line(points = {{10, 30}, {30, 30}, {30, 30.02}, {49.96, 30.02}}));
       annotation (
-        Diagram(coordinateSystem(initialScale = 0.1), graphics={  Text(lineColor={28,
-                  108,200},                                                                        extent={{
-                  -206,-2},{198,-66}},                                                                                             fontSize=
-                  12,
-              textString="The load switches to a degraded
+        Diagram(coordinateSystem(initialScale = 0.1), graphics = {Text(lineColor = {28, 108, 200}, extent = {{-206, -2}, {198, -66}}, fontSize = 12, textString = "The load switches to a degraded
 mode at time 36 s (when voltage is too low)
 and switches again to a normal mode
 at time 364 s (when voltage is normal again)
@@ -3237,13 +3653,12 @@ and can be compared to the required one")}),
       preferredView = "info",
       Documentation(info = "<html><head></head><body>
     <p>PowerSysPro is a Modelica library dedicated to the load flow calculation of Distribution grids.</p>
-    <p>PowerSysPro is been developed at EDF Lab Paris-Saclay.</p>
-    <p>Version 1.2 November 13th, 2020.</p>
+    <p>PowerSysPro is being developed at EDF Lab Paris-Saclay.</p>
     <p></p><p>-------------------------------------------------------------------------------------------------------------</p>
     </body></html>"));
   end Information;
   annotation (
-    version = "1.2",
+    version = "Version 1.3 November 22th, 2020",
     uses(Modelica(version = "3.2.3"), Complex(version = "3.2.3")),
     Documentation(info = "<html><head></head><body>
     <p>Copyright © 2020-2021, EDF.</p>
