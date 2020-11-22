@@ -7,5 +7,5 @@ Release 1.3 (Nov. 22th 2020): refer to ticket #6224 from OM
 							Also see ticket #6232 on improvement required on the tearing algorithm
 							* causal connectors are defined without flow attribute to be compatible with OM
 							Possible issue with future FMI 3.0 and flow connectors
-							* Also refer to enhancement #4232
+							* Also refer to enhancement #4232 to improve plotting of almost constant variables
 								
