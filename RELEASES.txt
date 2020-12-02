@@ -1,11 +1,14 @@
-Release 1.1 (Nov. 6th 2020): initial delivery
+Release 1.1 (Nov. 6th 2020): Initial delivery
 
-Release 1.2 (Nov. 13th 2020): correction of minor errors reported by the "Pedantic check" option of Dymola
+Release 1.2 (Nov. 13th 2020): Correction of minor errors reported by the "Pedantic check" option of Dymola
 
-Release 1.3 (Nov. 22th 2020): refer to ticket #6224 from OM
-							* --tearingMethod=minimalTearing must be set in OMEdit (Tools | Options | Simulation)
-							Also see ticket #6232 on improvement required on the tearing algorithm
-							* causal connectors are defined without flow attribute to be compatible with OM
-							Possible issue with future FMI 3.0 and flow connectors
-							* Also refer to enhancement #4232 to improve plotting of almost constant variables
-								
+Release 1.3 (Nov. 22th 2020): Causal connectors are now defined without flow attribute to be in conformance with Modelica
+							  Also refer to some OM tickets at https://trac.openmodelica.org/OpenModelica 
+							  * ticket #6224:
+							  --tearingMethod=minimalTearing must be set in OMEdit (Tools | Options | Simulation)
+							  * ticket #6232:
+							  Improvement required on the tearing algorithm done in release 1.17.0 (Feb. 2021)
+							  * ticket #4232:
+							  Enhancement to improve plotting of almost constant variables
+							  						  
+Release 1.4 (Dec. 1st 2020):  Some cosmetic changes in comments							
