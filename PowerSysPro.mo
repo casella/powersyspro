@@ -3672,7 +3672,7 @@ and can be compared to the required one")}),
     </body></html>"));
   end Information;
   annotation (
-    version = "Version 1.4 December 1st, 2020",
+    version = "Version 1.5 December 3rd, 2020",
     uses(Modelica(version="4.0.0"), Complex(version="4.0.0")),
     Documentation(info = "<html><head></head><body>
     <p>Copyright © 2020-2021, EDF.</p>
