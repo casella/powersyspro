@@ -17,8 +17,10 @@ package PowerSysPro
     public
       parameter Types.myVoltage UNom "Reference voltage of the source";
       parameter Types.myAngle theta = 0 "Phase shift of voltage phasor";
-      Types.myCurrent I = CM.'abs'(terminal.i) "Current flowing the source";
-      Types.myVoltage U = sqrt(3) * CM.'abs'(terminal.v) "Voltage at the source";
+      Types.myCurrent I = Modelica.ComplexMath.abs(
+                                   terminal.i) "Current flowing the source";
+      Types.myVoltage U = sqrt(3) * Modelica.ComplexMath.abs(
+                                             terminal.v) "Voltage at the source";
       Types.myApparentPower S = sqrt(3) * I * U "Apparent power flowing the source";
     equation
       terminal.v = CM.fromPolar(UNom / sqrt(3), theta);
@@ -49,8 +51,10 @@ package PowerSysPro
       Types.myActivePower P(start = Pstart) "Active power flowing the node";
       Types.myReactivePower Q "Reactive power flowing the node";
       Types.myAngle theta;
-      Types.myCurrent I = CM.'abs'(terminal.i) "Current flowing the PV node";
-      Types.myVoltage U = sqrt(3) * CM.'abs'(terminal.v) "Voltage at the PV node";
+      Types.myCurrent I = Modelica.ComplexMath.abs(
+                                   terminal.i) "Current flowing the PV node";
+      Types.myVoltage U = sqrt(3) * Modelica.ComplexMath.abs(
+                                             terminal.v) "Voltage at the PV node";
       Types.myApparentPower S = sqrt(3) * I * U "Apparent power flowing the PV node";
     equation
       assert(not UNom <= 0, ">>> Nominal voltage value must be strictly positive for " + getInstanceName());
@@ -87,8 +91,10 @@ package PowerSysPro
     public
       parameter Types.myVoltage UNom "Reference voltage of the variable PV node";
       parameter Types.myActivePower Pstart "Active power to provide (<0)";
-      Types.myCurrent I = CM.'abs'(terminal.i) "Current flowing the PV node";
-      Types.myVoltage U = sqrt(3) * CM.'abs'(terminal.v) "Voltage at the PV node";
+      Types.myCurrent I = Modelica.ComplexMath.abs(
+                                   terminal.i) "Current flowing the PV node";
+      Types.myVoltage U = sqrt(3) * Modelica.ComplexMath.abs(
+                                             terminal.v) "Voltage at the PV node";
       Types.myApparentPower S = sqrt(3) * I * U "Apparent power flowing the PV node";
     equation
       assert(not UNom <= 0, ">>> Nominal voltage value must be strictly positive for " + getInstanceName());
@@ -166,8 +172,10 @@ package PowerSysPro
       parameter Types.myVoltage UNom "Reference voltage of the capacitor bank";
       parameter Types.myConductance G = 0 "Capacitor bank conductance";
       parameter Types.mySusceptance B "Capacitor bank susceptance";
-      Types.myCurrent I = CM.'abs'(terminal.i) "Current flowing the capacitor bank";
-      Types.myVoltage U = sqrt(3) * CM.'abs'(terminal.v) "Voltage at the capacitor bank";
+      Types.myCurrent I = Modelica.ComplexMath.abs(
+                                   terminal.i) "Current flowing the capacitor bank";
+      Types.myVoltage U = sqrt(3) * Modelica.ComplexMath.abs(
+                                             terminal.v) "Voltage at the capacitor bank";
       Types.myApparentPower S = sqrt(3) * I * U "Apparent power flowing the capacitor bank";
     protected
       parameter Types.myComplexAdmittance Y = Complex(G, B) "Capacitor bank admittance";
@@ -214,10 +222,14 @@ package PowerSysPro
       parameter Types.mySusceptance B = 0 "Shunt susceptance of phase conductor coupling";
       parameter Types.myPerUnit l = 1 "lineic coefficient";
       parameter Types.myCurrent Imax = 0 "Maximum admissible current. 0 means no control";
-      Types.myCurrent IA = CM.'abs'(terminalA.i) "Current flowing port A";
-      Types.myVoltage UA = sqrt(3) * CM.'abs'(terminalA.v) "Voltage at port A";
-      Types.myCurrent IB = CM.'abs'(terminalB.i) "Current flowing port B";
-      Types.myVoltage UB = sqrt(3) * CM.'abs'(terminalB.v) "Voltage at port B";
+      Types.myCurrent IA = Modelica.ComplexMath.abs(
+                                    terminalA.i) "Current flowing port A";
+      Types.myVoltage UA = sqrt(3) * Modelica.ComplexMath.abs(
+                                              terminalA.v) "Voltage at port A";
+      Types.myCurrent IB = Modelica.ComplexMath.abs(
+                                    terminalB.i) "Current flowing port B";
+      Types.myVoltage UB = sqrt(3) * Modelica.ComplexMath.abs(
+                                              terminalB.v) "Voltage at port B";
       Types.myApparentPower S = sqrt(3) * IA * UA "Apparent power flowing port A";
     protected
       parameter Types.myComplexImpedance Z = Complex(l * R, l * X) "Series impedance of phase conductor";
@@ -269,10 +281,14 @@ package PowerSysPro
       parameter Types.myConductance G = 0 "Shunt conductance of phase conductor coupling";
       parameter Types.mySusceptance B = 0 "Shunt susceptance of phase conductor coupling";
       parameter Types.myPerUnit l = 1 "lineic coefficient";
-      Types.myCurrent IA = CM.'abs'(terminalA.i) "Current flowing port A";
-      Types.myVoltage UA = sqrt(3) * CM.'abs'(terminalA.v) "Voltage at port A";
-      Types.myCurrent IB = CM.'abs'(terminalB.i) "Current flowing port B";
-      Types.myVoltage UB = sqrt(3) * CM.'abs'(terminalB.v) "Voltage at port B";
+      Types.myCurrent IA = Modelica.ComplexMath.abs(
+                                    terminalA.i) "Current flowing port A";
+      Types.myVoltage UA = sqrt(3) * Modelica.ComplexMath.abs(
+                                              terminalA.v) "Voltage at port A";
+      Types.myCurrent IB = Modelica.ComplexMath.abs(
+                                    terminalB.i) "Current flowing port B";
+      Types.myVoltage UB = sqrt(3) * Modelica.ComplexMath.abs(
+                                              terminalB.v) "Voltage at port B";
       Types.myApparentPower S = sqrt(3) * IA * UA "Apparent power flowing port A";
     protected
       parameter Types.myComplexImpedance Z = Complex(l * R, l * X) "Series impedance of phase conductor";
@@ -337,10 +353,14 @@ package PowerSysPro
         Dialog(group = "Fault data"));
       parameter Types.myTime stopTime "End time of the fault" annotation (
         Dialog(group = "Fault data"));
-      Types.myCurrent IA = CM.'abs'(terminalA.i) "Current flowing port A";
-      Types.myVoltage UA = sqrt(3) * CM.'abs'(terminalA.v) "Voltage at port A";
-      Types.myCurrent IB = CM.'abs'(terminalB.i) "Current flowing port B";
-      Types.myVoltage UB = sqrt(3) * CM.'abs'(terminalB.v) "Voltage at port B";
+      Types.myCurrent IA = Modelica.ComplexMath.abs(
+                                    terminalA.i) "Current flowing port A";
+      Types.myVoltage UA = sqrt(3) * Modelica.ComplexMath.abs(
+                                              terminalA.v) "Voltage at port A";
+      Types.myCurrent IB = Modelica.ComplexMath.abs(
+                                    terminalB.i) "Current flowing port B";
+      Types.myVoltage UB = sqrt(3) * Modelica.ComplexMath.abs(
+                                              terminalB.v) "Voltage at port B";
       Types.myApparentPower S = sqrt(3) * IA * UA "Apparent power flowing port A";
     protected
       parameter Types.myComplexImpedance Z = Complex(l * R, l * X) "Series impedance of phase conductor";
@@ -452,10 +472,14 @@ package PowerSysPro
             rotation=0)));
       Modelica.Blocks.Interfaces.BooleanInput BrkOpen(start = false) "Breaker start position is false (closed)" annotation (
         Placement(visible = true, transformation(origin = {0, -40}, extent = {{-20, -20}, {20, 20}}, rotation = 90), iconTransformation(origin = {0, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-      Types.myCurrent IA = CM.'abs'(terminalA.i) "Current flowing port A";
-      Types.myVoltage UA = sqrt(3) * CM.'abs'(terminalA.v) "Voltage at port A";
-      Types.myCurrent IB = CM.'abs'(terminalB.i) "Current flowing port B";
-      Types.myVoltage UB = sqrt(3) * CM.'abs'(terminalB.v) "Voltage at port B";
+      Types.myCurrent IA = Modelica.ComplexMath.abs(
+                                    terminalA.i) "Current flowing port A";
+      Types.myVoltage UA = sqrt(3) * Modelica.ComplexMath.abs(
+                                              terminalA.v) "Voltage at port A";
+      Types.myCurrent IB = Modelica.ComplexMath.abs(
+                                    terminalB.i) "Current flowing port B";
+      Types.myVoltage UB = sqrt(3) * Modelica.ComplexMath.abs(
+                                              terminalB.v) "Voltage at port B";
       Types.myApparentPower S = sqrt(3) * IA * UA "Apparent power flowing port A";
     equation
       if BrkOpen then
@@ -485,7 +509,8 @@ package PowerSysPro
             origin={0,0},
             extent={{-10,-10},{10,10}},
             rotation=0)));
-      Types.myCurrent I = CM.'abs'(terminal.i) "Current flowing the ground";
+      Types.myCurrent I = Modelica.ComplexMath.abs(
+                                   terminal.i) "Current flowing the ground";
     equation
       terminal.v = Complex(0);
       annotation (
@@ -519,8 +544,10 @@ package PowerSysPro
         parameter Types.myPerUnit highVoltage(min = 1) = if UNom <= 1000 then 1.1 else 1.05 "Higher percentage limit for acceptable voltage";
         parameter Types.myVoltage minU = lowVoltage * UNom "Minimum acceptable value for U";
         parameter Types.myVoltage maxU = highVoltage * UNom "Maximum acceptable value for U";
-        Types.myCurrent I = CM.'abs'(terminal.i) "Current flowing the load";
-        Types.myVoltage U = sqrt(3) * CM.'abs'(terminal.v) "Voltage at the load";
+        Types.myCurrent I = Modelica.ComplexMath.abs(
+                                     terminal.i) "Current flowing the load";
+        Types.myVoltage U = sqrt(3) * Modelica.ComplexMath.abs(
+                                               terminal.v) "Voltage at the load";
         Types.myApparentPower S = sqrt(3) * I * U "Apparent power flowing the load";
       equation
         assert(not U < minU, ">>> Voltage is below the minimum acceptable value for " + getInstanceName(), AssertionLevel.warning);
@@ -565,10 +592,14 @@ package PowerSysPro
         parameter Types.myConductance G = 0 "Shunt conductance at primary side";
         parameter Types.mySusceptance B = 0 "Shunt susceptance at primary side";
         parameter Types.myApparentPowerMVA SNom = 0 "Nominal power of the transformer. 0 means no control";
-        Types.myCurrent IA = CM.'abs'(terminalA.i) "Current flowing port A";
-        Types.myVoltage UA = sqrt(3) * CM.'abs'(terminalA.v) "Voltage at port A";
-        Types.myCurrent IB = CM.'abs'(terminalB.i) "Current flowing port B";
-        Types.myVoltage UB = sqrt(3) * CM.'abs'(terminalB.v) "Voltage at port B";
+        Types.myCurrent IA = Modelica.ComplexMath.abs(
+                                      terminalA.i) "Current flowing port A";
+        Types.myVoltage UA = sqrt(3) * Modelica.ComplexMath.abs(
+                                                terminalA.v) "Voltage at port A";
+        Types.myCurrent IB = Modelica.ComplexMath.abs(
+                                      terminalB.i) "Current flowing port B";
+        Types.myVoltage UB = sqrt(3) * Modelica.ComplexMath.abs(
+                                                terminalB.v) "Voltage at port B";
         Types.myApparentPower S = sqrt(3) * IA * UA "Apparent power flowing port A";
       equation
         if SNom <> 0 then
@@ -842,7 +873,7 @@ package PowerSysPro
       Modelica.Blocks.Interfaces.RealOutput Umes(unit = "V", displayUnit = "kV") "Measured voltage" annotation (
         Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {-80, 90}), iconTransformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {0, 90})));
     equation
-      Umes = sqrt(3) * CM.'abs'(terminal.v);
+      Umes =sqrt(3)*Modelica.ComplexMath.abs(terminal.v);
       terminal.i = Complex(0);
       annotation (
         Documentation(info = "<html>
@@ -880,7 +911,7 @@ package PowerSysPro
       Modelica.Blocks.Interfaces.RealOutput Imes(unit = "A", displayUnit = "A") "Measured flowing current at port A" annotation (
         Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {-40, 90}), iconTransformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {0, 90})));
     equation
-      Imes = CM.'abs'(terminalA.i);
+      Imes =Modelica.ComplexMath.abs(terminalA.i);
       terminalB = terminalA;
       annotation (
         Documentation(info = "<html>
@@ -925,8 +956,8 @@ package PowerSysPro
       Modelica.Blocks.Interfaces.RealOutput Qmes(unit = "var", displayUnit = "kvar") "Measured reactive flowing power at port A";
       Modelica.Blocks.Interfaces.RealOutput Smes(unit = "kVA", displayUnit = "kVA") "Measured apparent flowing power at port A";
     equation
-      Umes = sqrt(3) * CM.'abs'(terminalA.v);
-      Imes = CM.'abs'(terminalA.i);
+      Umes =sqrt(3)*Modelica.ComplexMath.abs(terminalA.v);
+      Imes =Modelica.ComplexMath.abs(terminalA.i);
       Smes = sqrt(3) * Imes * Umes;
       Complex(Pmes, Qmes) = 3 * terminalA.v * CM.conj(terminalA.i);
       terminalB = terminalA;
@@ -986,8 +1017,8 @@ package PowerSysPro
 
     connector myAcausalTerminal
       "Non-causal terminal for phasor-based AC connections"
-      Modelica.SIunits.ComplexVoltage v "Phase-to-ground voltage phasor";
-      flow Modelica.SIunits.ComplexCurrent i "Line current phasor";
+      Modelica.Units.SI.ComplexVoltage v "Phase-to-ground voltage phasor";
+      flow Modelica.Units.SI.ComplexCurrent i "Line current phasor";
       annotation (
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 1, grid = {2, 2}), graphics={  Rectangle(origin = {92, 3}, fillColor = {85, 170, 255},
                 fillPattern =                                                                                                                                                                                      FillPattern.Solid, extent = {{-192, 97}, {8, -103}})}),
@@ -1019,8 +1050,8 @@ The myTerminal connector represents an AC terminal with voltage and flow current
     type myAngle = Real(unit = "rad", displayUnit = "deg");
     type myPerUnit = Real(unit = "1");
     type myTime = Real(unit = "s", displayUnit = "s");
-    operator record myComplexAdmittance = Modelica.SIunits.ComplexAdmittance;
-    operator record myComplexImpedance = Modelica.SIunits.ComplexImpedance;
+    operator record myComplexAdmittance = Modelica.Units.SI.ComplexAdmittance;
+    operator record myComplexImpedance = Modelica.Units.SI.ComplexImpedance;
     operator record myComplexPerUnit = Complex(re(unit = "1"), im(unit = "1"));
     annotation (
       Documentation(info = "<html>
@@ -1527,8 +1558,11 @@ U=20400 V"), Text(lineColor = {28, 108, 200}, extent = {{-2, 20}, {122, -54}}, f
       extends Modelica.Icons.Example;
       Regulations.myQfU qfU(Pracc_inj = 1000, UNom = 1000) annotation (
         Placement(transformation(extent = {{8, 20}, {50, 60}})));
-      Modelica.Blocks.Sources.Sine sine(amplitude = 300, freqHz = 0.01, offset = 1000) annotation (
-        Placement(transformation(extent = {{-66, 28}, {-32, 62}})));
+      Modelica.Blocks.Sources.Sine sine(
+        amplitude=300,
+        f=0.01,
+        offset=1000)
+        annotation (Placement(transformation(extent={{-66,28},{-32,62}})));
     equation
       connect(sine.y, qfU.U) annotation (
         Line(points = {{-30.3, 45}, {-8, 45}, {-8, 46.4}, {5.9, 46.4}}, color = {0, 0, 127}));
@@ -2344,8 +2378,13 @@ simulation is done for 1-year duration")}),
         Placement(transformation(extent = {{24, 68}, {68, 108}})));
       Sensors.VoltMeter sensor annotation (
         Placement(transformation(extent = {{-2, 56}, {18, 76}})));
-      Modelica.Blocks.Sources.Sine sine(amplitude = 30000000, freqHz = 0.01, offset = 0) annotation (
-        Placement(transformation(extent = {{-17, -17}, {17, 17}}, rotation = 180, origin = {67, -31})));
+      Modelica.Blocks.Sources.Sine sine(
+        amplitude=30000000,
+        f=0.01,
+        offset=0) annotation (Placement(transformation(
+            extent={{-17,-17},{17,17}},
+            rotation=180,
+            origin={67,-31})));
       Components.myTransformer tra(UNomA = 63000, UNomB = 20000, R = 1, SNom = 36000) annotation (
         Placement(transformation(extent = {{-72, 18}, {-52, 38}})));
     equation
@@ -2470,7 +2509,7 @@ and variable transformer with tap changer")}));
 
       model SlackBusRamp "Ramp as voltage"
         parameter Types.myVoltage UNom "Voltage magnitude, phase-to-phase";
-        parameter Modelica.SIunits.Angle theta = 0 "Phase of voltage phasor";
+        parameter Modelica.Units.SI.Angle theta=0 "Phase of voltage phasor";
         Interfaces.myAcausalTerminal terminal annotation (Placement(
             visible=true,
             transformation(
@@ -3668,7 +3707,7 @@ and can be compared to the required one")}),
   end Information;
   annotation (
     version = "Version 1.4 December 1st, 2020",
-    uses(Modelica(version = "3.2.3"), Complex(version = "3.2.3")),
+    uses(Modelica(version="4.0.0"), Complex(version="4.0.0")),
     Documentation(info = "<html><head></head><body>
     <p>Copyright © 2020-2021, EDF.</p>
     <p>The use of the PowerSysPro library is granted by EDF under the provisions of the Modelica License 2. A copy of this license can be obtained&nbsp;<a href=\"http://www.modelica.org/licenses/ModelicaLicense2\">here</a>.</p>
