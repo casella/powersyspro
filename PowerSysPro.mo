@@ -2167,7 +2167,7 @@ but the current in the line exceeds the maximum admissible value")}),
         experiment(StopTime = 1));
     end OneSourceOneLineOneLoadOneBank;
 
-    model OneSouceOneLineOneSource
+    model OneSourceOneLineOneSource
       extends Modelica.Icons.Example;
       Components.mySource src2(UNom = 9000) annotation (
         Placement(visible = true, transformation(origin = {52, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -2181,10 +2181,10 @@ but the current in the line exceeds the maximum admissible value")}),
       connect(src1.terminal, line.terminalA) annotation (
         Line(points = {{-52, 0}, {-10, 0}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-144, -24}, {152, -58}}, fontSize = 12, textString = "current  is 57.7 A in line
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-144, -24}, {152, -58}}, fontSize = 12, textString = "current  is 57.7 A in line
 and Imax is only 50 A")}),
         experiment(StopTime = 1));
-    end OneSouceOneLineOneSource;
+    end OneSourceOneLineOneSource;
 
     model OneSourceThreeLinesOneSource
       extends Modelica.Icons.Example;
@@ -3672,7 +3672,7 @@ and can be compared to the required one")}),
     </body></html>"));
   end Information;
   annotation (
-    version = "Version 1.5 December 3rd, 2020",
+    version = "Version 2.0.0 December 3rd, 2020",
     uses(Modelica(version="4.0.0"), Complex(version="4.0.0")),
     Documentation(info = "<html><head></head><body>
     <p>Copyright © 2020-2021, EDF.</p>
