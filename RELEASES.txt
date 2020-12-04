@@ -17,4 +17,4 @@ Release 1.4 (Dec. 1st 2020):    Some cosmetic changes in comments
 Release 2.0.0 (Dec. 3rd 2020):  Semantic versioning is now in conformance with de-facto standard in the Modelica community, see ​http://www.semver.org
 								Language versions used are Modelica(version="4.0.0"), and Complex(version="4.0.0")
 								These versions are available with Dymola 2021x, and with OM (after running a mos script as described in ticket #6261)
-									
+								Two tickets are open for OM on assert() management (refer to #6264, and #6265)									
