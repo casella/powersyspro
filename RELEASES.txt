@@ -1,4 +1,5 @@
-Release 1.1 (Nov. 6th 2020):    Initial delivery
+Release 1.1 (Nov. 6th 2020):    Initial delivery with an issue in the displayUnit detected with Dymola 2021
+								(refer to SR00703824 solved with Dymola 2021x)
 
 Release 1.2 (Nov. 13th 2020):   Correction of minor errors reported by the "Pedantic check" option of Dymola
 
