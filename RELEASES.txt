@@ -19,4 +19,4 @@ Release 2.0.0 (Dec. 3rd 2020):  Semantic versioning is now in conformance with d
 								These versions are available with Dymola 2021x, and with OM (after running a mos script as described in ticket #6261)
 								Some issues are reported on assert() management:
 								* tickets #6264 and #6265 for OM
-								* SR for Dymola
+								* SR00715358 for Dymola
