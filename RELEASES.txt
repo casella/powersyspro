@@ -20,4 +20,5 @@ Release 2.0.0 (Dec. 3rd 2020):  Semantic versioning is now in conformance with d
 								Some issues are reported on assert() management:
 								* tickets #6264 and #6265 for OM
 								* SR00715358 for Dymola
-								An issue is reported on FMU export with OM: refer to ticket #6262 (incorrect start value for an input variable)
+								A ticket is reported on FMU export with OM: refer to #6262 (incorrect start value for an input variable)
+								A ticket is reported about the size of FMUs exported from OM: refer to #6278 (about 10 times heavier than Dymola' ones)
