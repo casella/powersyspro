@@ -1016,14 +1016,31 @@ The myTerminal connector represents an AC terminal with voltage and flow current
     type myAngle = Real(unit = "rad", displayUnit = "deg");
     type myPerUnit = Real(unit = "1");
     type myTime = Real(unit = "s", displayUnit = "s");
-    operator record myComplexAdmittance = USI.ComplexAdmittance;
-    operator record myComplexImpedance = USI.ComplexImpedance;
-    operator record myComplexPerUnit = Complex(re(unit = "1"), im(unit = "1"));
+    operator record myComplexVoltage =
+      Complex(redeclare myVoltage re "Imaginary part of complex voltage",
+              redeclare myVoltage im "Real part of complex voltage")
+      "Complex voltage";
+    operator record myComplexCurrent =
+      Complex(redeclare myCurrent re "Real part of complex current",
+              redeclare myCurrent im "Imaginary part of complex current")
+      "Complex current";
+    operator record myComplexAdmittance =
+      Complex(redeclare myConductance re "Real part of complex admittance (conductance)",
+              redeclare mySusceptance im "Imaginary part of complex admittance (susceptance)")
+      "Complex admittance";
+    operator record myComplexImpedance =
+      Complex(redeclare myResistance re "Real part of complex impedance (resistance)",
+              redeclare myReactance im "Imaginary part of complex impedance (reactance)")
+      "Complex impedance";
+    operator record myComplexPerUnit =
+      Complex(re(unit = "1"), im(unit = "1"))
+      "Complexe per unit";
     annotation (
       Documentation(info = "<html>
     <p>This package gathers dedicated icons for all models in this library.</p>
 </body></html>"));
   end Types;
+
 
   package Icons "Icons for the library models"
     extends Icons.myIconsPackage;
