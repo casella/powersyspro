@@ -821,7 +821,6 @@ package PowerSysPro
   //Copyright 2020 EDF
   extends Modelica.Icons.Package;
   import CM = Modelica.ComplexMath;
-  import USI = Modelica.Units.SI;
 
   package Sensors "Ideal Sensors"
     extends Icons.mySensorsPackage;
@@ -983,8 +982,8 @@ package PowerSysPro
 
     connector myAcausalTerminal
       "Non-causal terminal for phasor-based AC connections"
-      USI.ComplexVoltage v "Phase-to-ground voltage phasor";
-      flow USI.ComplexCurrent i "Line current phasor";
+      Types.myComplexVoltage v "Phase-to-ground voltage phasor";
+      flow Types.myComplexCurrent i "Line current phasor";
       annotation (
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 1, grid = {2, 2}), graphics={  Rectangle(origin = {92, 3}, fillColor = {85, 170, 255},
                 fillPattern =                                                                                                                                                                                      FillPattern.Solid, extent = {{-192, 97}, {8, -103}})}),
@@ -2492,7 +2491,7 @@ and variable transformer with tap changer")}));
 
       model SlackBusRamp "Ramp as voltage"
         parameter Types.myVoltage UNom "Voltage magnitude, phase-to-phase";
-        parameter USI.Angle theta=0 "Phase of voltage phasor";
+        parameter Types.myAngle theta=0 "Phase of voltage phasor";
         Interfaces.myAcausalTerminal terminal annotation (Placement(
             visible=true,
             transformation(
