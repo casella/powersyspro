@@ -3255,7 +3255,7 @@ and can be compared to the required one")}),
     </body></html>"));
   end Information;
   annotation (
-    version = "Version 2.1.1 January 26th, 2021",
+    version = "Version 2.1.1 January 30th, 2021",
     Documentation(info = "<html><head></head><body>
     <p>Copyright © 2020-2021, EDF.</p>
     <p>The use of the PowerSysPro library is granted by EDF under the provisions of the Modelica License 2. A copy of this license can be obtained&nbsp;<a href=\"http://www.modelica.org/licenses/ModelicaLicense2\">here</a>.</p>
