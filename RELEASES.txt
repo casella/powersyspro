@@ -1,3 +1,5 @@
+Release 2.1.1 (Jan. 30th 2021):
+* algorithm in class myVariableLoad replaced by an equation (to be quicker with Dymola).
 Release 2.1.0 (Jan. 25th 2021):
 * Replacing in 3 models the <> by > as <> among Reals is forbidden in Modelica.
 * Removing the model myVariablePVNode and modifying the examples related to breakers (islanding).
