@@ -805,7 +805,7 @@ The myAcausalTerminal connector represents an AC terminal with voltage and flow 
   end sin;
 
   function asin "Inverse sine (-1 <= u <= 1)"
-    extends Modelica.Math.Icons.AxisCenter;
+    extends Icons.myFunction;
     input Real u "Independent variable";
     output Modelica.Units.SI.Angle y "Dependent variable y=asin(u)";
 
