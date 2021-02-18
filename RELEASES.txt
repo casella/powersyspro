@@ -1,10 +1,12 @@
+Release 2.1.2 (Feb. 18th 2021):
+* Library is less depending on MSL.
 Release 2.1.1 (Jan. 30th 2021):
 * algorithm in class myVariableLoad replaced by an equation (to be quicker with Dymola).
 Release 2.1.0 (Jan. 25th 2021):
 * Replacing in 3 models the <> by > as <> among Reals is forbidden in Modelica.
 * Removing the model myVariablePVNode and modifying the examples related to breakers (islanding).
 Release 2.0.1 (Jan. 24th 2021):
-* Portability minor improvements so that the library is now compatible with MSL 3.2.3 and MSL 4.0.0.
+* Portability minor improvements so that the library is no more depending on the differences between MSL 3.2.3 and MSL 4.0.0.
 Release 2.0.0 (Dec. 3rd 2020):
 * Semantic versioning is now in conformance with de-facto standard in the Modelica community, see ​http://www.semver.org
 * Language versions used are Modelica(version="4.0.0"), and Complex(version="4.0.0")
