@@ -577,8 +577,8 @@ package PowerSysPro
     equation
       v_re = terminal.v.re;
       v_im = terminal.v.im;
-      i_re = terminal.i.re;
-      i_im = terminal.i.im;
+      i_re = -terminal.i.re;
+      i_im = -terminal.i.im;
       annotation (
         Documentation(info = "<html>
     <p> Causal input connector, with complex voltage as input and complex current as output.</p>    
@@ -601,8 +601,8 @@ package PowerSysPro
     equation
       v_re = terminal.v.re;
       v_im = terminal.v.im;
-      i_re + terminal.i.re = 0;
-      i_im + terminal.i.im = 0;
+      i_re = terminal.i.re;
+      i_im = terminal.i.im;
       annotation (
         Documentation(info = "<html>
     <p> Causal output connector, with complex voltage as output and complex current as input.</p>
