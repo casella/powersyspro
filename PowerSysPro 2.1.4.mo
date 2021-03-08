@@ -152,39 +152,6 @@ package PowerSysPro
 </html>"));
     end myLine;
 
-    model myLightLine "MV or LV line without possible check of the maximum admissible current"
-      extends Icons.myLine;
-      extends Icons.myTwoPortsAC;
-      Interfaces.myAcausalTerminal terminalA(i(re(start = 0), im(start = 0))) "Terminal A of the node" annotation (
-        Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Interfaces.myAcausalTerminal terminalB(v(re(start = UNom / sqrt(3)), im(start = 0))) "Terminal B of the node" annotation (
-        Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    public
-      parameter Types.myVoltage UNom "Reference voltage of the line";
-      parameter Types.myResistance R "Series resistance of phase conductor";
-      parameter Types.myReactance X = 0 "Series reactance of phase conductor";
-      parameter Types.myConductance G = 0 "Shunt conductance of phase conductor coupling";
-      parameter Types.mySusceptance B = 0 "Shunt susceptance of phase conductor coupling";
-      parameter Types.myPerUnit l = 1 "lineic coefficient";
-      Types.myCurrent IA = CM.abs(terminalA.i) "Current flowing port A";
-      Types.myVoltage UA = sqrt(3) * CM.abs(terminalA.v) "Voltage at port A";
-      Types.myCurrent IB = CM.abs(terminalB.i) "Current flowing port B";
-      Types.myVoltage UB = sqrt(3) * CM.abs(terminalB.v) "Voltage at port B";
-      Types.myApparentPower S = sqrt(3) * IA * UA "Apparent power flowing port A";
-    protected
-      parameter Types.myComplexImpedance Z = Complex(l * R, l * X) "Series impedance of phase conductor";
-      parameter Types.myComplexAdmittance Y = Complex(l * G / 2, l * B / 2) "Shunt admittance at port A and port B";
-    equation
-      terminalA.i + terminalB.i = Y * (terminalB.v + terminalA.v);
-      terminalA.v - terminalB.v = Z * (terminalA.i - Y * terminalA.v);
-      annotation (
-        Documentation(info = "<html>
-    <p>A line can be modeled as a dedicated Pi-network. A diagram of the model is shown in the next figure:</p>
-    <p>  </p>
-    <figure> <img src=\"modelica://PowerSysPro/Resources/Images/PiNetworkLine.png\"></figure>
-</html>"));
-    end myLightLine;
-
     model myLineWithFault "MV or LV line with constant impedance and fault at intermediate position"
       extends Icons.myLine;
       extends Icons.myTwoPortsAC;
@@ -193,11 +160,11 @@ package PowerSysPro
         Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Interfaces.myAcausalTerminal terminalB(v(re(start = UNom / sqrt(3)), im(start = 0))) "Terminal B of the node" annotation (
         Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      myLightLine lineA(UNom = UNom, R = faultLocationPu * l * R, X = faultLocationPu * l * X, B = faultLocationPu * l * B, G = faultLocationPu * l * G) annotation (
+      Components.myLine lineA(UNom = UNom, R = faultLocationPu * l * R, X = faultLocationPu * l * X, B = faultLocationPu * l * B, G = faultLocationPu * l * G) annotation (
         Placement(visible = true, transformation(origin = {-40, 2.44249e-15}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-      myLightLine lineB(UNom = UNom, R = (1 - faultLocationPu) * l * R, X = (1 - faultLocationPu) * l * X, B = (1 - faultLocationPu) * l * B, G = (1 - faultLocationPu) * l * G) annotation (
+      Components.myLine lineB(UNom = UNom, R = (1 - faultLocationPu) * l * R, X = (1 - faultLocationPu) * l * X, B = (1 - faultLocationPu) * l * B, G = (1 - faultLocationPu) * l * G) annotation (
         Placement(visible = true, transformation(origin = {40, 1.77636e-15}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-      PartialModels.myFault myFault(R = RFault, X = XFault, startTime = startTime, stopTime = stopTime) annotation (
+      Components.PartialModels.myFault myFault(R = RFault, X = XFault, startTime = startTime, stopTime = stopTime) annotation (
         Placement(visible = true, transformation(origin = {0, 0}, extent = {{-22, -22}, {22, 22}}, rotation = 0)));
     public
       parameter Types.myVoltage UNom "Reference voltage of the line";
@@ -923,7 +890,9 @@ The myAcausalTerminal connector represents an AC terminal with voltage and flow 
 
     partial model myExample "Icon for runnable tests and examples"
       annotation (
-        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Ellipse(lineColor = {75, 138, 73}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-100, -100}, {100, 100}}), Polygon(lineColor = {0, 0, 255}, fillColor = {75, 138, 73}, pattern = LinePattern.None, fillPattern = FillPattern.Solid, points = {{-36, 60}, {64, 0}, {-36, -60}, {-36, 60}})}),
+        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics={  Ellipse(lineColor = {75, 138, 73}, fillColor = {255, 255, 255},
+                fillPattern =                                                                                                                                                              FillPattern.Solid, extent = {{-100, -100}, {100, 100}}), Polygon(lineColor = {0, 0, 255}, fillColor = {75, 138, 73}, pattern = LinePattern.None,
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid, points = {{-36, 60}, {64, 0}, {-36, -60}, {-36, 60}})}),
         Documentation(info = "<html>
 <p>This icon indicates an example. The play button suggests that the example can be executed.</p>
 </html>"));
@@ -1629,7 +1598,7 @@ current in the source 0.867 A")}, coordinateSystem(initialScale = 0.1)),
       connect(tra.terminalB, line.terminalA) annotation (
         Line(points = {{-10, 22}, {8, 22}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-20, 62}, {152, 28}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-36, -18}, {38, -62}}, fontSize = 12, textString = "source voltage is 20 kV
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-20, 62}, {152, 28}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-36, -18}, {38, -62}}, fontSize = 12, textString = "source voltage is 20 kV
 downstream voltage in transformer is 10 kV
 voltage drop is 5 V in the line
 current in the load is 0.289 A
@@ -1655,7 +1624,12 @@ current in the source is 0.144 A")}, coordinateSystem(initialScale = 0.1)),
       connect(line2.terminalB, load.terminal) annotation (
         Line(points = {{30, 10}, {40, 10}, {40, 10.02}, {49.96, 10.02}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-30, 62}, {168, 34}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-36, -8}, {38, -52}}, fontSize = 12, textString = "source voltge is 10 kV
+        Diagram(graphics={  Text(lineColor={28,108,200},     extent = {{-30, 62}, {168, 34}}, fontSize=
+                  12,
+              textString="P=4 kW and Q=3 kvar"),                                                                                                  Text(lineColor=
+                  {28,108,200},                                                                                                                                                    extent = {{-36, -8}, {38, -52}}, fontSize=
+                  12,
+              textString="source voltage is 10 kV
 voltage drop is about 4 V in each resistive line
 current is 0.289 A in the feeder")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
@@ -1687,7 +1661,7 @@ current is 0.289 A in the feeder")}, coordinateSystem(initialScale = 0.1)),
       connect(tra2.terminalB, line2.terminalA) annotation (
         Line(points = {{26, 22}, {40, 22}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{2, 56}, {176, 34}}, fontSize = 12, textString = "P=50 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-40, -10}, {34, -54}}, fontSize = 12, textString = "as the load is strong
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{2, 56}, {176, 34}}, fontSize = 12, textString = "P=50 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-40, -10}, {34, -54}}, fontSize = 12, textString = "as the load is strong
 current is exceeding the maximum
 acceptable value for line2
 but voltage is correct")}, coordinateSystem(initialScale = 0.1)),
@@ -2026,7 +2000,8 @@ in voltage, current and apparent power in the line")}),
         Line(points = {{-22, 8}, {20, 8}}, color = {0, 0, 0}));
       annotation (
         Icon(coordinateSystem(grid = {0.1, 0.1})),
-        Diagram(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(lineColor = {28, 108, 200}, extent = {{-146, -18}, {146, -64}}, fontSize = 12, textString = "a fault appears at 0.4 s and is eliminated in 200 ms
+        Diagram(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics={  Text(lineColor = {28, 108, 200}, extent={{
+                  -148,-16},{144,-62}},                                                                                                                 fontSize = 12, textString = "a fault appears at 0.4 s and is eliminated in 200 ms
 its location is at 70%% line length from port A
 during fault, voltage drop at port B is 7 kV
 and fault current is very important")}),
@@ -2039,6 +2014,44 @@ and fault current is very important")}),
 </body></html>"),
         experiment(StopTime = 1));
     end OneSourceOneLigneWithFault;
+
+    model OneSourceTwoLinesWithFaultOneLoad
+      extends Icons.myExample;
+      Components.mySource src(UNom = 10000) annotation (
+        Placement(transformation(extent = {{-62, 0}, {-42, 20}})));
+      Components.myLine line1(UNom = 10000, R = 10, X = 2.657870e-02, Imax = 80) annotation (
+        Placement(transformation(extent={{12,0},{32,20}})));
+      Components.myLineWithFault
+                        line2(
+        UNom=10000,                         R = 10, X = 2.657870e-02, Imax = 80,
+        faultLocationPu=0.7,
+        RFault=2,
+        startTime=0.4,
+        stopTime=0.6)                                                            annotation (
+        Placement(transformation(extent={{-32,0},{-12,20}})));
+      Components.myLoad load(UNom = 10000, P = 4000, Q = 3000) annotation (
+        Placement(transformation(extent = {{40, 0}, {60, 20}})));
+    equation
+      connect(src.terminal, line2.terminalA)
+        annotation (Line(points={{-52,10},{-32,10}}, color={0,0,0}));
+      connect(line2.terminalB, line1.terminalA)
+        annotation (Line(points={{-12,10},{12,10}}, color={0,0,0}));
+      connect(line1.terminalB, load.terminal) annotation (Line(points={{32,10},
+              {40,10},{40,10.02},{49.96,10.02}}, color={0,0,0}));
+      annotation (
+        Diagram(graphics={  Text(lineColor={28,108,200},     extent = {{-30, 62}, {168, 34}}, fontSize=
+                  12,
+              textString="P=4 kW and Q=3 kvar"),                                                                                                  Text(lineColor=
+                  {28,108,200},                                                                                                                                                    extent={{
+                  -36,-18},{38,-62}},                                                                                                                                                                               fontSize=
+                  12,
+              textString="a fault appears at 0.4 s and is eliminated in 200 ms
+its location is at 70%% line length from port A
+source voltge is 10 kV
+current during default is above Imax for line2")},
+                                     coordinateSystem(initialScale = 0.1)),
+        experiment(StopTime = 1));
+    end OneSourceTwoLinesWithFaultOneLoad;
 
     model VariableLoad
       extends Icons.myExample;
@@ -3333,7 +3346,7 @@ and can be compared to the required one")}),
     </body></html>"));
   end Information;
   annotation (
-    version = "2.1.3", versionDate = "2021-02-24",
+    version = "2.1.4", versionDate = "2021-03-07",
     Documentation(info = "<html><head></head><body>
     <p>Copyright © 2020-2021, EDF.</p>
     <p>The use of the PowerSysPro library is granted by EDF under the provisions of the Modelica License 2. A copy of this license can be obtained&nbsp;<a href=\"http://www.modelica.org/licenses/ModelicaLicense2\">here</a>.</p>
