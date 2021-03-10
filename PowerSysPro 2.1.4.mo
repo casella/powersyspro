@@ -472,7 +472,7 @@ package PowerSysPro
       assert(tap < tapMax, ">>> Maximum tap position reached for " + getInstanceName(), AssertionLevel.warning);
       assert(tap > tapMin, ">>> Minimum tap position reached for " + getInstanceName(), AssertionLevel.warning);
       annotation (
-        Icon(graphics = {Text(origin = {-140.43, 18.67}, lineColor = {28, 108, 200}, extent = {{-53.57, 7.33}, {331.14, -14.66}}, textStyle = {TextStyle.Bold}, textString = "RegU")}),
+        Icon(graphics={  Text(origin = {-140.43, 18.67}, lineColor = {28, 108, 200}, extent = {{-53.57, 7.33}, {331.14, -14.66}}, textStyle = {TextStyle.Bold}, textString = "RegU")}),
         Documentation(info = "<html>
             <p>This regulation is an academic example of voltage regulation. Next figure roughly illustrates it:</p>
             <p>  </p>
@@ -515,7 +515,7 @@ package PowerSysPro
         end if;
       end when;
       annotation (
-        Icon(coordinateSystem(preserveAspectRatio = false), graphics = {Text(origin = {-136.43, 18.67}, lineColor = {28, 108, 200}, extent = {{-53.57, 7.33}, {331.14, -14.66}}, textStyle = {TextStyle.Bold}, textString = "Q=f(U)")}),
+        Icon(coordinateSystem(preserveAspectRatio = false), graphics={  Text(origin = {-136.43, 18.67}, lineColor = {28, 108, 200}, extent = {{-53.57, 7.33}, {331.14, -14.66}}, textStyle = {TextStyle.Bold}, textString = "Q=f(U)")}),
         Diagram(coordinateSystem(preserveAspectRatio = false)),
         Documentation(info = "<html>
     <p>This regulation is derived from document Enedis-NOI-RES_60E published by ENEDIS. A diagram of the Q=f(U) law is shown in the next figure:</p>
@@ -550,7 +550,7 @@ package PowerSysPro
         Documentation(info = "<html>
     <p> Causal input connector, with complex voltage as input and complex current as output.</p>    
     </html>"),
-        Icon(graphics = {Text(origin = {73, 97}, lineColor = {0, 0, 255}, extent = {{-131, 11}, {131, -11}}, textString = "%name"), Text(extent = {{-10, -12}, {72, -52}}, lineColor = {0, 0, 0}, textStyle = {TextStyle.Bold}, textString = "~")}));
+        Icon(graphics={  Text(origin = {73, 97}, lineColor = {0, 0, 255}, extent = {{-131, 11}, {131, -11}}, textString = "%name"), Text(extent = {{-10, -12}, {72, -52}}, lineColor = {0, 0, 0}, textStyle = {TextStyle.Bold}, textString = "~")}));
     end myCausalBusVInput;
 
     model myCausalBusVOutput "Causal bus with voltage as output"
@@ -574,7 +574,7 @@ package PowerSysPro
         Documentation(info = "<html>
     <p> Causal output connector, with complex voltage as output and complex current as input.</p>
     </html>"),
-        Icon(graphics = {Text(origin = {-79, 97}, lineColor = {0, 0, 255}, extent = {{-131, 11}, {131, -11}}, textString = "%name"), Text(extent = {{-70, -10}, {12, -50}}, lineColor = {0, 0, 0}, textStyle = {TextStyle.Bold}, textString = "~")}));
+        Icon(graphics={  Text(origin = {-79, 97}, lineColor = {0, 0, 255}, extent = {{-131, 11}, {131, -11}}, textString = "%name"), Text(extent = {{-70, -10}, {12, -50}}, lineColor = {0, 0, 0}, textStyle = {TextStyle.Bold}, textString = "~")}));
     end myCausalBusVOutput;
     annotation (
       Icon(coordinateSystem(grid = {0.1, 0.1}), graphics={  Rectangle(lineColor = {200, 200, 200}, fillColor = {248, 248, 248},
@@ -849,12 +849,13 @@ The myAcausalTerminal connector represents an AC terminal with voltage and flow 
 
     model myBus "Icon for causal bus"
       annotation (
-        Icon(graphics = {Rectangle(origin = {1, 25}, fillPattern = FillPattern.Solid, extent = {{-5, 75}, {5, -125}})}, coordinateSystem(initialScale = 0.1)));
+        Icon(graphics={  Rectangle(origin = {1, 25}, fillPattern = FillPattern.Solid, extent = {{-5, 75}, {5, -125}})}, coordinateSystem(initialScale = 0.1)));
     end myBus;
 
     model myRegulation "Icon for tape changer"
       annotation (
-        Icon(coordinateSystem(initialScale = 0.2), graphics = {Rectangle(extent = {{-100, 40}, {98, -50}}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, pattern = LinePattern.None), Line(points = {{-76, -18}, {-48, 24}, {-12, -50}, {20, -4}, {60, -30}, {82, 20}}, color = {0, 0, 255}, smooth = Smooth.None), Line(points = {{-88, 0}, {88, 0}}, color = {0, 0, 0}), Line(points = {{-86, 32}, {90, 32}}, color = {192, 192, 192}, thickness = 1), Line(points = {{-88, -30}, {88, -30}}, color = {192, 192, 192}, thickness = 1)}));
+        Icon(coordinateSystem(initialScale = 0.2), graphics={  Rectangle(extent = {{-100, 40}, {98, -50}}, fillColor = {255, 255, 255},
+                fillPattern =                                                                                                                         FillPattern.Solid, pattern = LinePattern.None), Line(points = {{-76, -18}, {-48, 24}, {-12, -50}, {20, -4}, {60, -30}, {82, 20}}, color = {0, 0, 255}, smooth = Smooth.None), Line(points = {{-88, 0}, {88, 0}}, color = {0, 0, 0}), Line(points = {{-86, 32}, {90, 32}}, color = {192, 192, 192}, thickness = 1), Line(points = {{-88, -30}, {88, -30}}, color = {192, 192, 192}, thickness = 1)}));
     end myRegulation;
 
     model myFault "Icon for fault"
@@ -1017,9 +1018,9 @@ This icon is indicates a record.
         Placement(visible = true, transformation(origin = {-52, -6}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Buses.myCausalBusVOutput Bout annotation (
         Placement(transformation(extent = {{-26, -16}, {-6, 4}})));
-      Modelica.Blocks.Interfaces.RealInput i_re(start = -30) annotation (
+      Modelica.Blocks.Interfaces.RealInput i_re(start = 30) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {100, 24})));
-      Modelica.Blocks.Interfaces.RealInput i_im(start = -40) annotation (
+      Modelica.Blocks.Interfaces.RealInput i_im(start = 40) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {100, -8})));
     equation
       connect(i_re, Bout.i_re) annotation (
@@ -1029,8 +1030,10 @@ This icon is indicates a record.
       connect(i_im, Bout.i_im) annotation (
         Line(points = {{100, -8}, {22, -8}, {22, -2}, {-14, -2}}, color = {0, 0, 127}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-108, 24}, {34, 14}}, fontSize = 12, textString = "U = 10 kV, theta = 30°"), Text(lineColor = {28, 108, 200}, extent = {{-94, -20}, {106, -60}}, fontSize = 12, textString = "current in the source is 50 A
-apparent power flowing the source is 866 kVA"), Text(lineColor = {28, 108, 200}, extent = {{10, 48}, {152, 38}}, fontSize = 12, textString = "i_re = -30, i_im = -40")}, coordinateSystem(initialScale = 0.1)),
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-108, 24}, {34, 14}}, fontSize = 12, textString = "U = 10 kV, theta = 30°"), Text(lineColor = {28, 108, 200}, extent = {{-94, -20}, {106, -60}}, fontSize = 12, textString = "current in the source is 50 A
+apparent power flowing the source is 866 kVA"), Text(lineColor={28,108,200},     extent = {{10, 48}, {152, 38}}, fontSize=
+                  12,
+              textString="i_re = 30, i_im = 40")},                                                                                                                       coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
     end OneSource;
 
@@ -1052,7 +1055,7 @@ apparent power flowing the source is 866 kVA"), Text(lineColor = {28, 108, 200},
       connect(Bin.v_im, v_im) annotation (
         Line(points = {{26.2, -2}, {-6, -2}, {-6, -10}, {-100, -10}}, color = {0, 0, 127}));
       annotation (
-        Diagram(graphics = {Text(extent = {{-106, -22}, {106, -64}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "voltage at the load is 5 kV
+        Diagram(graphics={  Text(extent = {{-106, -22}, {106, -64}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "voltage at the load is 5 kV
 and current is 0.577 A
 apparent power flowing the load is 5 kVA"), Text(extent = {{10, 54}, {140, 12}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "P = 4 kW, Q = 3 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-220, 58}, {48, 52}}, fontSize = 12, textString = "v_re = 4000/sqrt(3), v_im = 3000/sqrt(3)")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
@@ -1066,9 +1069,9 @@ apparent power flowing the load is 5 kVA"), Text(extent = {{10, 54}, {140, 12}},
         Placement(transformation(extent = {{-46, 4}, {-26, 24}})));
       Buses.myCausalBusVOutput Bout annotation (
         Placement(transformation(extent = {{16, 4}, {36, 24}})));
-      Modelica.Blocks.Interfaces.RealInput i_re(start = -30) annotation (
+      Modelica.Blocks.Interfaces.RealInput i_re(start = 30) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {104, 34})));
-      Modelica.Blocks.Interfaces.RealInput i_im(start = -40) annotation (
+      Modelica.Blocks.Interfaces.RealInput i_im(start = 40) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {104, -2})));
       Modelica.Blocks.Interfaces.RealInput v_re(start = 4000 / sqrt(3)) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 0, origin = {-110, 40})));
@@ -1088,10 +1091,12 @@ apparent power flowing the load is 5 kVA"), Text(extent = {{10, 54}, {140, 12}},
       connect(v_im, Bin.v_im) annotation (
         Line(points = {{-110, 4}, {-74, 4}, {-74, 6}, {-37.8, 6}}, color = {0, 0, 127}));
       annotation (
-        Diagram(graphics = {Text(extent = {{-58, -12}, {70, -62}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "current in the line is 50 A and voltage is 5 kV 
+        Diagram(graphics={  Text(extent = {{-58, -12}, {70, -62}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "current in the line is 50 A and voltage is 5 kV 
 no voltage drop as the line is perfect
 apparent power flowing the line is 433 kVA"), Text(origin = {42.8, 22.3078}, lineColor = {28, 108, 200}, extent = {{-76.8, 19.6922}, {-12.8, 35.6922}}, fontSize = 12, textString = "perfect line:
-R very low, and X=G=B=0"), Text(lineColor = {28, 108, 200}, extent = {{30, 60}, {172, 50}}, fontSize = 12, textString = "i_re = -30, i_im = -40"), Text(lineColor = {28, 108, 200}, extent = {{-208, 74}, {20, 66}}, fontSize = 12, textString = "v_re = 4000/sqrt(3), v_im = 3000/sqrt(3)")}, coordinateSystem(initialScale = 0.1)),
+R very low, and X=G=B=0"), Text(lineColor={28,108,200},     extent = {{30, 60}, {172, 50}}, fontSize=
+                  12,
+              textString="i_re = 30, i_im = 40"),                                                                                                  Text(lineColor = {28, 108, 200}, extent = {{-208, 74}, {20, 66}}, fontSize = 12, textString = "v_re = 4000/sqrt(3), v_im = 3000/sqrt(3)")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
     end OnePerfectLine;
 
@@ -1103,9 +1108,9 @@ R very low, and X=G=B=0"), Text(lineColor = {28, 108, 200}, extent = {{30, 60}, 
         Placement(transformation(extent = {{-46, 2}, {-26, 22}})));
       Buses.myCausalBusVOutput Bout annotation (
         Placement(transformation(extent = {{18, 2}, {38, 22}})));
-      Modelica.Blocks.Interfaces.RealInput i_re(start = -30) annotation (
+      Modelica.Blocks.Interfaces.RealInput i_re(start = 30) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {100, 40})));
-      Modelica.Blocks.Interfaces.RealInput i_im(start = -40) annotation (
+      Modelica.Blocks.Interfaces.RealInput i_im(start = 40) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {100, 4})));
       Modelica.Blocks.Interfaces.RealInput v_re(start = 5000 / sqrt(3)) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 0, origin = {-112, 34})));
@@ -1125,10 +1130,12 @@ R very low, and X=G=B=0"), Text(lineColor = {28, 108, 200}, extent = {{30, 60}, 
       connect(v_re, Bin.v_re) annotation (
         Line(points = {{-112, 34}, {-76, 34}, {-76, 8}, {-37.8, 8}}, color = {0, 0, 127}));
       annotation (
-        Diagram(graphics = {Text(origin = {38.8, 18.3078}, lineColor = {28, 108, 200}, extent = {{-76.8, 19.6922}, {-12.8, 35.6922}}, fontSize = 12, textString = "resistive line:
+        Diagram(graphics={  Text(origin = {38.8, 18.3078}, lineColor = {28, 108, 200}, extent = {{-76.8, 19.6922}, {-12.8, 35.6922}}, fontSize = 12, textString = "resistive line:
 R = 10 ohms, and X=G=B=0"), Text(extent = {{-58, -18}, {70, -68}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "current in the line is 50 A and voltage is 5 kV 
 voltage drop is 466 V
-apparent power flowing the line is 433 kVA"), Text(lineColor = {28, 108, 200}, extent = {{26, 66}, {168, 56}}, fontSize = 12, textString = "i_re = -30, i_im = -40"), Text(lineColor = {28, 108, 200}, extent = {{-188, 64}, {-46, 54}}, fontSize = 12, textString = "v_re = 5000/sqrt(3), v_im = 0")}, coordinateSystem(initialScale = 0.1)),
+apparent power flowing the line is 433 kVA"), Text(lineColor={28,108,200},     extent = {{26, 66}, {168, 56}}, fontSize=
+                  12,
+              textString="i_re = 30, i_im = 40"),                                                                                                                     Text(lineColor = {28, 108, 200}, extent = {{-188, 64}, {-46, 54}}, fontSize = 12, textString = "v_re = 5000/sqrt(3), v_im = 0")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
     end OneLine;
 
@@ -1140,9 +1147,9 @@ apparent power flowing the line is 433 kVA"), Text(lineColor = {28, 108, 200}, e
         Placement(transformation(extent = {{-46, 6}, {-26, 26}})));
       Buses.myCausalBusVOutput Bout annotation (
         Placement(transformation(extent = {{16, 6}, {36, 26}})));
-      Modelica.Blocks.Interfaces.RealInput i_re(start = -30) annotation (
+      Modelica.Blocks.Interfaces.RealInput i_re(start = 30) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {100, 42})));
-      Modelica.Blocks.Interfaces.RealInput i_im(start = -40) annotation (
+      Modelica.Blocks.Interfaces.RealInput i_im(start = 40) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {100, 6})));
       Modelica.Blocks.Interfaces.RealInput v_re(start = 63000 / sqrt(3)) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 0, origin = {-106, 40})));
@@ -1162,11 +1169,13 @@ apparent power flowing the line is 433 kVA"), Text(lineColor = {28, 108, 200}, e
       connect(v_im, Bin.v_im) annotation (
         Line(points = {{-106, 4}, {-70, 4}, {-70, 8}, {-37.8, 8}}, color = {0, 0, 127}));
       annotation (
-        Diagram(graphics = {Text(origin = {44.8, 20.3078}, lineColor = {28, 108, 200}, extent = {{-76.8, 19.6922}, {-12.8, 35.6922}}, fontSize = 12, textString = "perfect transformer:
+        Diagram(graphics={  Text(origin = {44.8, 20.3078}, lineColor = {28, 108, 200}, extent = {{-76.8, 19.6922}, {-12.8, 35.6922}}, fontSize = 12, textString = "perfect transformer:
 R very low, and X=G=B=0
 ratio=20/63"), Text(extent = {{-66, -14}, {62, -64}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "voltage at port A is 63 kV and is 20 kV at port B
 current in port A is 15.9 A and is 50 A in port B
-apparent power flowing the transformer is 1732 kVA"), Text(lineColor = {28, 108, 200}, extent = {{26, 68}, {168, 58}}, fontSize = 12, textString = "i_re = -30, i_im = -40"), Text(lineColor = {28, 108, 200}, extent = {{-200, 66}, {-6, 62}}, fontSize = 12, textString = "v_re = 63000/sqrt(3), v_im = 0")}, coordinateSystem(initialScale = 0.1)),
+apparent power flowing the transformer is 1732 kVA"), Text(lineColor={28,108,200},     extent = {{26, 68}, {168, 58}}, fontSize=
+                  12,
+              textString="i_re = 30, i_im = 40"),                                                                                                                             Text(lineColor = {28, 108, 200}, extent = {{-200, 66}, {-6, 62}}, fontSize = 12, textString = "v_re = 63000/sqrt(3), v_im = 0")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
     end OneperfectTransfo;
 
@@ -1178,7 +1187,7 @@ apparent power flowing the transformer is 1732 kVA"), Text(lineColor = {28, 108,
         Placement(transformation(extent = {{-46, 6}, {-26, 26}})));
       Buses.myCausalBusVOutput Bout annotation (
         Placement(transformation(extent = {{16, 6}, {36, 26}})));
-      Modelica.Blocks.Interfaces.RealInput i_re(start = -50) annotation (
+      Modelica.Blocks.Interfaces.RealInput i_re(start = 50) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {100, 50})));
       Modelica.Blocks.Interfaces.RealInput i_im(start = 0) annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 180, origin = {100, 14})));
@@ -1200,12 +1209,15 @@ apparent power flowing the transformer is 1732 kVA"), Text(lineColor = {28, 108,
       connect(v_im, Bin.v_im) annotation (
         Line(points = {{-104, 8}, {-37.8, 8}}, color = {0, 0, 127}));
       annotation (
-        Diagram(graphics = {Text(origin = {40.8, 24.3078}, lineColor = {28, 108, 200}, extent = {{-76.8, 19.6922}, {-12.8, 35.6922}}, fontSize = 12, textString = "resistive transformer:
+        Diagram(graphics={  Text(origin = {40.8, 24.3078}, lineColor = {28, 108, 200}, extent = {{-76.8, 19.6922}, {-12.8, 35.6922}}, fontSize = 12, textString = "resistive transformer:
 R=10 ohms, and X=G=B=0
 ratio=20/63"), Text(extent = {{-132, -8}, {142, -58}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "voltage at port A is 63 kV
 voltage drop at port B is 87 V bellow 20 kV
 current in port A is 15.9 A and is 50 A in port B
-apparent power flowing the transformer is 1732 kVA"), Text(lineColor = {28, 108, 200}, extent = {{24, 76}, {166, 66}}, fontSize = 12, textString = "i_re = -50, i_im = 0"), Text(lineColor = {28, 108, 200}, extent = {{-198, 70}, {-4, 66}}, fontSize = 12, textString = "v_re = 63000/sqrt(3), v_im = 0")}, coordinateSystem(initialScale = 0.1)),
+apparent power flowing the transformer is 1732 kVA"), Text(lineColor={28,108,
+                  200},                                                                extent = {{24, 76}, {166, 66}}, fontSize=
+                  12,
+              textString="i_re = 50, i_im = 0"),                                                                                                                            Text(lineColor = {28, 108, 200}, extent = {{-198, 70}, {-4, 66}}, fontSize = 12, textString = "v_re = 63000/sqrt(3), v_im = 0")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
     end OneTransfo;
 
@@ -1228,9 +1240,12 @@ apparent power flowing the transformer is 1732 kVA"), Text(lineColor = {28, 108,
         Line(points = {{-90, 8}, {-32, 8}, {-32, 4}, {28.2, 4}}, color = {0, 0, 127}));
       annotation (
         Icon(coordinateSystem(preserveAspectRatio = false)),
-        Diagram(coordinateSystem(preserveAspectRatio = false), graphics = {Text(lineColor = {28, 108, 200}, extent = {{28, 44}, {104, 22}}, fontSize = 12, textString = "B = 1 S"), Text(extent = {{-38, -22}, {36, -66}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "voltage at the bank is 5 kV
+        Diagram(coordinateSystem(preserveAspectRatio = false), graphics={  Text(lineColor = {28, 108, 200}, extent = {{28, 44}, {104, 22}}, fontSize = 12, textString = "B = 1 S"), Text(extent = {{-38, -22}, {36, -66}}, lineColor=
+                  {28,108,200},                                                                                                                                                                                                        fontSize=
+                  12,
+              textString="voltage at the bank is 5 kV
 current is 2887 A
-apparent power flowing the bank is 25 MVAR"), Text(lineColor = {28, 108, 200}, extent = {{-242, 74}, {62, 66}}, fontSize = 12, textString = "v_re = 4000/sqrt(3), v_im = 3000/sqrt(3)")}),
+apparent power flowing the bank is 25 MVA"),  Text(lineColor = {28, 108, 200}, extent = {{-242, 74}, {62, 66}}, fontSize = 12, textString = "v_re = 4000/sqrt(3), v_im = 3000/sqrt(3)")}),
         experiment(StopTime = 1));
     end OneBank;
 
@@ -1246,7 +1261,8 @@ apparent power flowing the bank is 25 MVAR"), Text(lineColor = {28, 108, 200}, e
         Line(points = {{-31, 76}, {-22, 76}, {-22, 74.4}, {20, 74.4}}, color = {0, 0, 127}));
       annotation (
         Icon(coordinateSystem(preserveAspectRatio = false)),
-        Diagram(coordinateSystem(preserveAspectRatio = false), graphics = {Text(lineColor = {28, 108, 200}, extent = {{-94, 0}, {30, -74}}, fontSize = 12, horizontalAlignment = TextAlignment.Left, textString = "voltage evolution:
+        Diagram(coordinateSystem(preserveAspectRatio = false), graphics={  Text(lineColor = {28, 108, 200}, extent = {{-94, 0}, {30, -74}}, fontSize = 12,
+                horizontalAlignment =                                                                                                                                            TextAlignment.Left, textString = "voltage evolution:
 t=0 s 
 t=10 s
 t=20 s 
@@ -1259,7 +1275,8 @@ t=250 s
 t=311 s
 t=321 s
 t=331 s
-t=341 s"), Text(lineColor = {28, 108, 200}, extent = {{-60, 0}, {64, -74}}, fontSize = 12, horizontalAlignment = TextAlignment.Left, textString = "
+t=341 s"), Text(lineColor = {28, 108, 200}, extent = {{-60, 0}, {64, -74}}, fontSize = 12,
+                horizontalAlignment =                                                                            TextAlignment.Left, textString = "
 U=20400 V
 U=21400 V
 U=20400 V
@@ -1272,11 +1289,13 @@ U=21400 V
 U=21350 V
 U=21300 V
 U=21250 V
-U=20400 V"), Text(lineColor = {28, 108, 200}, extent = {{-2, -2}, {122, -76}}, fontSize = 12, horizontalAlignment = TextAlignment.Left, textString = "tap decrease at t=90 s,
+U=20400 V"), Text(lineColor = {28, 108, 200}, extent = {{-2, -2}, {122, -76}}, fontSize = 12,
+                horizontalAlignment =                                                                               TextAlignment.Left, textString = "tap decrease at t=90 s,
 
 tap increase at t=180 s, and t=190 s
 
-tap decrease at t=310 s, t=320 s, t=330 s, and t=340 s"), Text(lineColor = {28, 108, 200}, extent = {{-138, 58}, {224, 28}}, fontSize = 12, horizontalAlignment = TextAlignment.Left, textString = "In this case, the starting voltage is in the normal range [underMinU, aboveMaxU]")}),
+tap decrease at t=310 s, t=320 s, t=330 s, and t=340 s"), Text(lineColor = {28, 108, 200}, extent = {{-138, 58}, {224, 28}}, fontSize = 12,
+                horizontalAlignment =                                                                                                                             TextAlignment.Left, textString = "In this case, the starting voltage is in the normal range [underMinU, aboveMaxU]")}),
         experiment(StopTime = 350));
     end VoltageRegulation1;
 
@@ -1292,11 +1311,15 @@ tap decrease at t=310 s, t=320 s, t=330 s, and t=340 s"), Text(lineColor = {28, 
         Line(points = {{-31, 76}, {-22, 76}, {-22, 74.4}, {20, 74.4}}, color = {0, 0, 127}));
       annotation (
         Icon(coordinateSystem(preserveAspectRatio = false)),
-        Diagram(coordinateSystem(preserveAspectRatio = false), graphics = {Text(lineColor = {28, 108, 200}, extent = {{-94, 24}, {30, -50}}, fontSize = 12, horizontalAlignment = TextAlignment.Left, textString = "voltage evolution:
+        Diagram(coordinateSystem(preserveAspectRatio = false), graphics={  Text(lineColor = {28, 108, 200}, extent = {{-94, 24}, {30, -50}}, fontSize = 12,
+                horizontalAlignment =                                                                                                                                             TextAlignment.Left, textString = "voltage evolution:
 t=0 s 
-t=300 s"), Text(lineColor = {28, 108, 200}, extent = {{-64, 20}, {60, -54}}, fontSize = 12, horizontalAlignment = TextAlignment.Left, textString = "U=21400 V
-U=20400 V"), Text(lineColor = {28, 108, 200}, extent = {{-2, 20}, {122, -54}}, fontSize = 12, horizontalAlignment = TextAlignment.Left, textString = "tap decrease at t=60 s, 70 s, 80 s,
-90 s, 100 s, 110 s, 120 s, and 130 s"), Text(lineColor = {28, 108, 200}, extent = {{-132, 58}, {230, 28}}, fontSize = 12, horizontalAlignment = TextAlignment.Left, textString = "In this case, the starting voltage is outside the normal range [underMinU, aboveMaxU]")}),
+t=300 s"), Text(lineColor = {28, 108, 200}, extent = {{-64, 20}, {60, -54}}, fontSize = 12,
+                horizontalAlignment =                                                                             TextAlignment.Left, textString = "U=21400 V
+U=20400 V"), Text(lineColor = {28, 108, 200}, extent = {{-2, 20}, {122, -54}}, fontSize = 12,
+                horizontalAlignment =                                                                               TextAlignment.Left, textString = "tap decrease at t=60 s, 70 s, 80 s,
+90 s, 100 s, 110 s, 120 s, and 130 s"), Text(lineColor = {28, 108, 200}, extent = {{-132, 58}, {230, 28}}, fontSize = 12,
+                horizontalAlignment =                                                                                                           TextAlignment.Left, textString = "In this case, the starting voltage is outside the normal range [underMinU, aboveMaxU]")}),
         experiment(StopTime = 350));
     end VoltageRegulation2;
 
@@ -1312,7 +1335,8 @@ U=20400 V"), Text(lineColor = {28, 108, 200}, extent = {{-2, 20}, {122, -54}}, f
         Line(points = {{5.9, 46.4}, {-30, 46.4}, {-30, 72}, {-70.3, 72}}, color = {0, 0, 127}));
       annotation (
         Icon(coordinateSystem(preserveAspectRatio = false)),
-        Diagram(coordinateSystem(preserveAspectRatio = false), graphics = {Text(lineColor = {28, 108, 200}, extent = {{-68, 16}, {56, -58}}, fontSize = 12, horizontalAlignment = TextAlignment.Left, textString = "a variable reactive power is calculated
+        Diagram(coordinateSystem(preserveAspectRatio = false), graphics={  Text(lineColor = {28, 108, 200}, extent = {{-68, 16}, {56, -58}}, fontSize = 12,
+                horizontalAlignment =                                                                                                                                             TextAlignment.Left, textString = "a variable reactive power is calculated
 depending on the variable input voltage")}),
         experiment(StopTime = 150));
     end QfURegulation;
