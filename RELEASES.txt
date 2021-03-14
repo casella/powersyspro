@@ -1,6 +1,6 @@
 Release 2.1.5 (March 14th 2021):
-* Comestic changes for a final delivery.
-* Use cases using PVNode do not run under Dymola.
+* Cosmetic changes for a final delivery.
+* Note that all use cases using PVNode do not run under Dymola (successfull under OpenModelica).
 * Oldest releases are removed from bitbucket (before 2.1.3). 
 Release 2.1.4 (March 7th 2021):
 * Class myLightLine is removed as obsolete.
