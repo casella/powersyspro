@@ -1,5 +1,5 @@
 Release 2.1.6 (April 13th 2021):
-* Some voltage start values added to help Dymola.
+* Some voltage start values added to help Dymola (solving ticket SR00742142).
 Release 2.1.5 (March 14th 2021):
 * Some cosmetic changes.
 * Note that most of the use cases using PVNode do not run under Dymola (successfull under OpenModelica). See ticket SR00742142.
