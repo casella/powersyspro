@@ -116,7 +116,7 @@ package PowerSysPro
     model myLine "MV or LV line with constant impedance"
       extends Icons.myLine;
       extends Icons.myTwoPortsAC;
-      Interfaces.myAcausalTerminal terminalA(i(re(start = 0), im(start = 0))) "Terminal A of the 2-port node" annotation (
+      Interfaces.myAcausalTerminal terminalA(v(re(start = UNom / sqrt(3)), im(start = 0))) "Terminal A of the 2-port node" annotation (
         Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Interfaces.myAcausalTerminal terminalB(v(re(start = UNom / sqrt(3)), im(start = 0))) "Terminal B of the 2-port node" annotation (
         Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -154,7 +154,7 @@ package PowerSysPro
       extends Icons.myLine;
       extends Icons.myTwoPortsAC;
       extends Icons.myFault;
-      Interfaces.myAcausalTerminal terminalA(i(re(start = 0), im(start = 0))) "Terminal A of the 2-port node" annotation (
+      Interfaces.myAcausalTerminal terminalA(v(re(start = UNom / sqrt(3)), im(start = 0))) "Terminal A of the 2-port node" annotation (
         Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Interfaces.myAcausalTerminal terminalB(v(re(start = UNom / sqrt(3)), im(start = 0))) "Terminal B of the 2-port node" annotation (
         Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -273,7 +273,7 @@ package PowerSysPro
     model myBreaker "Perfect breaker"
       extends Icons.myBreaker;
       extends Icons.myTwoPortsAC;
-      Interfaces.myAcausalTerminal terminalA(i(re(start = 0), im(start = 0))) "Terminal A of the 1-port node" annotation (
+      Interfaces.myAcausalTerminal terminalA "Terminal A of the 1-port node" annotation (
         Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Interfaces.myAcausalTerminal terminalB "Terminal B of the node" annotation (
         Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -344,7 +344,7 @@ package PowerSysPro
       partial model myPartialTransformer "Partial model for transformers"
         extends Icons.myTransformer;
         extends Icons.myTwoPortsAC;
-        Interfaces.myAcausalTerminal terminalA(i(re(start = 0), im(start = 0))) "Terminal A of the 2-port node" annotation (
+        Interfaces.myAcausalTerminal terminalA(v(re(start = UNomA / sqrt(3)), im(start = 0))) "Terminal A of the 2-port node" annotation (
           Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
         Interfaces.myAcausalTerminal terminalB(v(re(start = UNomB / sqrt(3)), im(start = 0))) "Terminal B of the 2-port node" annotation (
           Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -995,7 +995,11 @@ This icon is indicates a record.
 
     partial class myReleaseNotes "Icon for general information"
       annotation (
-        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Polygon(points = {{-80, -100}, {-80, 100}, {0, 100}, {0, 20}, {80, 20}, {80, -100}, {-80, -100}}, fillColor = {245, 245, 245}, fillPattern = FillPattern.Solid), Polygon(points = {{0, 100}, {80, 20}, {0, 20}, {0, 100}}, fillColor = {215, 215, 215}, fillPattern = FillPattern.Solid), Line(points = {{2, -12}, {50, -12}}), Ellipse(extent = {{-56, 2}, {-28, -26}}, fillColor = {215, 215, 215}, fillPattern = FillPattern.Solid), Line(points = {{2, -60}, {50, -60}}), Ellipse(extent = {{-56, -46}, {-28, -74}}, fillColor = {215, 215, 215}, fillPattern = FillPattern.Solid)}),
+        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics={  Polygon(points = {{-80, -100}, {-80, 100}, {0, 100}, {0, 20}, {80, 20}, {80, -100}, {-80, -100}}, fillColor = {245, 245, 245},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Polygon(points = {{0, 100}, {80, 20}, {0, 20}, {0, 100}}, fillColor = {215, 215, 215},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Line(points = {{2, -12}, {50, -12}}), Ellipse(extent = {{-56, 2}, {-28, -26}}, fillColor = {215, 215, 215},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Line(points = {{2, -60}, {50, -60}}), Ellipse(extent = {{-56, -46}, {-28, -74}}, fillColor = {215, 215, 215},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid)}),
         Documentation(info = "<html>
 <p>This icon indicates release notes and the revision history of a library.</p>
 </html>"));
@@ -1003,7 +1007,11 @@ This icon is indicates a record.
 
     partial class myContact "Icon for contact information"
       annotation (
-        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, 70}, {100, -72}}, fillColor = {235, 235, 235}, fillPattern = FillPattern.Solid), Polygon(points = {{-100, -72}, {100, -72}, {0, 20}, {-100, -72}}, fillColor = {215, 215, 215}, fillPattern = FillPattern.Solid), Polygon(points = {{22, 0}, {100, 70}, {100, -72}, {22, 0}}, fillColor = {235, 235, 235}, fillPattern = FillPattern.Solid), Polygon(points = {{-100, 70}, {100, 70}, {0, -20}, {-100, 70}}, fillColor = {241, 241, 241}, fillPattern = FillPattern.Solid)}),
+        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics={  Rectangle(extent = {{-100, 70}, {100, -72}}, fillColor = {235, 235, 235},
+                fillPattern =                                                                                                                                                                        FillPattern.Solid), Polygon(points = {{-100, -72}, {100, -72}, {0, 20}, {-100, -72}}, fillColor = {215, 215, 215},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Polygon(points = {{22, 0}, {100, 70}, {100, -72}, {22, 0}}, fillColor = {235, 235, 235},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Polygon(points = {{-100, 70}, {100, 70}, {0, -20}, {-100, 70}}, fillColor = {241, 241, 241},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid)}),
         Documentation(info = "<html>
 <p>This icon shall be used for the contact information of the library developers.</p>
 </html>"));
@@ -1341,7 +1349,7 @@ depending on the variable input voltage")}),
       connect(src.terminal, load.terminal) annotation (
         Line(points = {{-26, 18}, {4, 18}, {4, 18.02}, {35.96, 18.02}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-34, -10}, {40, -54}}, fontSize = 12, textString = "voltage is 10 kV
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-34, -10}, {40, -54}}, fontSize = 12, textString = "voltage is 10 kV
 current is 0,289 A
 apparent power flowing the components is 5 kVA"), Text(lineColor = {28, 108, 200}, extent = {{-30, 54}, {134, 28}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
@@ -1392,7 +1400,7 @@ apparent power flowing the components is 5 kVA")}, coordinateSystem(initialScale
       connect(line.terminalB, load.terminal) annotation (
         Line(points = {{10, 16}, {30, 16}, {30, 16.02}, {49.96, 16.02}}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-22, 52}, {150, 26}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-36, -10}, {38, -54}}, fontSize = 12, textString = "source voltage is 10 kV
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-22, 52}, {150, 26}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-36, -10}, {38, -54}}, fontSize = 12, textString = "source voltage is 10 kV
 current in load is 0.289 A
 voltage drop is 10 V in the resistive line")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
@@ -1420,7 +1428,7 @@ voltage drop is 10 V in the resistive line")}, coordinateSystem(initialScale = 0
       connect(line2.terminalB, line1.terminalB) annotation (
         Line(points = {{16, -12}, {26, -12}, {26, 30}, {16, 30}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-38, -20}, {36, -64}}, fontSize = 12, textString = "current is 0.289 A in the load
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-38, -20}, {36, -64}}, fontSize = 12, textString = "current is 0.289 A in the load
 and equally divided in the two lines"), Text(lineColor = {28, 108, 200}, extent = {{4, 36}, {174, 12}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
     end TwoSourcesTwoLinesOneLoad;
@@ -1448,9 +1456,8 @@ Pstart=-5 kW for the PV node", fontSize = 12), Text(lineColor={28,108,200},     
                   -34,-26},{40,-70}},                                                                             fontSize=
                   12,
               textString="the load is correctly supplied by the PV node
-and the voltage in the load is correct (380 V)"),
-                              Text(extent={{-160,88},{-24,54}},      textColor = {238, 46, 47}, textString = "Cannot be run with Dymola
-(only OpenModelica)")},                coordinateSystem(initialScale = 0.1)),
+and the voltage in the load is correct (380 V)")},
+                                       coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
     end OneProdLoadOneLineOneLineOneLoad;
 
@@ -1637,7 +1644,7 @@ current in the source is 0.144 A")}, coordinateSystem(initialScale = 0.1)),
       connect(line2.terminalB, load.terminal) annotation (
         Line(points = {{30, 10}, {40, 10}, {40, 10.02}, {49.96, 10.02}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-30, 62}, {168, 34}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-36, -8}, {38, -52}}, fontSize = 12, textString = "source voltage is 10 kV
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-30, 62}, {168, 34}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-36, -8}, {38, -52}}, fontSize = 12, textString = "source voltage is 10 kV
 voltage drop is about 4 V in each resistive line
 current is 0.289 A in the feeder")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
@@ -2463,8 +2470,7 @@ all loads are permanently supplied")}),
 consuming load is permanently supplied
 by the source and/or by the PV node
 after switching the power supplied by the PV node is over Pmax"), Text(lineColor = {28, 108, 200}, extent = {{36, 78}, {112, 56}}, fontSize = 12, textString = "P=5 kW and Q=0.1 kvar for the load
-Pstart=-2 kW for the PV node"), Text(extent = {{-154, 86}, {-18, 52}}, textColor = {238, 46, 47}, textString = "Cannot be run with Dymola
-(only OpenModelica)")}),
+Pstart=-2 kW for the PV node")}),
           experiment(StopTime = 1));
       end Islanding1;
 
@@ -2526,9 +2532,7 @@ Pstart=-2 kW for the PV nodes", fontSize = 12),                              Tex
                 textString="the circuit breaker switches off at 0.5 s
 consuming loads are permanently supplied
 by the source and/or by the PV node
-the power supplied by the PV node is permanently below Pmax"),
-                                Text(extent={{-156,86},{-20,52}},      textColor = {238, 46, 47}, textString = "Cannot be run with Dymola
-(only OpenModelica)")}),
+the power supplied by the PV node is permanently below Pmax")}),
           experiment(StopTime = 1));
       end Islanding2;
     end BreakerTests;
@@ -3344,8 +3348,8 @@ and can be compared to the required one")}),
     </body></html>"));
   end Information;
   annotation (
-    version = "2.1.5",
-    versionDate = "2021-03-14",
+    version = "2.1.6",
+    versionDate = "2021-04-13",
     Documentation(info = "<html><head></head><body>
     <p>Copyright © 2020-2021, EDF.</p>
     <p>The use of the PowerSysPro library is granted by EDF under the provisions of the Modelica License 2. A copy of this license can be obtained&nbsp;<a href=\"http://www.modelica.org/licenses/ModelicaLicense2\">here</a>.</p>
