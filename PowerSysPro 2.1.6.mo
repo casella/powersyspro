@@ -36,8 +36,8 @@ package PowerSysPro
       Types.myVoltage U = sqrt(3) * CM.abs(terminal.v) "Voltage at the PV node";
       Types.myApparentPower S = sqrt(3) * I * U "Apparent power flowing the PV node";
     equation
-      assert(-P < -Pmax, ">>> Active power is above the maximum acceptable value for " + getInstanceName(), AssertionLevel.warning);
-      assert(-P > -Pmax, ">>> Active power is below the maximum acceptable value for " + getInstanceName(), AssertionLevel.warning);
+      assert((-P) < (-Pmax), ">>> Active power is above the maximum acceptable value for " + getInstanceName(), AssertionLevel.warning);
+      assert((-P) > (-Pmax), ">>> Active power is below the maximum acceptable value for " + getInstanceName(), AssertionLevel.warning);
       3 * terminal.v * CM.conj(terminal.i) = Complex(P, Q);
       terminal.v = CM.fromPolar(UNom / sqrt(3), atan(Q / P));
       annotation (
@@ -470,7 +470,7 @@ package PowerSysPro
       assert(tap < tapMax, ">>> Maximum tap position reached for " + getInstanceName(), AssertionLevel.warning);
       assert(tap > tapMin, ">>> Minimum tap position reached for " + getInstanceName(), AssertionLevel.warning);
       annotation (
-        Icon(graphics={  Text(origin = {-140.43, 18.67}, lineColor = {28, 108, 200}, extent = {{-53.57, 7.33}, {331.14, -14.66}}, textStyle = {TextStyle.Bold}, textString = "RegU")}),
+        Icon(graphics = {Text(origin = {-140.43, 18.67}, lineColor = {28, 108, 200}, extent = {{-53.57, 7.33}, {331.14, -14.66}}, textStyle = {TextStyle.Bold}, textString = "RegU")}),
         Documentation(info = "<html>
             <p>This regulation is an academic example of voltage regulation. Next figure roughly illustrates it:</p>
             <p>  </p>
@@ -513,7 +513,7 @@ package PowerSysPro
         end if;
       end when;
       annotation (
-        Icon(coordinateSystem(preserveAspectRatio = false), graphics={  Text(origin = {-136.43, 18.67}, lineColor = {28, 108, 200}, extent = {{-53.57, 7.33}, {331.14, -14.66}}, textStyle = {TextStyle.Bold}, textString = "Q=f(U)")}),
+        Icon(coordinateSystem(preserveAspectRatio = false), graphics = {Text(origin = {-136.43, 18.67}, lineColor = {28, 108, 200}, extent = {{-53.57, 7.33}, {331.14, -14.66}}, textStyle = {TextStyle.Bold}, textString = "Q=f(U)")}),
         Diagram(coordinateSystem(preserveAspectRatio = false)),
         Documentation(info = "<html>
     <p>This regulation is derived from document Enedis-NOI-RES_60E published by ENEDIS. A diagram of the Q=f(U) law is shown in the next figure:</p>
@@ -548,7 +548,7 @@ package PowerSysPro
         Documentation(info = "<html>
     <p> Causal input connector, with complex voltage as input and complex current as output.</p>    
     </html>"),
-        Icon(graphics={  Text(origin = {73, 97}, lineColor = {0, 0, 255}, extent = {{-131, 11}, {131, -11}}, textString = "%name"), Text(extent = {{-10, -12}, {72, -52}}, lineColor = {0, 0, 0}, textStyle = {TextStyle.Bold}, textString = "~")}));
+        Icon(graphics = {Text(origin = {73, 97}, lineColor = {0, 0, 255}, extent = {{-131, 11}, {131, -11}}, textString = "%name"), Text(extent = {{-10, -12}, {72, -52}}, lineColor = {0, 0, 0}, textStyle = {TextStyle.Bold}, textString = "~")}));
     end myCausalBusVInput;
 
     model myCausalBusVOutput "Causal bus with voltage as output"
@@ -572,7 +572,7 @@ package PowerSysPro
         Documentation(info = "<html>
     <p> Causal output connector, with complex voltage as output and complex current as input.</p>
     </html>"),
-        Icon(graphics={  Text(origin = {-79, 97}, lineColor = {0, 0, 255}, extent = {{-131, 11}, {131, -11}}, textString = "%name"), Text(extent = {{-70, -10}, {12, -50}}, lineColor = {0, 0, 0}, textStyle = {TextStyle.Bold}, textString = "~")}));
+        Icon(graphics = {Text(origin = {-79, 97}, lineColor = {0, 0, 255}, extent = {{-131, 11}, {131, -11}}, textString = "%name"), Text(extent = {{-70, -10}, {12, -50}}, lineColor = {0, 0, 0}, textStyle = {TextStyle.Bold}, textString = "~")}));
     end myCausalBusVOutput;
     annotation (
       Icon(coordinateSystem(grid = {0.1, 0.1}), graphics={  Rectangle(lineColor = {200, 200, 200}, fillColor = {248, 248, 248},
@@ -639,12 +639,12 @@ package PowerSysPro
         Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {0, 90}), iconTransformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {40, 90})));
       Modelica.Blocks.Interfaces.RealOutput Pmes(unit = "W", displayUnit = "kW") "Measured active flowing power at port A";
       Modelica.Blocks.Interfaces.RealOutput Qmes(unit = "var", displayUnit = "kvar") "Measured reactive flowing power at port A";
-      Modelica.Blocks.Interfaces.RealOutput Smes(unit = "kVA", displayUnit = "kVA") "Measured apparent flowing power at port A";
+      Modelica.Blocks.Interfaces.RealOutput Smes(unit = "VA", displayUnit = "kVA") "Measured apparent flowing power at port A";
     equation
       Umes = sqrt(3) * CM.abs(terminalA.v);
       Imes = CM.abs(terminalA.i);
+      Complex(Pmes, Qmes) = -3 * terminalA.v * CM.conj(terminalA.i);
       Smes = sqrt(3) * Imes * Umes;
-      Complex(Pmes, Qmes) = 3 * terminalA.v * CM.conj(terminalA.i);
       terminalB = terminalA;
       annotation (
         Documentation(info = "<html>
@@ -661,7 +661,7 @@ package PowerSysPro
       extends Icons.mySensor;
       Modelica.Blocks.Interfaces.RealOutput deltaU(unit = "V", displayUnit = "kV") "Measured voltage drop from port A to port B";
       Modelica.Blocks.Interfaces.RealOutput deltaI(unit = "A", displayUnit = "A") "Measured current drop from port A to port B";
-      Modelica.Blocks.Interfaces.RealOutput deltaS(unit = "kVA", displayUnit = "kVA") "Measured apparent power drop from port A to port B";
+      Modelica.Blocks.Interfaces.RealOutput deltaS(unit = "VA", displayUnit = "kVA") "Measured apparent power drop from port A to port B";
       Modelica.Blocks.Interfaces.RealInput UA(unit = "V", displayUnit = "kV") "Voltage at port A" annotation (
         Placement(transformation(extent = {{-132, 14}, {-100, 46}}), iconTransformation(extent = {{-132, 14}, {-100, 46}})));
       Modelica.Blocks.Interfaces.RealInput IA(unit = "A", displayUnit = "A") "Current flowing into port A" annotation (
@@ -852,13 +852,12 @@ The myAcausalTerminal connector represents an AC terminal with voltage and flow 
 
     model myBus "Icon for causal bus"
       annotation (
-        Icon(graphics={  Rectangle(origin = {1, 25}, fillPattern = FillPattern.Solid, extent = {{-5, 75}, {5, -125}})}, coordinateSystem(initialScale = 0.1)));
+        Icon(graphics = {Rectangle(origin = {1, 25}, fillPattern = FillPattern.Solid, extent = {{-5, 75}, {5, -125}})}, coordinateSystem(initialScale = 0.1)));
     end myBus;
 
     model myRegulation "Icon for tape changer"
       annotation (
-        Icon(coordinateSystem(initialScale = 0.2), graphics={  Rectangle(extent = {{-100, 40}, {98, -50}}, fillColor = {255, 255, 255},
-                fillPattern =                                                                                                                         FillPattern.Solid, pattern = LinePattern.None), Line(points = {{-76, -18}, {-48, 24}, {-12, -50}, {20, -4}, {60, -30}, {82, 20}}, color = {0, 0, 255}, smooth = Smooth.None), Line(points = {{-88, 0}, {88, 0}}, color = {0, 0, 0}), Line(points = {{-86, 32}, {90, 32}}, color = {192, 192, 192}, thickness = 1), Line(points = {{-88, -30}, {88, -30}}, color = {192, 192, 192}, thickness = 1)}));
+        Icon(coordinateSystem(initialScale = 0.2), graphics = {Rectangle(extent = {{-100, 40}, {98, -50}}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, pattern = LinePattern.None), Line(points = {{-76, -18}, {-48, 24}, {-12, -50}, {20, -4}, {60, -30}, {82, 20}}, color = {0, 0, 255}, smooth = Smooth.None), Line(points = {{-88, 0}, {88, 0}}, color = {0, 0, 0}), Line(points = {{-86, 32}, {90, 32}}, color = {192, 192, 192}, thickness = 1), Line(points = {{-88, -30}, {88, -30}}, color = {192, 192, 192}, thickness = 1)}));
     end myRegulation;
 
     model myFault "Icon for fault"
@@ -995,11 +994,7 @@ This icon is indicates a record.
 
     partial class myReleaseNotes "Icon for general information"
       annotation (
-        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics={  Polygon(points = {{-80, -100}, {-80, 100}, {0, 100}, {0, 20}, {80, 20}, {80, -100}, {-80, -100}}, fillColor = {245, 245, 245},
-                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Polygon(points = {{0, 100}, {80, 20}, {0, 20}, {0, 100}}, fillColor = {215, 215, 215},
-                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Line(points = {{2, -12}, {50, -12}}), Ellipse(extent = {{-56, 2}, {-28, -26}}, fillColor = {215, 215, 215},
-                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Line(points = {{2, -60}, {50, -60}}), Ellipse(extent = {{-56, -46}, {-28, -74}}, fillColor = {215, 215, 215},
-                fillPattern =                                                                                                                                                                                                        FillPattern.Solid)}),
+        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Polygon(points = {{-80, -100}, {-80, 100}, {0, 100}, {0, 20}, {80, 20}, {80, -100}, {-80, -100}}, fillColor = {245, 245, 245}, fillPattern = FillPattern.Solid), Polygon(points = {{0, 100}, {80, 20}, {0, 20}, {0, 100}}, fillColor = {215, 215, 215}, fillPattern = FillPattern.Solid), Line(points = {{2, -12}, {50, -12}}), Ellipse(extent = {{-56, 2}, {-28, -26}}, fillColor = {215, 215, 215}, fillPattern = FillPattern.Solid), Line(points = {{2, -60}, {50, -60}}), Ellipse(extent = {{-56, -46}, {-28, -74}}, fillColor = {215, 215, 215}, fillPattern = FillPattern.Solid)}),
         Documentation(info = "<html>
 <p>This icon indicates release notes and the revision history of a library.</p>
 </html>"));
@@ -1007,11 +1002,7 @@ This icon is indicates a record.
 
     partial class myContact "Icon for contact information"
       annotation (
-        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics={  Rectangle(extent = {{-100, 70}, {100, -72}}, fillColor = {235, 235, 235},
-                fillPattern =                                                                                                                                                                        FillPattern.Solid), Polygon(points = {{-100, -72}, {100, -72}, {0, 20}, {-100, -72}}, fillColor = {215, 215, 215},
-                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Polygon(points = {{22, 0}, {100, 70}, {100, -72}, {22, 0}}, fillColor = {235, 235, 235},
-                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Polygon(points = {{-100, 70}, {100, 70}, {0, -20}, {-100, 70}}, fillColor = {241, 241, 241},
-                fillPattern =                                                                                                                                                                                                        FillPattern.Solid)}),
+        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, 70}, {100, -72}}, fillColor = {235, 235, 235}, fillPattern = FillPattern.Solid), Polygon(points = {{-100, -72}, {100, -72}, {0, 20}, {-100, -72}}, fillColor = {215, 215, 215}, fillPattern = FillPattern.Solid), Polygon(points = {{22, 0}, {100, 70}, {100, -72}, {22, 0}}, fillColor = {235, 235, 235}, fillPattern = FillPattern.Solid), Polygon(points = {{-100, 70}, {100, 70}, {0, -20}, {-100, 70}}, fillColor = {241, 241, 241}, fillPattern = FillPattern.Solid)}),
         Documentation(info = "<html>
 <p>This icon shall be used for the contact information of the library developers.</p>
 </html>"));
@@ -1342,18 +1333,52 @@ depending on the variable input voltage")}),
     model OneSourceOneLoad
       extends Icons.myExample;
       Components.mySource src(UNom = 10000) annotation (
-        Placement(visible = true, transformation(origin = {-26, 18}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Placement(visible = true, transformation(origin = {-28, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Components.myLoad load(UNom = 10000, P = 4000, Q = 3000) annotation (
-        Placement(visible = true, transformation(origin = {36, 18}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Placement(visible = true, transformation(origin = {34, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
       connect(src.terminal, load.terminal) annotation (
-        Line(points = {{-26, 18}, {4, 18}, {4, 18.02}, {35.96, 18.02}}, color = {0, 0, 0}));
+        Line(points = {{-28, 20}, {4, 20}, {4, 20.02}, {33.96, 20.02}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-34, -10}, {40, -54}}, fontSize = 12, textString = "voltage is 10 kV
+        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-34, -10}, {40, -54}}, fontSize = 12, textString = "voltage is 10 kV
 current is 0,289 A
 apparent power flowing the components is 5 kVA"), Text(lineColor = {28, 108, 200}, extent = {{-30, 54}, {134, 28}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
     end OneSourceOneLoad;
+
+    model OneSourceOneLoadwithSensors
+      extends Icons.myExample;
+      Sensors.AmMeter amp annotation (
+        Placement(transformation(extent = {{-10, 10}, {10, 30}})));
+      Sensors.VoltMeter volt annotation (
+        Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {-10, 56})));
+      Components.mySource src(UNom = 10000) annotation (
+        Placement(visible = true, transformation(origin = {-28, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Components.myLoad load(UNom = 10000, P = 4000, Q = 3000) annotation (
+        Placement(visible = true, transformation(origin = {34, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Sensors.WattMeter wattMeter annotation (
+        Placement(transformation(extent = {{-10, -28}, {10, -8}})));
+      Components.mySource src1(UNom = 10000) annotation (
+        Placement(visible = true, transformation(origin = {-28, -18}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Components.myLoad load1(UNom = 10000, P = 4000, Q = 3000) annotation (
+        Placement(visible = true, transformation(origin = {34, -18}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    equation
+      connect(volt.terminal, amp.terminalA) annotation (
+        Line(points = {{-10, 46}, {-10, 20}}, color = {0, 0, 0}));
+      connect(src.terminal, amp.terminalA) annotation (
+        Line(points = {{-28, 20}, {-10, 20}}, color = {0, 0, 0}));
+      connect(amp.terminalB, load.terminal) annotation (
+        Line(points = {{10, 20}, {33.96, 20.02}}, color = {0, 0, 0}));
+      connect(src1.terminal, wattMeter.terminalA) annotation (
+        Line(points = {{-28, -18}, {-10, -18}}, color = {0, 0, 0}));
+      connect(wattMeter.terminalB, load1.terminal) annotation (
+        Line(points = {{10, -18}, {33.96, -17.98}}, color = {0, 0, 0}));
+      annotation (
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-34, -40}, {40, -84}}, fontSize = 12, textString = "measured voltage is 10 kV
+measured current is 0,289 A
+measured apparent power is 5 kVA"), Text(lineColor = {28, 108, 200}, extent = {{-30, 54}, {134, 28}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar")}, coordinateSystem(initialScale = 0.1)),
+        experiment(StopTime = 1));
+    end OneSourceOneLoadwithSensors;
 
     model OneSourceOneLoadWithBuses
       extends Icons.myExample;
@@ -1400,7 +1425,7 @@ apparent power flowing the components is 5 kVA")}, coordinateSystem(initialScale
       connect(line.terminalB, load.terminal) annotation (
         Line(points = {{10, 16}, {30, 16}, {30, 16.02}, {49.96, 16.02}}));
       annotation (
-        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-22, 52}, {150, 26}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-36, -10}, {38, -54}}, fontSize = 12, textString = "source voltage is 10 kV
+        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-22, 52}, {150, 26}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-36, -10}, {38, -54}}, fontSize = 12, textString = "source voltage is 10 kV
 current in load is 0.289 A
 voltage drop is 10 V in the resistive line")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
@@ -1428,14 +1453,14 @@ voltage drop is 10 V in the resistive line")}, coordinateSystem(initialScale = 0
       connect(line2.terminalB, line1.terminalB) annotation (
         Line(points = {{16, -12}, {26, -12}, {26, 30}, {16, 30}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-38, -20}, {36, -64}}, fontSize = 12, textString = "current is 0.289 A in the load
+        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-38, -20}, {36, -64}}, fontSize = 12, textString = "current is 0.289 A in the load
 and equally divided in the two lines"), Text(lineColor = {28, 108, 200}, extent = {{4, 36}, {174, 12}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
     end TwoSourcesTwoLinesOneLoad;
 
     model OneProdLoadOneLineOneLineOneLoad
       extends Icons.myExample;
-      Components.myPVNode pv(Pmax=-10000, UNom=400)     annotation (
+      Components.myPVNode pv(Pmax = -10000, UNom = 400) annotation (
         Placement(visible = true, transformation(origin = {24, 14}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Components.myLoad load(UNom = 400, P = 5000, Q = 100) annotation (
         Placement(visible = true, transformation(origin = {18, -12}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -1451,13 +1476,9 @@ and equally divided in the two lines"), Text(lineColor = {28, 108, 200}, extent 
       connect(line1.terminalA, line2.terminalA) annotation (
         Line(points = {{-14, 14}, {-32, 14}, {-32, -12}, {-14, -12}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-6, 54}, {70, 32}}, textString = "P=5 kW and Q=0.1 kvar for the load
-Pstart=-5 kW for the PV node", fontSize = 12), Text(lineColor={28,108,200},     extent={{
-                  -34,-26},{40,-70}},                                                                             fontSize=
-                  12,
-              textString="the load is correctly supplied by the PV node
-and the voltage in the load is correct (380 V)")},
-                                       coordinateSystem(initialScale = 0.1)),
+        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-6, 54}, {70, 32}}, textString = "P=5 kW and Q=0.1 kvar for the load
+Pstart=-5 kW for the PV node", fontSize = 12), Text(lineColor = {28, 108, 200}, extent = {{-34, -26}, {40, -70}}, fontSize = 12, textString = "the load is correctly supplied by the PV node
+and the voltage in the load is correct (380 V)")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
     end OneProdLoadOneLineOneLineOneLoad;
 
@@ -1644,7 +1665,7 @@ current in the source is 0.144 A")}, coordinateSystem(initialScale = 0.1)),
       connect(line2.terminalB, load.terminal) annotation (
         Line(points = {{30, 10}, {40, 10}, {40, 10.02}, {49.96, 10.02}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-30, 62}, {168, 34}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-36, -8}, {38, -52}}, fontSize = 12, textString = "source voltage is 10 kV
+        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-30, 62}, {168, 34}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-36, -8}, {38, -52}}, fontSize = 12, textString = "source voltage is 10 kV
 voltage drop is about 4 V in each resistive line
 current is 0.289 A in the feeder")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
@@ -1997,7 +2018,7 @@ but Imax for line3 is only 50 A")}),
       connect(sensor2.Imes, sensor3.IB) annotation (
         Line(points = {{36, 37}, {36, 55}, {11.6, 55}}, color = {0, 0, 127}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-150, -14}, {146, -48}}, fontSize = 10, textString = "the two wattmeters measure
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-150, -14}, {146, -48}}, fontSize = 10, textString = "the two wattmeters measure
 current and voltage at port A and port B of the line
 sensor3 calculates the drop
 in voltage, current and apparent power in the line")}),
@@ -2466,7 +2487,7 @@ all loads are permanently supplied")}),
           Line(points = {{-20, 30}, {-10, 30}}, color = {0, 0, 0}));
         annotation (
           Icon(coordinateSystem(preserveAspectRatio = false)),
-          Diagram(coordinateSystem(preserveAspectRatio = false), graphics={  Text(lineColor = {28, 108, 200}, extent = {{-116, -16}, {124, -90}}, fontSize = 12, textString = "the circuit breaker switches off at 0.5 s
+          Diagram(coordinateSystem(preserveAspectRatio = false), graphics = {Text(lineColor = {28, 108, 200}, extent = {{-116, -16}, {124, -90}}, fontSize = 12, textString = "the circuit breaker switches off at 0.5 s
 consuming load is permanently supplied
 by the source and/or by the PV node
 after switching the power supplied by the PV node is over Pmax"), Text(lineColor = {28, 108, 200}, extent = {{36, 78}, {112, 56}}, fontSize = 12, textString = "P=5 kW and Q=0.1 kvar for the load
@@ -2480,9 +2501,9 @@ Pstart=-2 kW for the PV node")}),
           Placement(visible = true, transformation(origin = {-86, 8}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
         Components.myBreaker brk annotation (
           Placement(transformation(extent = {{-8, -2}, {12, 18}})));
-        Components.myPVNode pv1( Pmax( displayUnit = "kW") = -15000,UNom( displayUnit = "V") = 400) annotation (
+        Components.myPVNode pv1(Pmax(displayUnit = "kW") = -15000, UNom(displayUnit = "V") = 400) annotation (
           Placement(visible = true, transformation(origin = {86, 42}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        PowerSysPro.Components.myLoad load3( P( displayUnit = "W") = 5000, Q = 100,UNom( displayUnit = "V") = 400) annotation (
+        PowerSysPro.Components.myLoad load3(P(displayUnit = "W") = 5000, Q = 100, UNom(displayUnit = "V") = 400) annotation (
           Placement(visible = true, transformation(origin = {80, 8}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
         Components.myLine line2(UNom = 400, G = 0.01, B = 0.01, Imax = 50, R = 0.1) annotation (
           Placement(visible = true, transformation(origin = {50, 42}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -2494,21 +2515,18 @@ Pstart=-2 kW for the PV node")}),
           Placement(visible = true, transformation(origin = {-60, 8}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
         Components.myTransformer tra(UNomA = 20000, UNomB = 400, R = 0.1) annotation (
           Placement(transformation(extent = {{-38, -2}, {-18, 18}})));
-        Components.myLoad load5( P( displayUnit = "W") = 5000, Q = 100,UNom( displayUnit = "V") = 400) annotation (
+        Components.myLoad load5(P(displayUnit = "W") = 5000, Q = 100, UNom(displayUnit = "V") = 400) annotation (
           Placement(visible = true, transformation(origin = {80, -26}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Components.myLine line5( B = 0.01, G = 0.01, Imax = 50, R = 0.1,UNom( displayUnit = "V") = 400) annotation (
+        Components.myLine line5(B = 0.01, G = 0.01, Imax = 50, R = 0.1, UNom(displayUnit = "V") = 400) annotation (
           Placement(visible = true, transformation(origin = {50, -26}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       equation
         connect(pv1.terminal, line2.terminalB) annotation (
           Line(points = {{86, 42}, {60, 42}}, color = {0, 0, 0}));
-        connect(
-          line3.terminalB, load3.terminal) annotation (
+        connect(line3.terminalB, load3.terminal) annotation (
           Line(points = {{60, 8}, {72, 8}, {72, 8.02}, {79.96, 8.02}}));
         connect(brk.terminalB, line2.terminalA) annotation (
           Line(points = {{12, 8}, {24, 8}, {24, 42}, {40, 42}}, color = {0, 0, 0}));
-        connect(
-          brk.terminalB, line3.terminalA)
-          annotation (
+        connect(brk.terminalB, line3.terminalA) annotation (
           Line(points = {{12, 8}, {40, 8}}));
         connect(cmd.y, brk.BrkOpen) annotation (
           Line(points = {{-13.4, -26}, {2, -26}, {2, 5}}, color = {255, 0, 255}));
@@ -2524,12 +2542,8 @@ Pstart=-2 kW for the PV node")}),
           Line(points = {{12, 8}, {24, 8}, {24, -26}, {40, -26}}, color = {0, 0, 0}));
         annotation (
           Icon(coordinateSystem(preserveAspectRatio = false)),
-          Diagram(coordinateSystem(preserveAspectRatio = false), graphics={  Text(lineColor = {28, 108, 200}, extent = {{36, 78}, {112, 56}}, textString = "P=5 kW and Q=0.1 kvar for the loads
-Pstart=-2 kW for the PV nodes", fontSize = 12),                              Text(lineColor=
-                    {28,108,200},                                                                             extent={{
-                    -122,-30},{118,-104}},                                                                                                        fontSize=
-                    12,
-                textString="the circuit breaker switches off at 0.5 s
+          Diagram(coordinateSystem(preserveAspectRatio = false), graphics = {Text(lineColor = {28, 108, 200}, extent = {{36, 78}, {112, 56}}, textString = "P=5 kW and Q=0.1 kvar for the loads
+Pstart=-2 kW for the PV nodes", fontSize = 12), Text(lineColor = {28, 108, 200}, extent = {{-122, -30}, {118, -104}}, fontSize = 12, textString = "the circuit breaker switches off at 0.5 s
 consuming loads are permanently supplied
 by the source and/or by the PV node
 the power supplied by the PV node is permanently below Pmax")}),
@@ -3348,8 +3362,8 @@ and can be compared to the required one")}),
     </body></html>"));
   end Information;
   annotation (
-    version = "2.1.6",
-    versionDate = "2021-04-13",
+    version = "2.1.7",
+    versionDate = "2021-05-17",
     Documentation(info = "<html><head></head><body>
     <p>Copyright © 2020-2021, EDF.</p>
     <p>The use of the PowerSysPro library is granted by EDF under the provisions of the Modelica License 2. A copy of this license can be obtained&nbsp;<a href=\"http://www.modelica.org/licenses/ModelicaLicense2\">here</a>.</p>
