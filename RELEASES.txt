@@ -1,3 +1,5 @@
+Release 2.1.7 (May 17th 2021):
+* An error on unit solved in sensors WattMeter and DiffMeter. In addition, a new example related to sensors is given.
 Release 2.1.6 (April 13th 2021):
 * Some voltage start values added to help Dymola (solving ticket SR00742142).
 Release 2.1.5 (March 14th 2021):
