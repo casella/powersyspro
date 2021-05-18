@@ -615,7 +615,8 @@ package PowerSysPro
         Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {-40, 90}), iconTransformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {0, 90})));
     equation
       Imes = CM.abs(terminalA.i);
-      terminalB = terminalA;
+      terminalB.v = terminalA.v;
+      terminalA.i + terminalB.i = Complex(0);
       annotation (
         Documentation(info = "<html>
     <p>This equipement measures the current flowing through the two connected terminals.</p>
@@ -633,19 +634,19 @@ package PowerSysPro
         Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Interfaces.myAcausalTerminal terminalB "Terminal B of the 2-port node" annotation (
         Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Modelica.Blocks.Interfaces.RealOutput Umes(unit = "V", displayUnit = "kV") "Measured voltage at port A" annotation (
-        Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {-80, 90}), iconTransformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {-40, 90})));
-      Modelica.Blocks.Interfaces.RealOutput Imes(unit = "A", displayUnit = "A") "Measured flowing current at port A" annotation (
-        Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {0, 90}), iconTransformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {40, 90})));
-      Modelica.Blocks.Interfaces.RealOutput Pmes(unit = "W", displayUnit = "kW") "Measured active flowing power at port A";
-      Modelica.Blocks.Interfaces.RealOutput Qmes(unit = "var", displayUnit = "kvar") "Measured reactive flowing power at port A";
-      Modelica.Blocks.Interfaces.RealOutput Smes(unit = "VA", displayUnit = "kVA") "Measured apparent flowing power at port A";
+      Modelica.Blocks.Interfaces.RealOutput Pmes(unit = "W", displayUnit = "kW") "Measured active flowing power at port A" annotation (
+        Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin={-70,90}),    iconTransformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin={-70,90})));
+      Modelica.Blocks.Interfaces.RealOutput Qmes(unit = "var", displayUnit = "kvar") "Measured reactive flowing power at port A" annotation (
+        Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin={0,90}),      iconTransformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin={0,90})));
+      Modelica.Blocks.Interfaces.RealOutput Smes(unit = "VA", displayUnit = "kVA") "Measured apparent flowing power at port A" annotation (
+        Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin={70,90}),     iconTransformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin={70,90})));
+      Types.myCurrent Imes = CM.abs(terminalA.i) "Current flowing the source";
+      Types.myVoltage Umes = sqrt(3) * CM.abs(terminalA.v) "Voltage at the source";
     equation
-      Umes = sqrt(3) * CM.abs(terminalA.v);
-      Imes = CM.abs(terminalA.i);
-      Complex(Pmes, Qmes) = -3 * terminalA.v * CM.conj(terminalA.i);
+      Complex(Pmes, Qmes) = 3 * terminalA.v * CM.conj(terminalA.i);
       Smes = sqrt(3) * Imes * Umes;
-      terminalB = terminalA;
+      terminalB.v = terminalA.v;
+      terminalA.i + terminalB.i = Complex(0);
       annotation (
         Documentation(info = "<html>
     <p>This equipement measures the active, reactive and apparent power flowing through the two connected terminals.</p>
@@ -659,21 +660,30 @@ package PowerSysPro
 
     model DiffMeter "Drop sensor"
       extends Icons.mySensor;
-      Modelica.Blocks.Interfaces.RealOutput deltaU(unit = "V", displayUnit = "kV") "Measured voltage drop from port A to port B";
-      Modelica.Blocks.Interfaces.RealOutput deltaI(unit = "A", displayUnit = "A") "Measured current drop from port A to port B";
+      Modelica.Blocks.Interfaces.RealOutput deltaP(unit = "W", displayUnit = "kW") "Measured active power drop from port A to port B";
+      Modelica.Blocks.Interfaces.RealOutput deltaQ(unit = "var", displayUnit = "kvar") "Measured reactive power drop from port A to port B";
       Modelica.Blocks.Interfaces.RealOutput deltaS(unit = "VA", displayUnit = "kVA") "Measured apparent power drop from port A to port B";
-      Modelica.Blocks.Interfaces.RealInput UA(unit = "V", displayUnit = "kV") "Voltage at port A" annotation (
-        Placement(transformation(extent = {{-132, 14}, {-100, 46}}), iconTransformation(extent = {{-132, 14}, {-100, 46}})));
-      Modelica.Blocks.Interfaces.RealInput IA(unit = "A", displayUnit = "A") "Current flowing into port A" annotation (
-        Placement(transformation(extent = {{-132, -48}, {-100, -16}}), iconTransformation(extent = {{-132, -48}, {-100, -16}})));
-      Modelica.Blocks.Interfaces.RealInput UB(unit = "V", displayUnit = "kV") "Voltage at port B" annotation (
-        Placement(transformation(extent = {{-16, -16}, {16, 16}}, rotation = 180, origin = {116, 30}), iconTransformation(extent = {{-16, -16}, {16, 16}}, rotation = 180, origin = {116, 30})));
-      Modelica.Blocks.Interfaces.RealInput IB(unit = "A", displayUnit = "A") "Current flowing into port B" annotation (
-        Placement(transformation(extent = {{-16, -16}, {16, 16}}, rotation = 180, origin = {116, -30}), iconTransformation(extent = {{-16, -16}, {16, 16}}, rotation = 180, origin = {116, -30})));
+      Modelica.Blocks.Interfaces.RealInput PA(unit = "W", displayUnit = "kW") "Measured active flowing power at port A" annotation (
+        Placement(transformation(extent={{-132,44},{-100,76}}),      iconTransformation(extent={{-132,44},
+                {-100,76}})));
+      Modelica.Blocks.Interfaces.RealInput QA(unit = "var", displayUnit = "kvar") "Measured reactive flowing power at port A" annotation (
+        Placement(transformation(extent={{-132,-16},{-100,16}}),       iconTransformation(extent={{-132,
+                -16},{-100,16}})));
+      Modelica.Blocks.Interfaces.RealInput SA(unit = "VA", displayUnit = "kVA") "Measured apparent flowing power at port A" annotation (
+        Placement(transformation(extent = {{-16, -16}, {16, 16}}, rotation=0,     origin={-116,-60}),  iconTransformation(extent = {{-16, -16}, {16, 16}}, rotation=0,     origin={-116,-60})));
+      Modelica.Blocks.Interfaces.RealInput PB(unit = "W", displayUnit = "kW") "Measured active flowing power at port B" annotation (
+        Placement(transformation(extent = {{-16, -16}, {16, 16}}, rotation = 180, origin={116,60}),     iconTransformation(extent = {{-16, -16}, {16, 16}}, rotation = 180, origin={116,60})));
+      Modelica.Blocks.Interfaces.RealInput QB(unit = "var", displayUnit = "kvar") "Measured reactive flowing power at port B" annotation (
+        Placement(transformation(extent={{-16,-16},{16,16}},
+            rotation=180,
+            origin={116,0}),                                           iconTransformation(extent={{102,-16},
+                {134,16}})));
+      Modelica.Blocks.Interfaces.RealInput SB(unit = "VA", displayUnit = "kVA") "Measured apparent flowing power at port B" annotation (
+        Placement(transformation(extent = {{-16, -16}, {16, 16}}, rotation = 180, origin={116,-60}),   iconTransformation(extent = {{-16, -16}, {16, 16}}, rotation = 180, origin={116,-60})));
     equation
-      deltaU = UA - UB;
-      deltaI = IA - IB;
-      deltaS = sqrt(3) * (IA * UA - IB * UB);
+      deltaP = PA - PB;
+      deltaQ = QA - QB;
+      deltaS = SA - SB;
       annotation (
         Documentation(info = "<html>
     <p>This equipement measures the difference of voltage, current, and apparent power between its two connected terminals.</p>
@@ -1333,14 +1343,14 @@ depending on the variable input voltage")}),
     model OneSourceOneLoad
       extends Icons.myExample;
       Components.mySource src(UNom = 10000) annotation (
-        Placement(visible = true, transformation(origin = {-28, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Placement(visible = true, transformation(origin={-36,20},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Components.myLoad load(UNom = 10000, P = 4000, Q = 3000) annotation (
         Placement(visible = true, transformation(origin = {34, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
       connect(src.terminal, load.terminal) annotation (
-        Line(points = {{-28, 20}, {4, 20}, {4, 20.02}, {33.96, 20.02}}, color = {0, 0, 0}));
+        Line(points={{-36,20},{4,20},{4,20.02},{33.96,20.02}},          color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-34, -10}, {40, -54}}, fontSize = 12, textString = "voltage is 10 kV
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-34, -10}, {40, -54}}, fontSize = 12, textString = "voltage is 10 kV
 current is 0,289 A
 apparent power flowing the components is 5 kVA"), Text(lineColor = {28, 108, 200}, extent = {{-30, 54}, {134, 28}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
@@ -1351,28 +1361,28 @@ apparent power flowing the components is 5 kVA"), Text(lineColor = {28, 108, 200
       Sensors.AmMeter amp annotation (
         Placement(transformation(extent = {{-10, 10}, {10, 30}})));
       Sensors.VoltMeter volt annotation (
-        Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 90, origin = {-10, 56})));
+        Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation=0,    origin={0,56})));
       Components.mySource src(UNom = 10000) annotation (
-        Placement(visible = true, transformation(origin = {-28, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Placement(visible = true, transformation(origin={-36,20},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Components.myLoad load(UNom = 10000, P = 4000, Q = 3000) annotation (
         Placement(visible = true, transformation(origin = {34, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Sensors.WattMeter wattMeter annotation (
-        Placement(transformation(extent = {{-10, -28}, {10, -8}})));
+      Sensors.WattMeter watt
+        annotation (Placement(transformation(extent={{-10,-28},{10,-8}})));
       Components.mySource src1(UNom = 10000) annotation (
-        Placement(visible = true, transformation(origin = {-28, -18}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Placement(visible = true, transformation(origin={-36,-18},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Components.myLoad load1(UNom = 10000, P = 4000, Q = 3000) annotation (
         Placement(visible = true, transformation(origin = {34, -18}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
       connect(volt.terminal, amp.terminalA) annotation (
-        Line(points = {{-10, 46}, {-10, 20}}, color = {0, 0, 0}));
+        Line(points={{-10,56},{-10,20}},      color = {0, 0, 0}));
       connect(src.terminal, amp.terminalA) annotation (
-        Line(points = {{-28, 20}, {-10, 20}}, color = {0, 0, 0}));
+        Line(points={{-36,20},{-10,20}},      color = {0, 0, 0}));
       connect(amp.terminalB, load.terminal) annotation (
         Line(points = {{10, 20}, {33.96, 20.02}}, color = {0, 0, 0}));
-      connect(src1.terminal, wattMeter.terminalA) annotation (
-        Line(points = {{-28, -18}, {-10, -18}}, color = {0, 0, 0}));
-      connect(wattMeter.terminalB, load1.terminal) annotation (
-        Line(points = {{10, -18}, {33.96, -17.98}}, color = {0, 0, 0}));
+      connect(src1.terminal, watt.terminalA)
+        annotation (Line(points={{-36,-18},{-10,-18}}, color={0,0,0}));
+      connect(watt.terminalB, load1.terminal)
+        annotation (Line(points={{10,-18},{33.96,-17.98}}, color={0,0,0}));
       annotation (
         Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-34, -40}, {40, -84}}, fontSize = 12, textString = "measured voltage is 10 kV
 measured current is 0,289 A
@@ -1754,10 +1764,58 @@ and 0.046 A in the source")}, coordinateSystem(initialScale = 0.1)),
       connect(tra1.terminalB, line1.terminalA) annotation (
         Line(points = {{-42, 22}, {-24, 22}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-4, 62}, {168, 40}}, textString = "P=5 kW and Q=0 kvar", fontSize = 12), Text(origin = {-15.7297, 7.27273}, lineColor = {28, 108, 200}, extent = {{-94.2703, -5.27273}, {123.73, -63.2727}}, textString = "current is 7.46 A in the load
-and 0.047 A in the source", fontSize = 12)}, coordinateSystem(initialScale = 0.1)),
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-4, 62}, {168, 40}}, textString = "P=5 kW and Q=0 kvar", fontSize = 12), Text(origin = {-15.7297, 7.27273}, lineColor=
+                  {28,108,200},                                                                                                                                                                                 extent = {{-94.2703, -5.27273}, {123.73, -63.2727}},
+                            fontSize=12,
+              textString="current is 0.047 A in the source
+and 7.46 A in the load
+voltage in the load is 387 V")},             coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
     end OneSourceOneTransfoOneLineOneTransfoOneLineOneLoad;
+
+    model OneSourceOneTransfoOneLineOneTransfoOneLineOneLoadWithSensors
+      extends Icons.myExample;
+      Components.myTransformer tra2(UNomA = 20000, UNomB = 400, SNom = 0.25, R = 1e-6, X = 1e-6) annotation (
+        Placement(visible = true, transformation(origin = {20, 22}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Components.myLine line2(UNom = 400, Imax = 60, R = 1, X = 2.657870e-02) annotation (
+        Placement(visible = true, transformation(origin = {52, 22}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Components.myLoad load(UNom = 400, P = 5000) annotation (
+        Placement(visible = true, transformation(origin={110,22},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Components.myLine line1(UNom = 20000, Imax = 60, R = 1, X = 125e-4) annotation (
+        Placement(visible = true, transformation(origin = {-14, 22}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Components.myTransformer tra1(UNomA = 63000, UNomB = 20000, SNom = 70, R = 0.2, X = 1e-6) annotation (
+        Placement(visible = true, transformation(origin = {-52, 22}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Components.mySource src(UNom = 63000) annotation (
+        Placement(visible = true, transformation(origin={-114,22},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Sensors.WattMeter sensor1 annotation (
+        Placement(visible = true, transformation(origin={-86,22},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Sensors.WattMeter sensor2 annotation (
+        Placement(visible = true, transformation(origin={84,22},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    equation
+      connect(line1.terminalB, tra2.terminalA) annotation (
+        Line(points = {{-4, 22}, {10, 22}}));
+      connect(tra2.terminalB, line2.terminalA) annotation (
+        Line(points = {{30, 22}, {42, 22}}));
+      connect(tra1.terminalB, line1.terminalA) annotation (
+        Line(points = {{-42, 22}, {-24, 22}}, color = {0, 0, 0}));
+      connect(tra1.terminalA, sensor1.terminalB)
+        annotation (Line(points={{-62,22},{-76,22}}, color={0,0,0}));
+      connect(src.terminal, sensor1.terminalA)
+        annotation (Line(points={{-114,22},{-96,22}}, color={0,0,0}));
+      connect(load.terminal, sensor2.terminalB)
+        annotation (Line(points={{109.96,22.02},{94,22}}, color={0,0,0}));
+      connect(line2.terminalB, sensor2.terminalA)
+        annotation (Line(points={{62,22},{74,22}}, color={0,0,0}));
+      annotation (
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-4, 62}, {168, 40}}, textString = "P=5 kW and Q=0 kvar", fontSize = 12), Text(origin={
+                  -15.7297,7.2727},                                                                                                                                                 lineColor=
+                  {28,108,200},                                                                                                                                                                                 extent = {{-94.2703, -5.27273}, {123.73, -63.2727}},
+                            fontSize=12,
+              textString="current is 0.047 A in the source
+and 7.46 A in the load
+voltage in the load is 387 V")},             coordinateSystem(initialScale = 0.1)),
+        experiment(StopTime = 1));
+    end OneSourceOneTransfoOneLineOneTransfoOneLineOneLoadWithSensors;
 
     model OneSourceOneTransfoOneLineOneTransfoOneLineOneLoadWithBuses1
       extends Icons.myExample;
@@ -2009,19 +2067,25 @@ but Imax for line3 is only 50 A")}),
         Line(points = {{10, 28}, {22, 28}}, color = {0, 0, 0}));
       connect(sensor2.terminalB, src2.terminal) annotation (
         Line(points = {{42, 28}, {60, 28}}, color = {0, 0, 0}));
-      connect(sensor1.Umes, sensor3.UA) annotation (
-        Line(points = {{-38, 37}, {-38, 61}, {-11.6, 61}}, color = {0, 0, 127}));
-      connect(sensor1.Imes, sensor3.IA) annotation (
-        Line(points = {{-30, 37}, {-30, 54.8}, {-11.6, 54.8}}, color = {0, 0, 127}));
-      connect(sensor2.Umes, sensor3.UB) annotation (
-        Line(points = {{28, 37}, {28, 61}, {11.6, 61}}, color = {0, 0, 127}));
-      connect(sensor2.Imes, sensor3.IB) annotation (
-        Line(points = {{36, 37}, {36, 55}, {11.6, 55}}, color = {0, 0, 127}));
+      connect(sensor1.Pmes, sensor3.PA) annotation (Line(points={{-41,37},{-41,
+              64},{-11.6,64}}, color={0,0,127}));
+      connect(sensor1.Qmes, sensor3.QA) annotation (Line(points={{-34,37},{-34,
+              58},{-11.6,58}}, color={0,0,127}));
+      connect(sensor1.Smes, sensor3.SA) annotation (Line(points={{-27,37},{-27,
+              52},{-11.6,52}}, color={0,0,127}));
+      connect(sensor2.Pmes, sensor3.PB)
+        annotation (Line(points={{25,37},{25,64},{11.6,64}}, color={0,0,127}));
+      connect(sensor2.Qmes, sensor3.QB)
+        annotation (Line(points={{32,37},{32,58},{11.8,58}}, color={0,0,127}));
+      connect(sensor2.Smes, sensor3.SB)
+        annotation (Line(points={{39,37},{39,52},{11.6,52}}, color={0,0,127}));
       annotation (
-        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-150, -14}, {146, -48}}, fontSize = 10, textString = "the two wattmeters measure
-current and voltage at port A and port B of the line
+        Diagram(graphics={  Text(lineColor={28,108,200},     extent = {{-150, -14}, {146, -48}}, fontSize=
+                  10,
+              textString="the two wattmeters measure
+active, reactive and apparent powers at port A and port B of the line
 sensor3 calculates the drop
-in voltage, current and apparent power in the line")}),
+in active, reactive and apparent powers in the line")}),
         experiment(StopTime = 1));
     end TwoSourcesOneLineThreeSensors;
 
@@ -3362,8 +3426,8 @@ and can be compared to the required one")}),
     </body></html>"));
   end Information;
   annotation (
-    version = "2.1.7",
-    versionDate = "2021-05-17",
+    version = "2.1.8",
+    versionDate = "2021-05-18",
     Documentation(info = "<html><head></head><body>
     <p>Copyright © 2020-2021, EDF.</p>
     <p>The use of the PowerSysPro library is granted by EDF under the provisions of the Modelica License 2. A copy of this license can be obtained&nbsp;<a href=\"http://www.modelica.org/licenses/ModelicaLicense2\">here</a>.</p>
