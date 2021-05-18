@@ -116,9 +116,9 @@ package PowerSysPro
     model myLine "MV or LV line with constant impedance"
       extends Icons.myLine;
       extends Icons.myTwoPortsAC;
-      Interfaces.myAcausalTerminal terminalA(v(re(start = UNom / sqrt(3)), im(start = 0))) "Terminal A of the 2-port node" annotation (
+      Interfaces.myAcausalTerminal terminalA(v(re(start = UNom / sqrt(3)), im(start = 0)), i(re(start = 0), im(start = 0))) "Terminal A of the 2-port node" annotation (
         Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Interfaces.myAcausalTerminal terminalB(v(re(start = UNom / sqrt(3)), im(start = 0))) "Terminal B of the 2-port node" annotation (
+      Interfaces.myAcausalTerminal terminalB(v(re(start = UNom / sqrt(3)), im(start = 0)), i(re(start = 0), im(start = 0))) "Terminal B of the 2-port node" annotation (
         Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     public
       parameter Types.myVoltage UNom "Reference voltage of the line";
@@ -154,9 +154,9 @@ package PowerSysPro
       extends Icons.myLine;
       extends Icons.myTwoPortsAC;
       extends Icons.myFault;
-      Interfaces.myAcausalTerminal terminalA(v(re(start = UNom / sqrt(3)), im(start = 0))) "Terminal A of the 2-port node" annotation (
+      Interfaces.myAcausalTerminal terminalA(v(re(start = UNom / sqrt(3)), im(start = 0)), i(re(start = 0), im(start = 0))) "Terminal A of the 2-port node" annotation (
         Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Interfaces.myAcausalTerminal terminalB(v(re(start = UNom / sqrt(3)), im(start = 0))) "Terminal B of the 2-port node" annotation (
+      Interfaces.myAcausalTerminal terminalB(v(re(start = UNom / sqrt(3)), im(start = 0)), i(re(start = 0), im(start = 0))) "Terminal B of the 2-port node" annotation (
         Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Components.myLine lineA(UNom = UNom, R = faultLocationPu * l * R, X = faultLocationPu * l * X, B = faultLocationPu * l * B, G = faultLocationPu * l * G) annotation (
         Placement(visible = true, transformation(origin = {-40, 2.44249e-15}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
@@ -344,9 +344,9 @@ package PowerSysPro
       partial model myPartialTransformer "Partial model for transformers"
         extends Icons.myTransformer;
         extends Icons.myTwoPortsAC;
-        Interfaces.myAcausalTerminal terminalA(v(re(start = UNomA / sqrt(3)), im(start = 0))) "Terminal A of the 2-port node" annotation (
+        Interfaces.myAcausalTerminal terminalA(v(re(start = UNomA / sqrt(3)), im(start = 0)), i(re(start = 0), im(start = 0))) "Terminal A of the 2-port node" annotation (
           Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Interfaces.myAcausalTerminal terminalB(v(re(start = UNomB / sqrt(3)), im(start = 0))) "Terminal B of the 2-port node" annotation (
+        Interfaces.myAcausalTerminal terminalB(v(re(start = UNomB / sqrt(3)), im(start = 0)), i(re(start = 0), im(start = 0))) "Terminal B of the 2-port node" annotation (
           Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       public
         parameter Types.myVoltage UNomA "Reference voltage at primary side";
@@ -2412,7 +2412,7 @@ the variable active power of the load")}),
           Line(points = {{41.4, 42}, {34, 42}, {34, -2}, {-26, -2}, {-26, 15}}, color = {255, 0, 255}));
         annotation (
           Icon(coordinateSystem(preserveAspectRatio = false)),
-          Diagram(coordinateSystem(preserveAspectRatio = false), graphics = {Text(lineColor = {28, 108, 200}, extent = {{-122, -6}, {118, -80}}, fontSize = 12, textString = "the positions of the circuit breakers are opposite
+          Diagram(coordinateSystem(preserveAspectRatio = false), graphics={  Text(lineColor = {28, 108, 200}, extent = {{-122, -6}, {118, -80}}, fontSize = 12, textString = "the positions of the circuit breakers are opposite
 brk1 starting position is close
 brk2 starting position is open
 breaker positions are changing at 0.5 s")}),
@@ -2506,7 +2506,7 @@ breaker positions are changing at 0.5 s")}),
           Line(points = {{-9.4, 0}, {0, 0}, {0, 30}, {21, 30}}, color = {255, 0, 255}));
         annotation (
           Icon(coordinateSystem(preserveAspectRatio = false)),
-          Diagram(coordinateSystem(preserveAspectRatio = false), graphics = {Text(lineColor = {28, 108, 200}, extent = {{-160, -42}, {80, -116}}, fontSize = 12, textString = "the position of the circuit breakers are opposite
+          Diagram(coordinateSystem(preserveAspectRatio = false), graphics={  Text(lineColor = {28, 108, 200}, extent = {{-160, -42}, {80, -116}}, fontSize = 12, textString = "the position of the circuit breakers are opposite
 breaker positions are changing at 0.5 s
 all loads are permanently supplied")}),
           experiment(StopTime = 1));
@@ -2551,7 +2551,7 @@ all loads are permanently supplied")}),
           Line(points = {{-20, 30}, {-10, 30}}, color = {0, 0, 0}));
         annotation (
           Icon(coordinateSystem(preserveAspectRatio = false)),
-          Diagram(coordinateSystem(preserveAspectRatio = false), graphics = {Text(lineColor = {28, 108, 200}, extent = {{-116, -16}, {124, -90}}, fontSize = 12, textString = "the circuit breaker switches off at 0.5 s
+          Diagram(coordinateSystem(preserveAspectRatio = false), graphics={  Text(lineColor = {28, 108, 200}, extent = {{-116, -16}, {124, -90}}, fontSize = 12, textString = "the circuit breaker switches off at 0.5 s
 consuming load is permanently supplied
 by the source and/or by the PV node
 after switching the power supplied by the PV node is over Pmax"), Text(lineColor = {28, 108, 200}, extent = {{36, 78}, {112, 56}}, fontSize = 12, textString = "P=5 kW and Q=0.1 kvar for the load
@@ -2606,7 +2606,7 @@ Pstart=-2 kW for the PV node")}),
           Line(points = {{12, 8}, {24, 8}, {24, -26}, {40, -26}}, color = {0, 0, 0}));
         annotation (
           Icon(coordinateSystem(preserveAspectRatio = false)),
-          Diagram(coordinateSystem(preserveAspectRatio = false), graphics = {Text(lineColor = {28, 108, 200}, extent = {{36, 78}, {112, 56}}, textString = "P=5 kW and Q=0.1 kvar for the loads
+          Diagram(coordinateSystem(preserveAspectRatio = false), graphics={  Text(lineColor = {28, 108, 200}, extent = {{36, 78}, {112, 56}}, textString = "P=5 kW and Q=0.1 kvar for the loads
 Pstart=-2 kW for the PV nodes", fontSize = 12), Text(lineColor = {28, 108, 200}, extent = {{-122, -30}, {118, -104}}, fontSize = 12, textString = "the circuit breaker switches off at 0.5 s
 consuming loads are permanently supplied
 by the source and/or by the PV node
