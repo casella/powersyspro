@@ -405,6 +405,55 @@ package PowerSysPro
           Icon(coordinateSystem(grid = {0.1, 0.1}), graphics={  Text(extent = {{-102.8, -57.6}, {103.5, -86.4}}, lineColor = {238, 46, 47}, fillColor = {238, 46, 47},
                   fillPattern =                                                                                                                                                      FillPattern.Solid, textString = "fault", textStyle = {TextStyle.Bold})}));
       end myFault;
+
+      partial model mySubNetworkOnePort "Wrapper of sub-network with one port"
+        extends Icons.mySubNetwork;
+        Interfaces.myAcausalTerminal terminal "Terminal of the 1-port sub-network" annotation (Placement(
+            visible=true,
+            transformation(
+              origin={-98,0},
+              extent={{-10,-10},{10,10}},
+              rotation=0),
+            iconTransformation(
+              origin={-98,0},
+              extent={{-10,-10},{10,10}},
+              rotation=0)));
+
+        annotation (Icon(coordinateSystem(preserveAspectRatio=false), graphics={                       Text(origin={1,
+                    82},                                                                                                      lineColor = {0, 0, 255}, extent={{
+                    -237,12},{237,-12}},                                                                                                                                                  textString = "%name")}),
+                                                                       Diagram(
+              coordinateSystem(preserveAspectRatio=false)));
+      end mySubNetworkOnePort;
+
+      partial model mySubNetworkTwoPorts "Wrapper of sub-network with two ports"
+        extends Icons.mySubNetwork;
+        Interfaces.myAcausalTerminal terminalA "Terminal A of the 2-port sub-network"  annotation (Placement(
+            visible=true,
+            transformation(
+              origin={-98,-2},
+              extent={{-10,-10},{10,10}},
+              rotation=0),
+            iconTransformation(
+              origin={-98,-2},
+              extent={{-10,-10},{10,10}},
+              rotation=0)));
+        Interfaces.myAcausalTerminal terminalB "Terminal B of the 2-port sub-network"  annotation (Placement(
+            visible=true,
+            transformation(
+              origin={98,0},
+              extent={{-10,-10},{10,10}},
+              rotation=0),
+            iconTransformation(
+              origin={100,-2},
+              extent={{-10,-10},{10,10}},
+              rotation=0)));
+        annotation (Icon(coordinateSystem(preserveAspectRatio=false), graphics={                       Text(origin={1,
+                    82},                                                                                                      lineColor = {0, 0, 255}, extent={{
+                    -237,12},{237,-12}},                                                                                                                                                  textString = "%name")}),
+                                                                       Diagram(
+              coordinateSystem(preserveAspectRatio=false)));
+      end mySubNetworkTwoPorts;
     end PartialModels;
     annotation (
       Documentation(info = "<html><head></head><body>
@@ -862,12 +911,13 @@ The myAcausalTerminal connector represents an AC terminal with voltage and flow 
 
     model myBus "Icon for causal bus"
       annotation (
-        Icon(graphics = {Rectangle(origin = {1, 25}, fillPattern = FillPattern.Solid, extent = {{-5, 75}, {5, -125}})}, coordinateSystem(initialScale = 0.1)));
+        Icon(graphics={  Rectangle(origin = {1, 25}, fillPattern = FillPattern.Solid, extent = {{-5, 75}, {5, -125}})}, coordinateSystem(initialScale = 0.1)));
     end myBus;
 
     model myRegulation "Icon for tape changer"
       annotation (
-        Icon(coordinateSystem(initialScale = 0.2), graphics = {Rectangle(extent = {{-100, 40}, {98, -50}}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, pattern = LinePattern.None), Line(points = {{-76, -18}, {-48, 24}, {-12, -50}, {20, -4}, {60, -30}, {82, 20}}, color = {0, 0, 255}, smooth = Smooth.None), Line(points = {{-88, 0}, {88, 0}}, color = {0, 0, 0}), Line(points = {{-86, 32}, {90, 32}}, color = {192, 192, 192}, thickness = 1), Line(points = {{-88, -30}, {88, -30}}, color = {192, 192, 192}, thickness = 1)}));
+        Icon(coordinateSystem(initialScale = 0.2), graphics={  Rectangle(extent = {{-100, 40}, {98, -50}}, fillColor = {255, 255, 255},
+                fillPattern =                                                                                                                         FillPattern.Solid, pattern = LinePattern.None), Line(points = {{-76, -18}, {-48, 24}, {-12, -50}, {20, -4}, {60, -30}, {82, 20}}, color = {0, 0, 255}, smooth = Smooth.None), Line(points = {{-88, 0}, {88, 0}}, color = {0, 0, 0}), Line(points = {{-86, 32}, {90, 32}}, color = {192, 192, 192}, thickness = 1), Line(points = {{-88, -30}, {88, -30}}, color = {192, 192, 192}, thickness = 1)}));
     end myRegulation;
 
     model myFault "Icon for fault"
@@ -875,6 +925,27 @@ The myAcausalTerminal connector represents an AC terminal with voltage and flow 
         Icon(graphics={  Rectangle(origin = {-1, -1}, fillColor = {238, 46, 47},
                 fillPattern =                                                                  FillPattern.Solid, extent = {{-59, 11}, {61, -11}}, lineColor = {238, 46, 47})}, coordinateSystem(initialScale = 0.1)));
     end myFault;
+
+    model mySubNetwork "Icon for sub-network"
+      annotation (
+        Icon(                                                                                                                                                                   coordinateSystem(initialScale = 0.1),
+            graphics={
+            Rectangle(
+              extent={{-80,20},{78,-20}},
+              lineColor={28,108,200},
+              pattern=LinePattern.None),
+            Rectangle(
+              extent={{-58,40},{60,-20}},
+              lineColor={28,108,200},
+              pattern=LinePattern.None),
+                         Rectangle(origin={-1.66795,0},                                                           extent={{
+                  -98.332,40},{101.668,-40}},                                                                                                      lineColor=
+                  {0,0,0},
+              lineThickness=0.5,
+              fillColor={255,255,255},
+              fillPattern=FillPattern.Sphere,
+              pattern=LinePattern.Dash)}));
+    end mySubNetwork;
 
     model mySensor "Icon for sensor"
       annotation (
@@ -897,7 +968,8 @@ The myAcausalTerminal connector represents an AC terminal with voltage and flow 
 
     partial function myFunction "Icon for functions"
       annotation (
-        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Text(textColor = {0, 0, 255}, extent = {{-150, 105}, {150, 145}}, textString = "%name"), Ellipse(lineColor = {108, 88, 49}, fillColor = {255, 215, 136}, fillPattern = FillPattern.Solid, extent = {{-100, -100}, {100, 100}}), Text(textColor = {108, 88, 49}, extent = {{-90.0, -90.0}, {90.0, 90.0}}, textString = "f")}),
+        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics={  Text(textColor = {0, 0, 255}, extent = {{-150, 105}, {150, 145}}, textString = "%name"), Ellipse(lineColor = {108, 88, 49}, fillColor = {255, 215, 136},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid, extent = {{-100, -100}, {100, 100}}), Text(textColor = {108, 88, 49}, extent = {{-90.0, -90.0}, {90.0, 90.0}}, textString = "f")}),
         Documentation(info = "<html>
 <p>This icon indicates functions.</p>
 </html>"));
@@ -915,7 +987,8 @@ The myAcausalTerminal connector represents an AC terminal with voltage and flow 
 
     partial record myRecord "Icon for records"
       annotation (
-        Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Text(textColor = {0, 0, 255}, extent = {{-150, 60}, {150, 100}}, textString = "%name"), Rectangle(origin = {0.0, -25.0}, lineColor = {64, 64, 64}, fillColor = {255, 215, 136}, fillPattern = FillPattern.Solid, extent = {{-100.0, -75.0}, {100.0, 75.0}}, radius = 25.0), Line(points = {{-100.0, 0.0}, {100.0, 0.0}}, color = {64, 64, 64}), Line(origin = {0.0, -50.0}, points = {{-100.0, 0.0}, {100.0, 0.0}}, color = {64, 64, 64}), Line(origin = {0.0, -25.0}, points = {{0.0, 75.0}, {0.0, -75.0}}, color = {64, 64, 64})}),
+        Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics={  Text(textColor = {0, 0, 255}, extent = {{-150, 60}, {150, 100}}, textString = "%name"), Rectangle(origin = {0.0, -25.0}, lineColor = {64, 64, 64}, fillColor = {255, 215, 136},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid, extent = {{-100.0, -75.0}, {100.0, 75.0}}, radius = 25.0), Line(points = {{-100.0, 0.0}, {100.0, 0.0}}, color = {64, 64, 64}), Line(origin = {0.0, -50.0}, points = {{-100.0, 0.0}, {100.0, 0.0}}, color = {64, 64, 64}), Line(origin = {0.0, -25.0}, points = {{0.0, 75.0}, {0.0, -75.0}}, color = {64, 64, 64})}),
         Documentation(info = "<html>
 <p>
 This icon is indicates a record.
@@ -1004,7 +1077,11 @@ This icon is indicates a record.
 
     partial class myReleaseNotes "Icon for general information"
       annotation (
-        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Polygon(points = {{-80, -100}, {-80, 100}, {0, 100}, {0, 20}, {80, 20}, {80, -100}, {-80, -100}}, fillColor = {245, 245, 245}, fillPattern = FillPattern.Solid), Polygon(points = {{0, 100}, {80, 20}, {0, 20}, {0, 100}}, fillColor = {215, 215, 215}, fillPattern = FillPattern.Solid), Line(points = {{2, -12}, {50, -12}}), Ellipse(extent = {{-56, 2}, {-28, -26}}, fillColor = {215, 215, 215}, fillPattern = FillPattern.Solid), Line(points = {{2, -60}, {50, -60}}), Ellipse(extent = {{-56, -46}, {-28, -74}}, fillColor = {215, 215, 215}, fillPattern = FillPattern.Solid)}),
+        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics={  Polygon(points = {{-80, -100}, {-80, 100}, {0, 100}, {0, 20}, {80, 20}, {80, -100}, {-80, -100}}, fillColor = {245, 245, 245},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Polygon(points = {{0, 100}, {80, 20}, {0, 20}, {0, 100}}, fillColor = {215, 215, 215},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Line(points = {{2, -12}, {50, -12}}), Ellipse(extent = {{-56, 2}, {-28, -26}}, fillColor = {215, 215, 215},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Line(points = {{2, -60}, {50, -60}}), Ellipse(extent = {{-56, -46}, {-28, -74}}, fillColor = {215, 215, 215},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid)}),
         Documentation(info = "<html>
 <p>This icon indicates release notes and the revision history of a library.</p>
 </html>"));
@@ -1012,7 +1089,11 @@ This icon is indicates a record.
 
     partial class myContact "Icon for contact information"
       annotation (
-        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, 70}, {100, -72}}, fillColor = {235, 235, 235}, fillPattern = FillPattern.Solid), Polygon(points = {{-100, -72}, {100, -72}, {0, 20}, {-100, -72}}, fillColor = {215, 215, 215}, fillPattern = FillPattern.Solid), Polygon(points = {{22, 0}, {100, 70}, {100, -72}, {22, 0}}, fillColor = {235, 235, 235}, fillPattern = FillPattern.Solid), Polygon(points = {{-100, 70}, {100, 70}, {0, -20}, {-100, 70}}, fillColor = {241, 241, 241}, fillPattern = FillPattern.Solid)}),
+        Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics={  Rectangle(extent = {{-100, 70}, {100, -72}}, fillColor = {235, 235, 235},
+                fillPattern =                                                                                                                                                                        FillPattern.Solid), Polygon(points = {{-100, -72}, {100, -72}, {0, 20}, {-100, -72}}, fillColor = {215, 215, 215},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Polygon(points = {{22, 0}, {100, 70}, {100, -72}, {22, 0}}, fillColor = {235, 235, 235},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid), Polygon(points = {{-100, 70}, {100, 70}, {0, -20}, {-100, 70}}, fillColor = {241, 241, 241},
+                fillPattern =                                                                                                                                                                                                        FillPattern.Solid)}),
         Documentation(info = "<html>
 <p>This icon shall be used for the contact information of the library developers.</p>
 </html>"));
@@ -2838,7 +2919,7 @@ before exporting as an FMU")}),
 the same model is then cut in 2 parts to get FMUs")}));
     end ExampleWithFMUs;
 
-    package MediumNetworks "Medium MV-LV network"
+    package MediumNetworks "Medium MV-LV networks"
       extends Icons.myExamplesPackage;
 
       model Network "Simple Distribution network"
@@ -2891,7 +2972,7 @@ the same model is then cut in 2 parts to get FMUs")}));
         connect(src.terminal, tra1.terminalA) annotation (
           Line(points = {{-88, 16}, {-72, 16}, {-72, 16}}, color = {0, 0, 0}));
         annotation (
-          Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-14, 96}, {62, 74}}, fontSize = 10, textStyle = {TextStyle.Bold}, textString = "All residential loads
+          Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-14, 96}, {62, 74}}, fontSize = 10, textStyle = {TextStyle.Bold}, textString = "All residential loads
 36 kVA (Q=0.4*P)"), Text(lineColor = {28, 108, 200}, extent = {{-110, 42}, {-66, 28}}, textStyle = {TextStyle.Bold}, fontSize = 10, textString = "RTE"), Text(lineColor = {28, 108, 200}, extent = {{-42, -22}, {32, -66}}, fontSize = 12, textString = "low voltage is detected in 
 load1 and load4")}, coordinateSystem(initialScale = 0.1)),
           experiment(StopTime = 1));
@@ -2979,13 +3060,190 @@ load1 and load4")}, coordinateSystem(initialScale = 0.1)),
         connect(tra2.terminalB, line7.terminalA) annotation (
           Line(points = {{10, 38}, {24, 38}, {24, -84}, {42, -84}}, color = {0, 0, 0}));
         annotation (
-          Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-114, 64}, {-70, 50}}, textStyle = {TextStyle.Bold}, fontSize = 10, textString = "RTE"), Text(lineColor = {28, 108, 200}, extent = {{-98, 4}, {-24, -40}}, fontSize = 12, textString = "same network with two LV feeders
+          Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-114, 64}, {-70, 50}}, textStyle = {TextStyle.Bold}, fontSize = 10, textString = "RTE"), Text(lineColor = {28, 108, 200}, extent = {{-98, 4}, {-24, -40}}, fontSize = 12, textString = "same network with two LV feeders
 low voltage is detected in 
 load1, load4, load5 and load8
 nominal power exceed detected in tra2"), Text(lineColor = {28, 108, 200}, extent = {{-24, 98}, {52, 76}}, fontSize = 10, textStyle = {TextStyle.Bold}, textString = "All residential loads
 36 kVA (Q=0.4*P)")}, coordinateSystem(initialScale = 0.1)),
           experiment(StopTime = 1));
       end DoubleNetwork;
+
+      package StructuredNetwork "Structured networks"
+        extends Icons.myExamplesPackage;
+
+        model DoubleNetwork "Double Distribution network"
+          extends Icons.myExample;
+          UnboundedSource src annotation (Placement(transformation(
+                extent={{-10,-10},{10,10}},
+                rotation=180,
+                origin={-50,30})));
+          UnboundedFeeder feeder2    annotation (Placement(transformation(extent={{16,4},{36,24}})));
+          UnboundedFeeder feeder1    annotation (Placement(transformation(extent={{16,34},{36,54}})));
+        equation
+          connect(src.terminal, feeder1.terminal) annotation (Line(points={{-40.2,30},{0,
+                  30},{0,44},{16.2,44}},          color={0,0,0}));
+          connect(src.terminal, feeder2.terminal) annotation (Line(points={{-40.2,30},{0,
+                  30},{0,14},{16.2,14}},          color={0,0,0}));
+          annotation (
+            Diagram(graphics={                                                                                                                             Text(lineColor=
+                      {28,108,200},                                                                                                                                                         extent={{
+                      -96,-12},{102,-60}},                                                                                                                                                                                    fontSize=
+                      12,
+                  textString="cloning MediumNetworks.DoubleNetwork")},
+                      coordinateSystem(initialScale = 0.1)),
+            experiment(StopTime = 1));
+        end DoubleNetwork;
+
+        model DoubleNetworkWithBreaker "Double Distribution network with breaker"
+          extends Icons.myExample;
+          UnboundedSource srce annotation (Placement(transformation(
+                extent={{-10,-10},{10,10}},
+                rotation=180,
+                origin={-50,30})));
+          UnboundedFeeder feeder2
+            annotation (Placement(transformation(extent={{16,4},{36,24}})));
+          UnboundedFeeder feeder1
+            annotation (Placement(transformation(extent={{16,34},{36,54}})));
+          Components.myBreaker disj
+            annotation (Placement(transformation(extent={{-28,20},{-8,40}})));
+          Modelica.Blocks.Sources.BooleanStep cmd(startTime=0.5, startValue=true)     annotation (
+            Placement(transformation(extent = {{-6, -6}, {6, 6}}, rotation=0,     origin={-46,0})));
+          Modelica.Blocks.Logical.Not n annotation (
+            Placement(transformation(extent = {{-6, -6}, {6, 6}}, rotation=0,     origin={-28,0})));
+
+        equation
+          connect(n.u, cmd.y)
+            annotation (Line(points={{-35.2,0},{-39.4,0}}, color={255,0,255}));
+          connect(n.y, disj.BrkOpen)
+            annotation (Line(points={{-21.4,0},{-18,0},{-18,27}}, color={255,0,255}));
+          connect(srce.terminal, disj.terminalA) annotation (Line(points={{-40.2,30},{-34,
+                  30},{-34,30},{-28,30}}, color={0,0,0}));
+          connect(disj.terminalB, feeder1.terminal)
+            annotation (Line(points={{-8,30},{0,30},{0,44},{16.2,44}}, color={0,0,0}));
+          connect(disj.terminalB, feeder2.terminal)
+            annotation (Line(points={{-8,30},{0,30},{0,14},{16.2,14}}, color={0,0,0}));
+          annotation (
+            Diagram(  coordinateSystem(initialScale = 0.1), graphics={                                                                                     Text(lineColor=
+                      {28,108,200},                                                                                                                                                         extent={{
+                      -96,-16},{102,-64}},                                                                                                                                                                                    fontSize=
+                      12,
+                  textString="adding a breaker to
+MediumNetworks.DoubleNetwork"),                                                                                                                            Text(lineColor=
+                      {238,46,47},                                                                                                                                                          extent={{
+                      -96,-50},{102,-98}},                                                                                                                                                                                    fontSize=
+                      12,
+                  textString="results not realy satisfying")}),
+            experiment(StopTime = 1));
+        end DoubleNetworkWithBreaker;
+
+        model UnboundedSource "Upstream part of the network"
+         extends Components.PartialModels.mySubNetworkOnePort;
+          Components.myTransformer tra1(
+            UNomA=63000,
+            UNomB=20000,
+            SNom=36000,
+            R=1e-9,
+            X=1e-9)  annotation (
+            Placement(visible = true, transformation(origin={-28,66},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+          Components.myLine line1(
+            UNom=20000,
+            Imax=160,
+            R=0.9,
+            X=0.3)  annotation (
+            Placement(visible = true, transformation(origin={4,66},      extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+          Components.myTransformer tra2(
+            UNomA=20000,
+            UNomB=400,
+            SNom=250,
+            R=1e-9,
+            X=1e-9)   annotation (
+            Placement(visible = true, transformation(origin={34,66},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+          Components.mySource src(UNom=63000)   annotation (
+            Placement(visible = true, transformation(origin={-54,66},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        equation
+          connect(line1.terminalB,tra2.terminalA) annotation (
+            Line(points={{14,66},{24,66}}));
+          connect(tra1.terminalB,line1.terminalA) annotation (
+            Line(points={{-18,66},{-6,66}},       color = {0, 0, 0}));
+          connect(src.terminal,tra1.terminalA) annotation (
+            Line(points={{-54,66},{-38,66}},                 color = {0, 0, 0}));
+          connect(tra2.terminalB, terminal)
+            annotation (Line(points={{44,66},{60,66},{60,0},{-98,0}}, color={0,0,0}));
+          annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+                coordinateSystem(preserveAspectRatio=false), graphics={
+                      Text(lineColor = {28, 108, 200}, extent={{-76,92},{-32,78}},       textStyle = {TextStyle.Bold}, fontSize = 10, textString = "RTE")}));
+        end UnboundedSource;
+
+        model UnboundedFeeder "Downstream part of the network"
+         extends Components.PartialModels.mySubNetworkOnePort;
+          Components.myLoad load1(
+            P=36000/sqrt(1.16),
+            UNom=400,
+            Q=0.4*36000/sqrt(1.16))                                                                 annotation (
+            Placement(visible = true, transformation(origin={64,58},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+          Components.myLine line2(
+            UNom=400,
+            Imax=140,
+            R=0.2,
+            X=0.2)                                                          annotation (
+            Placement(visible = true, transformation(origin={36,22},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+          Components.myLoad load2(
+            P=36000/sqrt(1.16),
+            UNom=400,
+            Q=0.4*36000/sqrt(1.16))                                                                 annotation (
+            Placement(visible = true, transformation(origin={66,0},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+          Components.myLine line4(
+            UNom=400,
+            Imax=140,
+            R=0.2,
+            X=0.2)                                                          annotation (
+            Placement(visible = true, transformation(origin={36,-22},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+          Components.myLoad load3(
+            P=36000/sqrt(1.16),
+            UNom=400,
+            Q=0.4*36000/sqrt(1.16))                                                                 annotation (
+            Placement(visible = true, transformation(origin={66,-22},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+          Components.myLine line3(
+            UNom=400,
+            Imax=140,
+            R=0.2,
+            X=0.2)                                                          annotation (
+            Placement(visible = true, transformation(origin={36,0},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+          Components.myLine line5(
+            UNom=400,
+            Imax=140,
+            R=0.2,
+            X=0.2)                                                          annotation (
+            Placement(visible = true, transformation(origin={74,22},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+          Components.myLoad load4(
+            P=36000/sqrt(1.16),
+            UNom=400,
+            Q=0.4*36000/sqrt(1.16))                                                                 annotation (
+            Placement(visible = true, transformation(origin={96,22},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        equation
+          connect(line2.terminalB,load1. terminal) annotation (
+            Line(points={{46,22},{56,22},{56,58.02},{63.96,58.02}}));
+          connect(line4.terminalB,load3. terminal) annotation (
+            Line(points={{46,-22},{56,-22},{56,-21.98},{65.96,-21.98}}));
+          connect(load2.terminal,line3. terminalB) annotation (
+            Line(points={{65.96,0.02},{56,0.02},{56,0},{46,0}},              color = {0, 0, 0}));
+          connect(line2.terminalB,line5. terminalA) annotation (
+            Line(points={{46,22},{64,22}},      color = {0, 0, 0}));
+          connect(line5.terminalB,load4. terminal) annotation (
+            Line(points={{84,22},{88,22},{88,22.02},{95.96,22.02}},             color = {0, 0, 0}));
+          connect(line3.terminalA, terminal)
+            annotation (Line(points={{26,0},{-36,0},{-36,0},{-98,0}},
+                                                       color={0,0,0}));
+          connect(line4.terminalA, terminal)
+            annotation (Line(points={{26,-22},{0,-22},{0,0},{-98,0}},  color={0,0,0}));
+          connect(line2.terminalA, terminal)
+            annotation (Line(points={{26,22},{0,22},{0,0},{-98,0}},  color={0,0,0}));
+          annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+                coordinateSystem(preserveAspectRatio=false), graphics={
+                                Text(lineColor = {28, 108, 200}, extent={{-28,80},{48,58}},      fontSize = 10, textStyle = {TextStyle.Bold}, textString = "All residential loads
+36 kVA (Q=0.4*P)")}));
+        end UnboundedFeeder;
+      end StructuredNetwork;
     end MediumNetworks;
 
     model FourVariableLoadsOneLVFeeder "Realistic case with three LV feeders and four variable loads"
@@ -3426,8 +3684,8 @@ and can be compared to the required one")}),
     </body></html>"));
   end Information;
   annotation (
-    version = "2.1.8",
-    versionDate = "2021-05-18",
+    version = "2.1.9",
+    versionDate = "2021-05-20",
     Documentation(info = "<html><head></head><body>
     <p>Copyright © 2020-2021, EDF.</p>
     <p>The use of the PowerSysPro library is granted by EDF under the provisions of the Modelica License 2. A copy of this license can be obtained&nbsp;<a href=\"http://www.modelica.org/licenses/ModelicaLicense2\">here</a>.</p>
