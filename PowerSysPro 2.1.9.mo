@@ -50,7 +50,6 @@ package PowerSysPro
 
     model myLoad "Load with P/Q as fixed values"
       extends PartialModels.myPartialLoad;
-    public
       parameter Types.myActivePower P "Active power consumed (>0) or provided (<0)";
       parameter Types.myReactivePower Q = 0 "Reactive power inductive (>0) or capacitive (<0)";
     equation
@@ -64,9 +63,9 @@ package PowerSysPro
 
     model myVariableLoad "Load with P/Q as input variables"
       extends PartialModels.myPartialLoad;
-      Modelica.Blocks.Interfaces.RealInput PInput(final unit = "W", displayUnit = "W") "Active power consumed (>0) or provided (<0)" annotation (
+      Modelica.Blocks.Interfaces.RealInput PInput(final unit = "W", displayUnit = "kW") "Active power consumed (>0) or provided (<0)" annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 0, origin = {-100, 40}), iconTransformation(extent = {{-15.3, -15.3}, {15.3, 15.3}}, rotation = 90, origin = {-25.4, -84.5})));
-      Modelica.Blocks.Interfaces.RealInput QInput(final unit = "var", displayUnit = "var") "Reactive power inductive (>0) or capacitive (<0)" annotation (
+      Modelica.Blocks.Interfaces.RealInput QInput(final unit = "var", displayUnit = "kvar") "Reactive power inductive (>0) or capacitive (<0)" annotation (
         Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 0, origin = {-100, -40}), iconTransformation(extent = {{-15.85, -15.85}, {15.85, 15.85}}, rotation = 90, origin = {25.65, -84.35})));
       parameter Boolean switchToImpedanceMode = true "Possibility to switch to impedance mode when voltage is too low";
     protected
@@ -89,6 +88,39 @@ package PowerSysPro
     <p>This node prescribes a variable active power <code>P</code> and reactive power <code>Q</code> entering the PQ bus.</p>
     </html>"));
     end myVariableLoad;
+
+    model myDisengageableVariableLoad "Disengageable load with P/Q as input variables"
+      extends PartialModels.myPartialLoad;
+      Modelica.Blocks.Interfaces.RealInput PInput(final unit = "W", displayUnit = "kW") "Active power consumed (>0) or provided (<0)" annotation (
+        Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 0, origin = {-100, 40}), iconTransformation(extent = {{-15.3, -15.3}, {15.3, 15.3}}, rotation = 90, origin = {-25.4, -84.5})));
+      Modelica.Blocks.Interfaces.RealInput QInput(final unit = "var", displayUnit = "kvar") "Reactive power inductive (>0) or capacitive (<0)" annotation (
+        Placement(transformation(extent = {{-20, -20}, {20, 20}}, rotation = 0, origin = {-100, -40}), iconTransformation(extent = {{-15.85, -15.85}, {15.85, 15.85}}, rotation = 90, origin = {25.65, -84.35})));
+      parameter Boolean switchToImpedanceMode = true "Possibility to switch to impedance mode when voltage is too low";
+      outer Boolean Supplied;
+    protected
+      Boolean degradedMode(start = false, fixed = true) "Mode for load: normal / degraded";
+      Types.myComplexAdmittance Y = Complex(PInput, QInput) / minU ^ 2 "Admittance of the load";
+    equation
+      degradedMode = if U < minU and switchToImpedanceMode then true else false;
+      when degradedMode <> pre(degradedMode) then
+        assert(degradedMode == false, ">>> Switching to the impedance mode for " + getInstanceName(), AssertionLevel.warning);
+        assert(degradedMode, ">>> Normal mode assumed for " + getInstanceName(), AssertionLevel.warning);
+      end when;
+      if degradedMode then
+        terminal.i = if Supplied then Y * terminal.v else Complex(0);
+      else
+        if Supplied then
+          3 * terminal.v * CM.conj(terminal.i) = Complex(PInput, QInput);
+        else
+          terminal.i = Complex(0);
+        end if;
+      end if;
+      annotation (
+        Icon(coordinateSystem(grid = {0.1, 0.1}, initialScale = 0.1), graphics={  Text(origin = {60.1, -63.1}, lineColor = {0, 0, 255}, extent = {{-124, 11}, {124, -11}}, textString = if OnePhaseLoad then "1" else "3", textStyle = {TextStyle.Bold})}),
+        Documentation(info = "<html>
+    <p>This node prescribes a variable active power <code>P</code> and reactive power <code>Q</code> entering the PQ bus.</p>
+    </html>"));
+    end myDisengageableVariableLoad;
 
     model myCapacitorBank "Capacitor bank with fixed capacitance"
       extends Icons.myCapacitorBank;
@@ -120,7 +152,6 @@ package PowerSysPro
         Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Interfaces.myAcausalTerminal terminalB(v(re(start = UNom / sqrt(3)), im(start = 0)), i(re(start = 0), im(start = 0))) "Terminal B of the 2-port node" annotation (
         Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    public
       parameter Types.myVoltage UNom "Reference voltage of the line";
       parameter Types.myResistance R "Series resistance of phase conductor";
       parameter Types.myReactance X = 0 "Series reactance of phase conductor";
@@ -128,11 +159,11 @@ package PowerSysPro
       parameter Types.mySusceptance B = 0 "Shunt susceptance of phase conductor coupling";
       parameter Types.myPerUnit l = 1 "lineic coefficient";
       parameter Types.myCurrent Imax = 0 "Maximum admissible current. 0 means no control";
-      Types.myCurrent IA = CM.abs(terminalA.i) "Current flowing port A";
+      Types.myCurrent IA = CM.abs(terminalA.i) "Current flowing at port A";
       Types.myVoltage UA = sqrt(3) * CM.abs(terminalA.v) "Voltage at port A";
-      Types.myCurrent IB = CM.abs(terminalB.i) "Current flowing port B";
+      Types.myCurrent IB = CM.abs(terminalB.i) "Current flowing at port B";
       Types.myVoltage UB = sqrt(3) * CM.abs(terminalB.v) "Voltage at port B";
-      Types.myApparentPower S = sqrt(3) * IA * UA "Apparent power flowing port A";
+      Types.myApparentPower SA = sqrt(3) * IA * UA "Apparent power flowing at port A";
     protected
       parameter Types.myComplexImpedance Z = Complex(l * R, l * X) "Series impedance of phase conductor";
       parameter Types.myComplexAdmittance Y = Complex(l * G / 2, l * B / 2) "Shunt admittance at port A and port B";
@@ -182,11 +213,11 @@ package PowerSysPro
         Dialog(group = "Fault data"));
       parameter Types.myTime stopTime "End time of the fault" annotation (
         Dialog(group = "Fault data"));
-      Types.myCurrent IA = CM.abs(terminalA.i) "Current flowing port A";
+      Types.myCurrent IA = CM.abs(terminalA.i) "Current flowing at port A";
       Types.myVoltage UA = sqrt(3) * CM.abs(terminalA.v) "Voltage at port A";
-      Types.myCurrent IB = CM.abs(terminalB.i) "Current flowing port B";
+      Types.myCurrent IB = CM.abs(terminalB.i) "Current flowing at port B";
       Types.myVoltage UB = sqrt(3) * CM.abs(terminalB.v) "Voltage at port B";
-      Types.myApparentPower S = sqrt(3) * IA * UA "Apparent power flowing port A";
+      Types.myApparentPower SA = sqrt(3) * IA * UA "Apparent power at flowing port A";
     protected
       parameter Types.myComplexImpedance Z = Complex(l * R, l * X) "Series impedance of phase conductor";
       parameter Types.myComplexAdmittance Y = Complex(l * G / 2, l * B / 2) "Shunt admittance at port A and port B";
@@ -270,49 +301,67 @@ package PowerSysPro
         Icon(graphics={  Text(extent = {{-80, 34}, {82, -34}}, lineColor = {28, 108, 200}, textString = "~", textStyle = {TextStyle.Bold})}));
     end myVariableTransformer;
 
-    model myBreaker "Perfect breaker"
+    model myBreaker "Perfect breaker cutting the current"
       extends Icons.myBreaker;
       extends Icons.myTwoPortsAC;
-      Interfaces.myAcausalTerminal terminalA "Terminal A of the 1-port node" annotation (
+      Interfaces.myAcausalTerminal terminalA(v(re(start = UNom / sqrt(3)), im(start = 0)), i(re(start = 0), im(start = 0))) "Terminal A of the 2-port node" annotation (
         Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Interfaces.myAcausalTerminal terminalB "Terminal B of the node" annotation (
+      Interfaces.myAcausalTerminal terminalB(v(re(start = UNom / sqrt(3)), im(start = 0)), i(re(start = 0), im(start = 0))) "Terminal B of the 2-port node" annotation (
         Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Modelica.Blocks.Interfaces.BooleanInput BrkOpen(start = false) "Breaker start position is false (closed)" annotation (
         Placement(visible = true, transformation(origin = {0, -40}, extent = {{-20, -20}, {20, 20}}, rotation = 90), iconTransformation(origin = {0, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-      Types.myCurrent IA = CM.abs(terminalA.i) "Current flowing port A";
+      parameter Types.myVoltage UNom "Reference voltage of the  breaker";
+      Types.myCurrent IA = CM.abs(terminalA.i) "Current flowing at port A";
       Types.myVoltage UA = sqrt(3) * CM.abs(terminalA.v) "Voltage at port A";
-      Types.myCurrent IB = CM.abs(terminalB.i) "Current flowing port B";
+      Types.myCurrent IB = CM.abs(terminalB.i) "Current flowing at port B";
       Types.myVoltage UB = sqrt(3) * CM.abs(terminalB.v) "Voltage at port B";
-      Types.myApparentPower S = sqrt(3) * IA * UA "Apparent power flowing port A";
+      Types.myApparentPower S = sqrt(3) * IA * UA "Apparent power flowing the breaker";
+
     equation
       if BrkOpen then
         terminalA.i = Complex(0);
         terminalB.i = Complex(0);
       else
-        terminalA.v = terminalB.v;
+        terminalB.v = terminalA.v;
         terminalA.i + terminalB.i = Complex(0);
       end if;
       annotation (
         Icon(graphics={  Line(points = {{-90, 0}, {-40, 0}}, color = {0, 0, 0}, thickness = 0.5), Line(points = {{90, 0}, {40, 0}}, color = {0, 0, 0}, thickness = 0.5), Line(points = DynamicSelect({{-40, 0}, {20, 40}}, if not BrkOpen then {{-40, 0}, {20, 40}} else {{-40, 0}, {40, 0}}), color = {0, 0, 0}, thickness = 0.5)}),
         Documentation(info = "<html>
-     <p>This node prescribes a perfect breaker.</p>
+    <p>This node prescribes a perfect breaker dropping the current to zero at port B.</p>
     </html>"));
     end myBreaker;
 
-    model myGround "Ground"
-      extends Icons.myGround;
-      Interfaces.myAcausalTerminal terminal "Terminal of the 1-port node" annotation (
-        Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Types.myCurrent I = CM.abs(terminal.i) "Current flowing the ground";
+    model mySecondBreaker "Perfect breaker cutting the voltage"
+      extends Icons.myBreaker;
+      extends Icons.myTwoPortsAC;
+      Interfaces.myAcausalTerminal terminalA(v(re(start = UNom / sqrt(3)), im(start = 0)), i(re(start = 0), im(start = 0))) "Terminal A of the 2-port node" annotation (
+        Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Interfaces.myAcausalTerminal terminalB(v(re(start = UNom / sqrt(3)), im(start = 0)), i(re(start = 0), im(start = 0))) "Terminal B of the 2-port node" annotation (
+        Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      Modelica.Blocks.Interfaces.BooleanInput BrkOpen(start = false) "Breaker start position is false (closed)" annotation (
+        Placement(visible = true, transformation(origin = {0, -40}, extent = {{-20, -20}, {20, 20}}, rotation = 90), iconTransformation(origin = {0, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
+      parameter Types.myVoltage UNom "Reference voltage of the  breaker";
+      Types.myCurrent IA = CM.abs(terminalA.i) "Current flowing port A";
+      Types.myVoltage UA = sqrt(3) * CM.abs(terminalA.v) "Voltage at port A";
+      Types.myCurrent IB = CM.abs(terminalB.i) "Current flowing port B";
+      Types.myVoltage UB = sqrt(3) * CM.abs(terminalB.v) "Voltage at port B";
+      Types.myApparentPower S = sqrt(3) * IA * UA "Apparent power flowing the breaker";
+
     equation
-      terminal.v = Complex(0);
+      if BrkOpen then
+        terminalA.i = Complex(0);
+        terminalB.v = Complex(0);
+      else
+        terminalB.v = terminalA.v;
+        terminalA.i + terminalB.i = Complex(0);
+      end if;
       annotation (
-        Icon(coordinateSystem(preserveAspectRatio = false)),
-        Diagram(coordinateSystem(preserveAspectRatio = false)),
+        Icon(graphics={  Line(points = {{-90, 0}, {-40, 0}}, color = {0, 0, 0}, thickness = 0.5), Line(points = {{90, 0}, {40, 0}}, color = {0, 0, 0}, thickness = 0.5), Line(points = DynamicSelect({{-40, 0}, {20, 40}}, if not BrkOpen then {{-40, 0}, {20, 40}} else {{-40, 0}, {40, 0}}), color = {0, 0, 0}, thickness = 0.5)}),
         Documentation(info = "<html>
-     <p>This node prescribes a connection to the ground where voltage is null.</p>
+    <p>This node prescribes a perfect breaker dropping the voltage to zero at port B.</p>
     </html>"));
-    end myGround;
+    end mySecondBreaker;
 
     package PartialModels "Partial models to be inherited"
       extends Icons.myBasesPackage;
@@ -321,13 +370,14 @@ package PowerSysPro
         extends Icons.myLoad;
         extends Icons.myOnePortAC;
         Interfaces.myAcausalTerminal terminal(v(re(start = UNom / sqrt(3)), im(start = 0))) "Terminal of the 1-port node" annotation (
-          Placement(visible = true, transformation(origin = {-0.4, 0.2}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-0.4, 0.2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      public
+          Placement(visible = true, transformation(origin={-0.1,-0.3},   extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin={-0.1,
+                  -0.3},                                                                                                                                          extent = {{-10, -10}, {10, 10}}, rotation = 0)));
         parameter Types.myVoltage UNom "Reference voltage of the load";
         parameter Types.myPerUnit lowVoltage(min = 0, max = 1) = if UNom <= 1000 then 0.9 else 0.95 "Lower percentage limit for acceptable voltage";
         parameter Types.myPerUnit highVoltage(min = 1) = if UNom <= 1000 then 1.1 else 1.05 "Higher percentage limit for acceptable voltage";
         parameter Types.myVoltage minU = lowVoltage * UNom "Minimum acceptable value for U";
         parameter Types.myVoltage maxU = highVoltage * UNom "Maximum acceptable value for U";
+        parameter Boolean Disengageable = false;
         Types.myCurrent I = CM.abs(terminal.i) "Current flowing the load";
         Types.myVoltage U = sqrt(3) * CM.abs(terminal.v) "Voltage at the load";
         Types.myApparentPower S = sqrt(3) * I * U "Apparent power flowing the load";
@@ -357,14 +407,14 @@ package PowerSysPro
         parameter Types.myConductance G = 0 "Shunt conductance at primary side";
         parameter Types.mySusceptance B = 0 "Shunt susceptance at primary side";
         parameter Types.myApparentPowerMVA SNom = 0 "Nominal power of the transformer. 0 means no control";
-        Types.myCurrent IA = CM.abs(terminalA.i) "Current flowing port A";
+        Types.myCurrent IA = CM.abs(terminalA.i) "Current flowing at port A";
         Types.myVoltage UA = sqrt(3) * CM.abs(terminalA.v) "Voltage at port A";
-        Types.myCurrent IB = CM.abs(terminalB.i) "Current flowing port B";
+        Types.myCurrent IB = CM.abs(terminalB.i) "Current flowing at port B";
         Types.myVoltage UB = sqrt(3) * CM.abs(terminalB.v) "Voltage at port B";
-        Types.myApparentPower S = sqrt(3) * IA * UA "Apparent power flowing port A";
+        Types.myApparentPower SA = sqrt(3) * IA * UA "Apparent power flowing at port A";
       equation
         if SNom > 0 then
-          assert(S <= 1e3 * SNom, ">>> Apparent power flowing the transformer is exceeding the nominal power for " + getInstanceName(), AssertionLevel.warning);
+          assert(SA <= 1e3 * SNom, ">>> Apparent power flowing the transformer is exceeding the nominal power for " + getInstanceName(), AssertionLevel.warning);
         end if;
         annotation (
           Documentation(info = "<html>
@@ -597,7 +647,7 @@ package PowerSysPro
         Documentation(info = "<html>
     <p> Causal input connector, with complex voltage as input and complex current as output.</p>    
     </html>"),
-        Icon(graphics = {Text(origin = {73, 97}, lineColor = {0, 0, 255}, extent = {{-131, 11}, {131, -11}}, textString = "%name"), Text(extent = {{-10, -12}, {72, -52}}, lineColor = {0, 0, 0}, textStyle = {TextStyle.Bold}, textString = "~")}));
+        Icon(graphics={  Text(origin = {73, 97}, lineColor = {0, 0, 255}, extent = {{-131, 11}, {131, -11}}, textString = "%name"), Text(extent = {{-10, -12}, {72, -52}}, lineColor = {0, 0, 0}, textStyle = {TextStyle.Bold}, textString = "~")}));
     end myCausalBusVInput;
 
     model myCausalBusVOutput "Causal bus with voltage as output"
@@ -621,8 +671,9 @@ package PowerSysPro
         Documentation(info = "<html>
     <p> Causal output connector, with complex voltage as output and complex current as input.</p>
     </html>"),
-        Icon(graphics = {Text(origin = {-79, 97}, lineColor = {0, 0, 255}, extent = {{-131, 11}, {131, -11}}, textString = "%name"), Text(extent = {{-70, -10}, {12, -50}}, lineColor = {0, 0, 0}, textStyle = {TextStyle.Bold}, textString = "~")}));
+        Icon(graphics={  Text(origin = {-79, 97}, lineColor = {0, 0, 255}, extent = {{-131, 11}, {131, -11}}, textString = "%name"), Text(extent = {{-70, -10}, {12, -50}}, lineColor = {0, 0, 0}, textStyle = {TextStyle.Bold}, textString = "~")}));
     end myCausalBusVOutput;
+
     annotation (
       Icon(coordinateSystem(grid = {0.1, 0.1}), graphics={  Rectangle(lineColor = {200, 200, 200}, fillColor = {248, 248, 248},
               fillPattern =                                                                                                                   FillPattern.HorizontalCylinder, extent = {{-100, -101.1}, {100, 98.9}}, radius = 25.0), Rectangle(lineColor = {128, 128, 128}, extent = {{-100, -101.1}, {100, 98.9}}, radius = 25.0), Text(extent = {{-78, 52.9}, {72, -59.1}}, lineColor = {28, 108, 200}, fontName = "Segoe Print", textString = "B")}),
@@ -903,11 +954,6 @@ The myAcausalTerminal connector represents an AC terminal with voltage and flow 
       annotation (
         Icon(graphics={  Line(points = {{90, 0}, {40, 0}}, color = {0, 0, 0}, thickness = 0.5), Text(origin = {0, 68}, lineColor = {0, 0, 255}, extent = {{-118, 12}, {118, -12}}, textString = "%name"), Line(points = {{-40, 0}, {-90, 0}}, color = {0, 0, 0}, thickness = 0.5)}));
     end myBreaker;
-
-    model myGround "Icon for ground"
-      annotation (
-        Icon(graphics={  Line(origin = {0, -20}, points = {{0, 20}, {0, -20}, {0, -20}}), Line(origin = {0, -40}, points = {{-40, 0}, {40, 0}, {40, 0}, {40, 0}}), Line(origin = {0, -60}, points = {{-20, 0}, {20, 0}, {20, 0}}), Line(origin = {0, -80}, points = {{-4, 0}, {4, 0}})}, coordinateSystem(initialScale = 0.1)));
-    end myGround;
 
     model myBus "Icon for causal bus"
       annotation (
@@ -1429,7 +1475,7 @@ depending on the variable input voltage")}),
         Placement(visible = true, transformation(origin = {34, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
       connect(src.terminal, load.terminal) annotation (
-        Line(points={{-36,20},{4,20},{4,20.02},{33.96,20.02}},          color = {0, 0, 0}));
+        Line(points={{-36,20},{4,20},{4,19.97},{33.99,19.97}},          color = {0, 0, 0}));
       annotation (
         Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-34, -10}, {40, -54}}, fontSize = 12, textString = "voltage is 10 kV
 current is 0,289 A
@@ -1495,7 +1541,7 @@ measured apparent power is 5 kVA"), Text(lineColor = {28, 108, 200}, extent = {{
       connect(bin.terminal, load.terminal) annotation (
         Line(points = {{15, 10}, {34, 10}, {34, 10.02}, {53.96, 10.02}}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{26, 42}, {102, 20}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-34, -20}, {40, -64}}, fontSize = 12, textString = "same results as previous model
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{26, 42}, {102, 20}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-34, -20}, {40, -64}}, fontSize = 12, textString = "same results as previous model
 voltage is 10 kV
 current is 0,289 A
 apparent power flowing the components is 5 kVA")}, coordinateSystem(initialScale = 0.1)),
@@ -1516,7 +1562,7 @@ apparent power flowing the components is 5 kVA")}, coordinateSystem(initialScale
       connect(line.terminalB, load.terminal) annotation (
         Line(points = {{10, 16}, {30, 16}, {30, 16.02}, {49.96, 16.02}}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-22, 52}, {150, 26}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-36, -10}, {38, -54}}, fontSize = 12, textString = "source voltage is 10 kV
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-22, 52}, {150, 26}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-36, -10}, {38, -54}}, fontSize = 12, textString = "source voltage is 10 kV
 current in load is 0.289 A
 voltage drop is 10 V in the resistive line")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
@@ -1524,15 +1570,21 @@ voltage drop is 10 V in the resistive line")}, coordinateSystem(initialScale = 0
 
     model TwoSourcesTwoLinesOneLoad
       extends Icons.myExample;
-      Components.mySource src1(UNom = 10000) annotation (
+      Components.mySource src1(UNom=20000)   annotation (
         Placement(visible = true, transformation(origin = {-26, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Components.myLoad load(UNom = 10000, P = 4000, Q = 3000) annotation (
+      Components.myLoad load(
+        UNom=20000,
+        P=500000,
+        Q=150000)                                              annotation (
         Placement(visible = true, transformation(origin = {36, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Components.mySource src2(UNom = 10000) annotation (
+      Components.mySource src2(UNom=20000)   annotation (
         Placement(visible = true, transformation(origin = {-26, -12}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Components.myLine line1(UNom = 10000, Imax = 50, R = 1) annotation (
+      Components.myLine line1(
+        UNom=20000,                         Imax = 50, R = 1) annotation (
         Placement(visible = true, transformation(origin = {6, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      Components.myLine line2(UNom = 10000, Imax = 50, R = 1) annotation (
+      Components.myLine line2(
+        UNom=20000,                         Imax = 50,
+        R=2)                                                  annotation (
         Placement(visible = true, transformation(origin = {6, -12}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     equation
       connect(src1.terminal, line1.terminalA) annotation (
@@ -1544,8 +1596,14 @@ voltage drop is 10 V in the resistive line")}, coordinateSystem(initialScale = 0
       connect(line2.terminalB, line1.terminalB) annotation (
         Line(points = {{16, -12}, {26, -12}, {26, 30}, {16, 30}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-38, -20}, {36, -64}}, fontSize = 12, textString = "current is 0.289 A in the load
-and equally divided in the two lines"), Text(lineColor = {28, 108, 200}, extent = {{4, 36}, {174, 12}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar")}, coordinateSystem(initialScale = 0.1)),
+        Diagram(graphics={  Text(lineColor={28,108,200},     extent={{-36,-30},
+                  {38,-74}},                                                                   fontSize=
+                  12,
+              textString="current in the load (15.08 A) is circulating
+in the line 1 (2/3) and the line 2 (1/3)
+voltage drop is 17 V"),                 Text(lineColor={28,108,200},     extent = {{4, 36}, {174, 12}}, fontSize=
+                  12,
+              textString="P=500 kW and Q=150 kvar")},                                                                                                        coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
     end TwoSourcesTwoLinesOneLoad;
 
@@ -1567,7 +1625,7 @@ and equally divided in the two lines"), Text(lineColor = {28, 108, 200}, extent 
       connect(line1.terminalA, line2.terminalA) annotation (
         Line(points = {{-14, 14}, {-32, 14}, {-32, -12}, {-14, -12}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-6, 54}, {70, 32}}, textString = "P=5 kW and Q=0.1 kvar for the load
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-6, 54}, {70, 32}}, textString = "P=5 kW and Q=0.1 kvar for the load
 Pstart=-5 kW for the PV node", fontSize = 12), Text(lineColor = {28, 108, 200}, extent = {{-34, -26}, {40, -70}}, fontSize = 12, textString = "the load is correctly supplied by the PV node
 and the voltage in the load is correct (380 V)")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
@@ -1583,7 +1641,7 @@ and the voltage in the load is correct (380 V)")}, coordinateSystem(initialScale
       connect(src.terminal, tra.terminalA) annotation (
         Line(points = {{-16, 20}, {8, 20}}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-36, -16}, {38, -60}}, fontSize = 12, textString = "upstream voltage is 10 kV
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-36, -16}, {38, -60}}, fontSize = 12, textString = "upstream voltage is 10 kV
 downstream voltage is 5 kV
 current and apparent power are null")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
@@ -1607,7 +1665,7 @@ current and apparent power are null")}, coordinateSystem(initialScale = 0.1)),
       connect(tra1.terminalB, line.terminalA) annotation (
         Line(points = {{-4, 12}, {14, 12}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(extent = {{-36, -16}, {38, -60}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "source voltage is 63 kV
+        Diagram(graphics={  Text(extent = {{-36, -16}, {38, -60}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "source voltage is 63 kV
 downstream the first transformer the voltage is 20 kV
 downstream the second transformer the voltage is 400 V
 current is null along the feeder")}),
@@ -1644,7 +1702,7 @@ current is null along the feeder")}),
       connect(tra2.terminalB, line4.terminalA) annotation (
         Line(points = {{42, 20}, {48, 20}, {48, -4}, {66, -4}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(extent = {{-36, -20}, {38, -64}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "source voltage is 63 kV
+        Diagram(graphics={  Text(extent = {{-36, -20}, {38, -64}}, lineColor = {28, 108, 200}, fontSize = 12, textString = "source voltage is 63 kV
 downstream the first transformer the voltage is 20 kV
 downstream the second transformer the voltage is 400 V
 current is null along the feeders")}),
@@ -1665,7 +1723,7 @@ current is null along the feeders")}),
       connect(tra.terminalB, load.terminal) annotation (
         Line(points = {{4, 20}, {18, 20}, {18, 20.02}, {31.96, 20.02}}));
       annotation (
-        Diagram(graphics = {Text(origin = {-29.513, 13}, lineColor = {28, 108, 200}, extent = {{-84.5405, -27}, {99.4603, -81}}, textString = "upstream voltage is 20 kV
+        Diagram(graphics={  Text(origin = {-29.513, 13}, lineColor = {28, 108, 200}, extent = {{-84.5405, -27}, {99.4603, -81}}, textString = "upstream voltage is 20 kV
 downstream voltage is 10 kV
 current in load is 0.289 A
 current in source is 0.144 A
@@ -1703,7 +1761,7 @@ voltage drop at the port B of the transformer is 1.25 V", fontSize = 12), Text(l
       connect(src.terminal, line3.terminalA) annotation (
         Line(points = {{-66, 26}, {-38, 26}, {-38, 4}, {-16, 4}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-4, 62}, {176, 38}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-144, -26}, {148, -72}}, fontSize = 12, textString = "source voltage is 10 kV
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-4, 62}, {176, 38}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-144, -26}, {148, -72}}, fontSize = 12, textString = "source voltage is 10 kV
 current in line1 and line2 is 0.289 A
 current in line3 is doubled (0.578 A)
 voltage drop in line2 and line3 is 5 V
@@ -1730,7 +1788,7 @@ current in the source 1.156 A"), Text(lineColor = {28, 108, 200}, extent = {{-2,
       connect(tra.terminalB, line.terminalA) annotation (
         Line(points = {{-10, 22}, {8, 22}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-20, 62}, {152, 28}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-36, -18}, {38, -62}}, fontSize = 12, textString = "source voltage is 20 kV
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-20, 62}, {152, 28}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-36, -18}, {38, -62}}, fontSize = 12, textString = "source voltage is 20 kV
 downstream voltage in transformer is 10 kV
 voltage drop is 5 V in the line
 current in the load is 0.289 A
@@ -1745,18 +1803,18 @@ current in the source is 0.144 A")}, coordinateSystem(initialScale = 0.1)),
       Components.myLine line1(UNom = 10000, R = 10, X = 2.657870e-02, Imax = 80) annotation (
         Placement(transformation(extent = {{-32, 0}, {-12, 20}})));
       Components.myLine line2(UNom = 10000, R = 10, X = 2.657870e-02, Imax = 80) annotation (
-        Placement(transformation(extent = {{10, 0}, {30, 20}})));
+        Placement(transformation(extent={{6,0},{26,20}})));
       Components.myLoad load(UNom = 10000, P = 4000, Q = 3000) annotation (
-        Placement(transformation(extent = {{40, 0}, {60, 20}})));
+        Placement(transformation(extent={{32,0},{52,20}})));
     equation
       connect(src.terminal, line1.terminalA) annotation (
         Line(points = {{-52, 10}, {-32, 10}}, color = {0, 0, 0}));
       connect(line1.terminalB, line2.terminalA) annotation (
-        Line(points = {{-12, 10}, {10, 10}}, color = {0, 0, 0}));
+        Line(points={{-12,10},{6,10}},       color = {0, 0, 0}));
       connect(line2.terminalB, load.terminal) annotation (
-        Line(points = {{30, 10}, {40, 10}, {40, 10.02}, {49.96, 10.02}}, color = {0, 0, 0}));
+        Line(points={{26,10},{40,10},{40,10.02},{41.96,10.02}},          color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-30, 62}, {168, 34}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-36, -8}, {38, -52}}, fontSize = 12, textString = "source voltage is 10 kV
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-30, 62}, {168, 34}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-36, -8}, {38, -52}}, fontSize = 12, textString = "source voltage is 10 kV
 voltage drop is about 4 V in each resistive line
 current is 0.289 A in the feeder")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
@@ -1788,7 +1846,7 @@ current is 0.289 A in the feeder")}, coordinateSystem(initialScale = 0.1)),
       connect(tra2.terminalB, line2.terminalA) annotation (
         Line(points = {{26, 22}, {40, 22}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{2, 56}, {176, 34}}, fontSize = 12, textString = "P=50 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-40, -10}, {34, -54}}, fontSize = 12, textString = "as the load is strong
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{2, 56}, {176, 34}}, fontSize = 12, textString = "P=50 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-40, -10}, {34, -54}}, fontSize = 12, textString = "as the load is strong
 current is exceeding the maximum
 acceptable value for line2
 but voltage is correct")}, coordinateSystem(initialScale = 0.1)),
@@ -1813,7 +1871,7 @@ but voltage is correct")}, coordinateSystem(initialScale = 0.1)),
       connect(tra1.terminalB, tra2.terminalA) annotation (
         Line(points = {{-14, 22}, {10, 22}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{50, 58}, {126, 36}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-24, -6}, {50, -50}}, fontSize = 12, textString = "with almost perfect transformers
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{50, 58}, {126, 36}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-24, -6}, {50, -50}}, fontSize = 12, textString = "with almost perfect transformers
 current is 7.22 A in the load
 and 0.046 A in the source")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
@@ -1938,7 +1996,7 @@ voltage in the load is 387 V")},             coordinateSystem(initialScale = 0.1
       connect(line2.terminalB, load.terminal) annotation (
         Line(points = {{42, 20}, {70, 20}, {70, 20.02}, {99.96, 20.02}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-28, 58}, {174, 34}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-38, -16}, {36, -60}}, fontSize = 12, textString = "same results as previous model
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-28, 58}, {174, 34}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-38, -16}, {36, -60}}, fontSize = 12, textString = "same results as previous model
 current is 7.46 A in the load
 and 0.047 A in the source")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
@@ -1955,7 +2013,7 @@ and 0.047 A in the source")}, coordinateSystem(initialScale = 0.1)),
       Components.myLine line2(UNom = 400, Imax = 60, R = 1, X = 2.657870e-02) annotation (
         Placement(visible = true, transformation(origin = {32, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Components.myLoad load(UNom = 400, P = 5000) annotation (
-        Placement(visible = true, transformation(origin = {100, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Placement(visible = true, transformation(origin={100,20},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Components.myLine line1(UNom = 20000, Imax = 60, R = 1, X = 125e-4) annotation (
         Placement(visible = true, transformation(origin = {-30, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
       Components.myTransformer tra1(UNomA = 63000, UNomB = 20000, SNom = 70, R = 0.2, X = 1e-6) annotation (
@@ -1980,11 +2038,11 @@ and 0.047 A in the source")}, coordinateSystem(initialScale = 0.1)),
       connect(line2.terminalB, bout2.terminal) annotation (
         Line(points = {{42, 20}, {53, 20}}, color = {0, 0, 0}));
       connect(bin2.terminal, load.terminal) annotation (
-        Line(points = {{85, 20}, {92, 20}, {92, 20.02}, {99.96, 20.02}}, color = {0, 0, 0}));
+        Line(points={{85,20},{92,20},{92,20.02},{99.96,20.02}},          color = {0, 0, 0}));
       connect(tra1.terminalB, line1.terminalA) annotation (
         Line(points = {{-96, 20}, {-40, 20}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-28, 58}, {174, 34}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-38, -16}, {36, -60}}, fontSize = 12, textString = "same results as previous model
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-28, 58}, {174, 34}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-38, -16}, {36, -60}}, fontSize = 12, textString = "same results as previous model
 current is 7.46 A in the load
 and 0.047 A in the source")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
@@ -2044,7 +2102,7 @@ and 0.047 A in the source")}, coordinateSystem(initialScale = 0.1)),
       connect(bin1.terminal, line1.terminalA) annotation (
         Line(points = {{-51, 20}, {-40, 20}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-28, 58}, {174, 34}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-38, -16}, {36, -60}}, fontSize = 12, textString = "same results as previous model
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-28, 58}, {174, 34}}, fontSize = 12, textString = "P=5 kW and Q=0 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-38, -16}, {36, -60}}, fontSize = 12, textString = "same results as previous model
 current is 7.46 A in the load
 and 0.047 A in the source")}, coordinateSystem(initialScale = 0.1)),
         experiment(StopTime = 1));
@@ -2069,7 +2127,7 @@ and 0.047 A in the source")}, coordinateSystem(initialScale = 0.1)),
         Line(points = {{18, -2}, {40, -2}, {40, -17.98}, {59.96, -17.98}}, color = {0, 0, 0}));
       annotation (
         Icon(coordinateSystem(preserveAspectRatio = false)),
-        Diagram(coordinateSystem(preserveAspectRatio = false), graphics = {Text(lineColor = {28, 108, 200}, extent = {{28, 46}, {104, 24}}, fontSize = 12, textString = "about 8 Mvar"), Text(lineColor = {28, 108, 200}, extent = {{-28, -24}, {174, -46}}, fontSize = 12, textString = "P=4 MW and Q=3 Mvar"), Text(lineColor = {28, 108, 200}, extent = {{-148, -50}, {148, -84}}, fontSize = 12, textString = "voltage after the line is increased
+        Diagram(coordinateSystem(preserveAspectRatio = false), graphics={  Text(lineColor = {28, 108, 200}, extent = {{28, 46}, {104, 24}}, fontSize = 12, textString = "about 8 Mvar"), Text(lineColor = {28, 108, 200}, extent = {{-28, -24}, {174, -46}}, fontSize = 12, textString = "P=4 MW and Q=3 Mvar"), Text(lineColor = {28, 108, 200}, extent = {{-148, -50}, {148, -84}}, fontSize = 12, textString = "voltage after the line is increased
 by the capacitor bank
 but the current in the line exceeds the maximum admissible value")}),
         experiment(StopTime = 1));
@@ -2089,7 +2147,7 @@ but the current in the line exceeds the maximum admissible value")}),
       connect(src1.terminal, line.terminalA) annotation (
         Line(points = {{-52, 0}, {-10, 0}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-144, -24}, {152, -58}}, fontSize = 12, textString = "current  is 57.7 A in line
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-144, -24}, {152, -58}}, fontSize = 12, textString = "current  is 57.7 A in line
 and Imax is only 50 A")}),
         experiment(StopTime = 1));
     end OneSouceOneLineOneSource;
@@ -2120,7 +2178,7 @@ and Imax is only 50 A")}),
       connect(line1.terminalB, src2.terminal) annotation (
         Line(points = {{10, 42}, {60, 42}, {60, 1.33227e-15}, {84, 1.33227e-15}, {84, 0}}, color = {0, 0, 0}));
       annotation (
-        Diagram(coordinateSystem(initialScale = 0.1), graphics = {Text(lineColor = {28, 108, 200}, extent = {{-142, -48}, {154, -82}}, fontSize = 12, textString = "current in all lines is 57.7 A as line parameters are identical
+        Diagram(coordinateSystem(initialScale = 0.1), graphics={  Text(lineColor = {28, 108, 200}, extent = {{-142, -48}, {154, -82}}, fontSize = 12, textString = "current in all lines is 57.7 A as line parameters are identical
 but Imax for line3 is only 50 A")}),
         experiment(StopTime = 1));
     end OneSourceThreeLinesOneSource;
@@ -2181,7 +2239,7 @@ in active, reactive and apparent powers in the line")}),
         Line(points = {{-22, 8}, {20, 8}}, color = {0, 0, 0}));
       annotation (
         Icon(coordinateSystem(grid = {0.1, 0.1})),
-        Diagram(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(lineColor = {28, 108, 200}, extent = {{-148, -16}, {144, -62}}, fontSize = 12, textString = "a fault appears at 0.4 s and is eliminated in 200 ms
+        Diagram(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics={  Text(lineColor = {28, 108, 200}, extent = {{-148, -16}, {144, -62}}, fontSize = 12, textString = "a fault appears at 0.4 s and is eliminated in 200 ms
 its location is at 70%% line length from port A
 during fault, voltage drop at port B is 7 kV
 and fault current is very important")}),
@@ -2213,7 +2271,7 @@ and fault current is very important")}),
       connect(line1.terminalB, load.terminal) annotation (
         Line(points = {{32, 10}, {40, 10}, {40, 10.02}, {49.96, 10.02}}, color = {0, 0, 0}));
       annotation (
-        Diagram(graphics = {Text(lineColor = {28, 108, 200}, extent = {{-30, 62}, {168, 34}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-36, -18}, {38, -62}}, fontSize = 12, textString = "a fault appears at 0.4 s and is eliminated in 200 ms
+        Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-30, 62}, {168, 34}}, fontSize = 12, textString = "P=4 kW and Q=3 kvar"), Text(lineColor = {28, 108, 200}, extent = {{-36, -18}, {38, -62}}, fontSize = 12, textString = "a fault appears at 0.4 s and is eliminated in 200 ms
 its location is at 70%% line length from port A
 source voltge is 10 kV
 current during default is above Imax for line2")}, coordinateSystem(initialScale = 0.1)),
@@ -2255,14 +2313,14 @@ current during default is above Imax for line2")}, coordinateSystem(initialScale
       connect(tra.terminalB, line2.terminalA) annotation (
         Line(points = {{22, 74}, {38, 74}}, color = {0, 0, 0}));
       connect(varLoad.terminal, line2.terminalB) annotation (
-        Line(points = {{75.96, 74.02}, {66, 74.02}, {66, 74}, {58, 74}}, color = {0, 0, 0}));
+        Line(points={{75.99,73.97},{66,73.97},{66,74},{58,74}},          color = {0, 0, 0}));
       connect(tra.terminalA, line1.terminalB) annotation (
         Line(points = {{2, 74}, {-12, 74}}, color = {0, 0, 0}));
       connect(src.terminal, line1.terminalA) annotation (
         Line(points = {{-48, 74}, {-32, 74}}, color = {0, 0, 0}));
       annotation (
         Icon(coordinateSystem(preserveAspectRatio = false)),
-        Diagram(coordinateSystem(preserveAspectRatio = false), graphics = {Text(lineColor = {28, 108, 200}, extent = {{-66, -12}, {58, -86}}, fontSize = 12, textString = "variable P/Q are given by
+        Diagram(coordinateSystem(preserveAspectRatio = false), graphics={  Text(lineColor = {28, 108, 200}, extent = {{-66, -12}, {58, -86}}, fontSize = 12, textString = "variable P/Q are given by
 the resource file variablePQLoad.csv
 located in folder Resources/Files
 simulation is done for 1-year duration")}),
@@ -2449,58 +2507,10 @@ the variable active power of the load")}),
       end WithVariableLoad;
     end VariableTransformers;
 
-    package BreakerTests
+    package BreakerTests "Particular cases where the loads are permanently supplied"
       extends Icons.myExamplesPackage;
 
-      model BreakersWithLines "Two lines with opposite breakers"
-        extends Icons.myExample;
-        Components.mySource src2(UNom = 100) annotation (
-          Placement(transformation(extent = {{-74, 8}, {-54, 28}})));
-        Modelica.Blocks.Logical.Not n annotation (
-          Placement(transformation(extent = {{-6, -6}, {6, 6}}, rotation = 180, origin = {-10, 42})));
-        Components.mySource src1(UNom = 1000) annotation (
-          Placement(transformation(extent = {{-74, 56}, {-54, 76}})));
-        Components.myLine line1(UNom = 1000, R = 10, X = 1e-6) annotation (
-          Placement(transformation(extent = {{0, 56}, {20, 76}})));
-        Components.myLine line2(UNom = 100, R = 10, X = 1e-6) annotation (
-          Placement(transformation(extent = {{2, 8}, {22, 28}})));
-        Components.myBreaker brk1 annotation (
-          Placement(transformation(extent = {{-36, 56}, {-16, 76}})));
-        Components.myBreaker brk2 annotation (
-          Placement(transformation(extent = {{-36, 8}, {-16, 28}})));
-        Modelica.Blocks.Sources.BooleanStep cmd(startTime = 0.5, startValue = true) annotation (
-          Placement(transformation(extent = {{-6, -6}, {6, 6}}, rotation = 180, origin = {48, 42})));
-        Components.myGround ground annotation (
-          Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 0, origin = {86, 44})));
-      equation
-        connect(src1.terminal, brk1.terminalA) annotation (
-          Line(points = {{-64, 66}, {-36, 66}}, color = {0, 0, 0}));
-        connect(src2.terminal, brk2.terminalA) annotation (
-          Line(points = {{-64, 18}, {-36, 18}}, color = {0, 0, 0}));
-        connect(n.y, brk1.BrkOpen) annotation (
-          Line(points = {{-16.6, 42}, {-26, 42}, {-26, 63}}, color = {255, 0, 255}));
-        connect(cmd.y, n.u) annotation (
-          Line(points = {{41.4, 42}, {-2.8, 42}}, color = {255, 0, 255}));
-        connect(brk1.terminalB, line1.terminalA) annotation (
-          Line(points = {{-16, 66}, {0, 66}}, color = {0, 0, 0}));
-        connect(brk2.terminalB, line2.terminalA) annotation (
-          Line(points = {{-16, 18}, {2, 18}}, color = {0, 0, 0}));
-        connect(line1.terminalB, ground.terminal) annotation (
-          Line(points = {{20, 66}, {80, 66}, {80, 44}, {86, 44}}, color = {0, 0, 0}));
-        connect(line2.terminalB, ground.terminal) annotation (
-          Line(points = {{22, 18}, {80, 18}, {80, 44}, {86, 44}}, color = {0, 0, 0}));
-        connect(cmd.y, brk2.BrkOpen) annotation (
-          Line(points = {{41.4, 42}, {34, 42}, {34, -2}, {-26, -2}, {-26, 15}}, color = {255, 0, 255}));
-        annotation (
-          Icon(coordinateSystem(preserveAspectRatio = false)),
-          Diagram(coordinateSystem(preserveAspectRatio = false), graphics={  Text(lineColor = {28, 108, 200}, extent = {{-122, -6}, {118, -80}}, fontSize = 12, textString = "the positions of the circuit breakers are opposite
-brk1 starting position is close
-brk2 starting position is open
-breaker positions are changing at 0.5 s")}),
-          experiment(StopTime = 1));
-      end BreakersWithLines;
-
-      model DistrictWithBreakers "District with two breakers"
+      model DistrictWithOppositeBreakers "District with two opposite breakers"
         extends Icons.myExample;
         Components.myTransformer tra1(UNomA = 20000, UNomB = 400, SNom = 50, R = 0.1) annotation (
           Placement(transformation(extent = {{-18, 38}, {2, 58}})));
@@ -2530,9 +2540,11 @@ breaker positions are changing at 0.5 s")}),
           Placement(transformation(extent = {{32, -58}, {52, -38}})));
         Components.myLine line211(UNom = 400, R = 0.1) annotation (
           Placement(transformation(extent = {{70, -90}, {90, -70}})));
-        Components.myBreaker brk1 annotation (
+        Components.myBreaker brk1(UNom=400)
+                                  annotation (
           Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 270, origin = {24, 30})));
-        Components.myBreaker brk2 annotation (
+        Components.myBreaker brk2(UNom=400)
+                                  annotation (
           Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 270, origin = {24, -30})));
         Components.mySource src(UNom = 63000) annotation (
           Placement(transformation(extent = {{-100, -10}, {-80, 10}})));
@@ -2545,8 +2557,6 @@ breaker positions are changing at 0.5 s")}),
       equation
         connect(tra1.terminalB, line11.terminalA) annotation (
           Line(points = {{2, 48}, {32, 48}}, color = {0, 0, 0}));
-        connect(brk2.terminalA, brk1.terminalB) annotation (
-          Line(points = {{24, -20}, {36, -20}, {36, 20}, {24, 20}}, color = {0, 0, 0}));
         connect(tra2.terminalB, line21.terminalA) annotation (
           Line(points = {{2, -48}, {32, -48}}, color = {0, 0, 0}));
         connect(line2.terminalB, tra2.terminalA) annotation (
@@ -2555,16 +2565,14 @@ breaker positions are changing at 0.5 s")}),
           Line(points = {{24, 40}, {24, 48}, {32, 48}}, color = {0, 0, 0}));
         connect(brk2.terminalB, line21.terminalA) annotation (
           Line(points = {{24, -40}, {24, -48}, {32, -48}}, color = {0, 0, 0}));
-        connect(line.terminalA, brk1.terminalB) annotation (
-          Line(points = {{58, 0}, {36, 0}, {36, 20}, {24, 20}}, color = {0, 0, 0}));
         connect(load.terminal, line.terminalB) annotation (
-          Line(points = {{99.96, 0.02}, {88, 0.02}, {88, 0}, {78, 0}}, color = {0, 0, 0}));
+          Line(points={{99.99,-0.03},{88,-0.03},{88,0},{78,0}},        color = {0, 0, 0}));
         connect(load21.terminal, line21.terminalB) annotation (
-          Line(points = {{99.96, -47.98}, {76, -47.98}, {76, -48}, {52, -48}}, color = {0, 0, 0}));
+          Line(points={{99.99,-48.03},{76,-48.03},{76,-48},{52,-48}},          color = {0, 0, 0}));
         connect(load22.terminal, line211.terminalB) annotation (
-          Line(points = {{99.96, -79.98}, {96, -79.98}, {96, -80}, {90, -80}}, color = {0, 0, 0}));
+          Line(points={{99.99,-80.03},{96,-80.03},{96,-80},{90,-80}},          color = {0, 0, 0}));
         connect(load12.terminal, line111.terminalB) annotation (
-          Line(points = {{99.96, 80.02}, {96, 80.02}, {96, 80}, {90, 80}}, color = {0, 0, 0}));
+          Line(points={{99.99,79.97},{96,79.97},{96,80},{90,80}},          color = {0, 0, 0}));
         connect(src.terminal, tra.terminalA) annotation (
           Line(points = {{-90, 0}, {-72, 0}}, color = {0, 0, 0}));
         connect(tra.terminalB, line1.terminalA) annotation (
@@ -2576,7 +2584,7 @@ breaker positions are changing at 0.5 s")}),
         connect(line21.terminalB, line211.terminalA) annotation (
           Line(points = {{52, -48}, {60, -48}, {60, -80}, {70, -80}}, color = {0, 0, 0}));
         connect(line11.terminalB, load11.terminal) annotation (
-          Line(points = {{52, 48}, {74, 48}, {74, 48.02}, {99.96, 48.02}}, color = {0, 0, 0}));
+          Line(points={{52,48},{74,48},{74,47.97},{99.99,47.97}},          color = {0, 0, 0}));
         connect(line11.terminalB, line111.terminalA) annotation (
           Line(points = {{52, 48}, {60, 48}, {60, 80}, {70, 80}}, color = {0, 0, 0}));
         connect(n.y, brk2.BrkOpen) annotation (
@@ -2585,23 +2593,28 @@ breaker positions are changing at 0.5 s")}),
           Line(points = {{-9.4, 0}, {0, 0}, {0, -30}, {2.8, -30}}, color = {255, 0, 255}));
         connect(cmd.y, brk1.BrkOpen) annotation (
           Line(points = {{-9.4, 0}, {0, 0}, {0, 30}, {21, 30}}, color = {255, 0, 255}));
+        connect(brk1.terminalB, line.terminalA)
+          annotation (Line(points={{24,20},{24,0},{58,0}}, color={0,0,0}));
+        connect(brk2.terminalA, line.terminalA)
+          annotation (Line(points={{24,-20},{24,0},{58,0}}, color={0,0,0}));
         annotation (
           Icon(coordinateSystem(preserveAspectRatio = false)),
           Diagram(coordinateSystem(preserveAspectRatio = false), graphics={  Text(lineColor = {28, 108, 200}, extent = {{-160, -42}, {80, -116}}, fontSize = 12, textString = "the position of the circuit breakers are opposite
 breaker positions are changing at 0.5 s
 all loads are permanently supplied")}),
           experiment(StopTime = 1));
-      end DistrictWithBreakers;
+      end DistrictWithOppositeBreakers;
 
-      model Islanding1 "Two loads with opposite breakers"
+      model Islanding1 "One load permanently supplied"
         extends Icons.myExample;
         Components.mySource src(UNom = 20000) annotation (
           Placement(visible = true, transformation(origin = {-88, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Components.myBreaker brk annotation (
+        Components.myBreaker brk(UNom=400)
+                                 annotation (
           Placement(transformation(extent = {{-10, 20}, {10, 40}})));
         Components.myPVNode pv(Pmax(displayUnit = "kW") = -8000, UNom(displayUnit = "V") = 400) annotation (
           Placement(visible = true, transformation(origin = {68, 42}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Components.myLoad load3(P(displayUnit = "W") = 5000, Q(displayUnit = "var") = 100, UNom(displayUnit = "V") = 400) annotation (
+        Components.myLoad load1(P(displayUnit = "W") = 5000, Q(displayUnit = "var") = 100, UNom(displayUnit = "V") = 400) annotation (
           Placement(visible = true, transformation(origin = {62, 16}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
         Components.myLine line2(B = 0.01, G = 0.01, Imax = 50, R = 0.1, UNom(displayUnit = "V") = 400) annotation (
           Placement(visible = true, transformation(origin = {44, 42}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -2616,8 +2629,8 @@ all loads are permanently supplied")}),
       equation
         connect(pv.terminal, line2.terminalB) annotation (
           Line(points = {{68, 42}, {60, 42}, {60, 42}, {54, 42}}, color = {0, 0, 0}));
-        connect(line3.terminalB, load3.terminal) annotation (
-          Line(points = {{54, 16}, {62, 16}, {62, 16.02}, {61.96, 16.02}}, color = {0, 0, 0}));
+        connect(line3.terminalB,load1. terminal) annotation (
+          Line(points={{54,16},{62,16},{62,15.97},{61.99,15.97}},          color = {0, 0, 0}));
         connect(brk.terminalB, line2.terminalA) annotation (
           Line(points = {{10, 30}, {22, 30}, {22, 42}, {34, 42}}, color = {0, 0, 0}));
         connect(brk.terminalB, line3.terminalA) annotation (
@@ -2640,11 +2653,12 @@ Pstart=-2 kW for the PV node")}),
           experiment(StopTime = 1));
       end Islanding1;
 
-      model Islanding2 "Two loads with opposite breakers"
+      model Islanding2 "Two loads permanently supplied"
         extends Icons.myExample;
         Components.mySource src(UNom = 20000) annotation (
           Placement(visible = true, transformation(origin = {-86, 8}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        Components.myBreaker brk annotation (
+        Components.myBreaker brk(UNom=400)
+                                 annotation (
           Placement(transformation(extent = {{-8, -2}, {12, 18}})));
         Components.myPVNode pv1(Pmax(displayUnit = "kW") = -15000, UNom(displayUnit = "V") = 400) annotation (
           Placement(visible = true, transformation(origin = {86, 42}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -2668,7 +2682,7 @@ Pstart=-2 kW for the PV node")}),
         connect(pv1.terminal, line2.terminalB) annotation (
           Line(points = {{86, 42}, {60, 42}}, color = {0, 0, 0}));
         connect(line3.terminalB, load3.terminal) annotation (
-          Line(points = {{60, 8}, {72, 8}, {72, 8.02}, {79.96, 8.02}}));
+          Line(points={{60,8},{72,8},{72,7.97},{79.99,7.97}}));
         connect(brk.terminalB, line2.terminalA) annotation (
           Line(points = {{12, 8}, {24, 8}, {24, 42}, {40, 42}}, color = {0, 0, 0}));
         connect(brk.terminalB, line3.terminalA) annotation (
@@ -2682,7 +2696,7 @@ Pstart=-2 kW for the PV node")}),
         connect(tra.terminalB, brk.terminalA) annotation (
           Line(points = {{-18, 8}, {-8, 8}}, color = {0, 0, 0}));
         connect(line5.terminalB, load5.terminal) annotation (
-          Line(points = {{60, -26}, {72, -26}, {72, -25.98}, {79.96, -25.98}}, color = {0, 0, 0}));
+          Line(points={{60,-26},{72,-26},{72,-26.03},{79.99,-26.03}},          color = {0, 0, 0}));
         connect(brk.terminalB, line5.terminalA) annotation (
           Line(points = {{12, 8}, {24, 8}, {24, -26}, {40, -26}}, color = {0, 0, 0}));
         annotation (
@@ -2952,9 +2966,9 @@ the same model is then cut in 2 parts to get FMUs")}));
         connect(line1.terminalB, tra2.terminalA) annotation (
           Line(points = {{-20, 16}, {-10, 16}}));
         connect(line2.terminalB, load1.terminal) annotation (
-          Line(points = {{60, 38}, {70, 38}, {70, 74.02}, {77.96, 74.02}}));
+          Line(points={{60,38},{70,38},{70,73.97},{77.99,73.97}}));
         connect(line4.terminalB, load3.terminal) annotation (
-          Line(points = {{60, -6}, {70, -6}, {70, -5.98}, {79.96, -5.98}}));
+          Line(points={{60,-6},{70,-6},{70,-6.03},{79.99,-6.03}}));
         connect(tra1.terminalB, line1.terminalA) annotation (
           Line(points = {{-52, 16}, {-40, 16}}, color = {0, 0, 0}));
         connect(tra2.terminalB, line2.terminalA) annotation (
@@ -2962,13 +2976,13 @@ the same model is then cut in 2 parts to get FMUs")}));
         connect(tra2.terminalB, line4.terminalA) annotation (
           Line(points = {{10, 16}, {24, 16}, {24, -6}, {40, -6}}, color = {0, 0, 0}));
         connect(load2.terminal, line3.terminalB) annotation (
-          Line(points = {{79.96, 16.02}, {70, 16.02}, {70, 16}, {60, 16}}, color = {0, 0, 0}));
+          Line(points={{79.99,15.97},{70,15.97},{70,16},{60,16}},          color = {0, 0, 0}));
         connect(tra2.terminalB, line3.terminalA) annotation (
           Line(points = {{10, 16}, {40, 16}}, color = {0, 0, 0}));
         connect(line2.terminalB, line5.terminalA) annotation (
           Line(points = {{60, 38}, {78, 38}}, color = {0, 0, 0}));
         connect(line5.terminalB, load4.terminal) annotation (
-          Line(points = {{98, 38}, {102, 38}, {102, 38.02}, {109.96, 38.02}}, color = {0, 0, 0}));
+          Line(points={{98,38},{102,38},{102,37.97},{109.99,37.97}},          color = {0, 0, 0}));
         connect(src.terminal, tra1.terminalA) annotation (
           Line(points = {{-88, 16}, {-72, 16}, {-72, 16}}, color = {0, 0, 0}));
         annotation (
@@ -2978,7 +2992,7 @@ load1 and load4")}, coordinateSystem(initialScale = 0.1)),
           experiment(StopTime = 1));
       end Network;
 
-      model DoubleNetwork "Same network with two LV feeders"
+      model DoubleNetwork "Double Distribution network"
         extends Icons.myExample;
         Components.myLine line1(UNom = 20000, Imax = 160, R = 0.9, X = 0.3) annotation (
           Placement(visible = true, transformation(origin = {-30, 38}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -3024,9 +3038,9 @@ load1 and load4")}, coordinateSystem(initialScale = 0.1)),
         connect(line1.terminalB, tra2.terminalA) annotation (
           Line(points = {{-20, 38}, {-10, 38}}));
         connect(line2.terminalB, load1.terminal) annotation (
-          Line(points = {{60, 60}, {70, 60}, {70, 96.02}, {77.96, 96.02}}));
+          Line(points={{60,60},{70,60},{70,95.97},{77.99,95.97}}));
         connect(line4.terminalB, load3.terminal) annotation (
-          Line(points = {{60, 16}, {70, 16}, {70, 16.02}, {79.96, 16.02}}));
+          Line(points={{60,16},{70,16},{70,15.97},{79.99,15.97}}));
         connect(src.terminal, tra1.terminalA) annotation (
           Line(points = {{-92, 38}, {-72, 38}}, color = {0, 0, 0}));
         connect(tra1.terminalB, line1.terminalA) annotation (
@@ -3036,23 +3050,23 @@ load1 and load4")}, coordinateSystem(initialScale = 0.1)),
         connect(tra2.terminalB, line4.terminalA) annotation (
           Line(points = {{10, 38}, {24, 38}, {24, 16}, {40, 16}}, color = {0, 0, 0}));
         connect(load2.terminal, line3.terminalB) annotation (
-          Line(points = {{79.96, 38.02}, {70, 38.02}, {70, 38}, {60, 38}}, color = {0, 0, 0}));
+          Line(points={{79.99,37.97},{70,37.97},{70,38},{60,38}},          color = {0, 0, 0}));
         connect(tra2.terminalB, line3.terminalA) annotation (
           Line(points = {{10, 38}, {40, 38}}, color = {0, 0, 0}));
         connect(line2.terminalB, line5.terminalA) annotation (
           Line(points = {{60, 60}, {78, 60}}, color = {0, 0, 0}));
         connect(line5.terminalB, load4.terminal) annotation (
-          Line(points = {{98, 60}, {102, 60}, {102, 60.02}, {109.96, 60.02}}, color = {0, 0, 0}));
+          Line(points={{98,60},{102,60},{102,59.97},{109.99,59.97}},          color = {0, 0, 0}));
         connect(line6.terminalB, load5.terminal) annotation (
-          Line(points = {{62, -40}, {72, -40}, {72, -3.98}, {79.96, -3.98}}));
+          Line(points={{62,-40},{72,-40},{72,-4.03},{79.99,-4.03}}));
         connect(line7.terminalB, load7.terminal) annotation (
-          Line(points = {{62, -84}, {72, -84}, {72, -83.98}, {81.96, -83.98}}));
+          Line(points={{62,-84},{72,-84},{72,-84.03},{81.99,-84.03}}));
         connect(load6.terminal, line8.terminalB) annotation (
-          Line(points = {{81.96, -61.98}, {72, -61.98}, {72, -62}, {62, -62}}, color = {0, 0, 0}));
+          Line(points={{81.99,-62.03},{72,-62.03},{72,-62},{62,-62}},          color = {0, 0, 0}));
         connect(line6.terminalB, line9.terminalA) annotation (
           Line(points = {{62, -40}, {80, -40}}, color = {0, 0, 0}));
         connect(line9.terminalB, load8.terminal) annotation (
-          Line(points = {{100, -40}, {104, -40}, {104, -39.98}, {111.96, -39.98}}, color = {0, 0, 0}));
+          Line(points={{100,-40},{104,-40},{104,-40.03},{111.99,-40.03}},          color = {0, 0, 0}));
         connect(tra2.terminalB, line6.terminalA) annotation (
           Line(points = {{10, 38}, {24, 38}, {24, -40}, {42, -40}}, color = {0, 0, 0}));
         connect(tra2.terminalB, line8.terminalA) annotation (
@@ -3068,185 +3082,527 @@ nominal power exceed detected in tra2"), Text(lineColor = {28, 108, 200}, extent
           experiment(StopTime = 1));
       end DoubleNetwork;
 
-      package StructuredNetwork "Structured networks"
-        extends Icons.myExamplesPackage;
-
-        model DoubleNetwork "Double Distribution network"
-          extends Icons.myExample;
-          UnboundedSource src annotation (Placement(transformation(
-                extent={{-10,-10},{10,10}},
-                rotation=180,
-                origin={-50,30})));
-          UnboundedFeeder feeder2    annotation (Placement(transformation(extent={{16,4},{36,24}})));
-          UnboundedFeeder feeder1    annotation (Placement(transformation(extent={{16,34},{36,54}})));
-        equation
-          connect(src.terminal, feeder1.terminal) annotation (Line(points={{-40.2,30},{0,
-                  30},{0,44},{16.2,44}},          color={0,0,0}));
-          connect(src.terminal, feeder2.terminal) annotation (Line(points={{-40.2,30},{0,
-                  30},{0,14},{16.2,14}},          color={0,0,0}));
-          annotation (
-            Diagram(graphics={                                                                                                                             Text(lineColor=
-                      {28,108,200},                                                                                                                                                         extent={{
-                      -96,-12},{102,-60}},                                                                                                                                                                                    fontSize=
-                      12,
-                  textString="cloning MediumNetworks.DoubleNetwork")},
-                      coordinateSystem(initialScale = 0.1)),
-            experiment(StopTime = 1));
-        end DoubleNetwork;
-
-        model DoubleNetworkWithBreaker "Double Distribution network with breaker"
-          extends Icons.myExample;
-          UnboundedSource srce annotation (Placement(transformation(
-                extent={{-10,-10},{10,10}},
-                rotation=180,
-                origin={-50,30})));
-          UnboundedFeeder feeder2
-            annotation (Placement(transformation(extent={{16,4},{36,24}})));
-          UnboundedFeeder feeder1
-            annotation (Placement(transformation(extent={{16,34},{36,54}})));
-          Components.myBreaker disj
-            annotation (Placement(transformation(extent={{-28,20},{-8,40}})));
-          Modelica.Blocks.Sources.BooleanStep cmd(startTime=0.5, startValue=true)     annotation (
-            Placement(transformation(extent = {{-6, -6}, {6, 6}}, rotation=0,     origin={-46,0})));
-          Modelica.Blocks.Logical.Not n annotation (
-            Placement(transformation(extent = {{-6, -6}, {6, 6}}, rotation=0,     origin={-28,0})));
-
-        equation
-          connect(n.u, cmd.y)
-            annotation (Line(points={{-35.2,0},{-39.4,0}}, color={255,0,255}));
-          connect(n.y, disj.BrkOpen)
-            annotation (Line(points={{-21.4,0},{-18,0},{-18,27}}, color={255,0,255}));
-          connect(srce.terminal, disj.terminalA) annotation (Line(points={{-40.2,30},{-34,
-                  30},{-34,30},{-28,30}}, color={0,0,0}));
-          connect(disj.terminalB, feeder1.terminal)
-            annotation (Line(points={{-8,30},{0,30},{0,44},{16.2,44}}, color={0,0,0}));
-          connect(disj.terminalB, feeder2.terminal)
-            annotation (Line(points={{-8,30},{0,30},{0,14},{16.2,14}}, color={0,0,0}));
-          annotation (
-            Diagram(  coordinateSystem(initialScale = 0.1), graphics={                                                                                     Text(lineColor=
-                      {28,108,200},                                                                                                                                                         extent={{
-                      -96,-16},{102,-64}},                                                                                                                                                                                    fontSize=
-                      12,
-                  textString="adding a breaker to
-MediumNetworks.DoubleNetwork"),                                                                                                                            Text(lineColor=
-                      {238,46,47},                                                                                                                                                          extent={{
-                      -96,-50},{102,-98}},                                                                                                                                                                                    fontSize=
-                      12,
-                  textString="results not realy satisfying")}),
-            experiment(StopTime = 1));
-        end DoubleNetworkWithBreaker;
-
-        model UnboundedSource "Upstream part of the network"
-         extends Components.PartialModels.mySubNetworkOnePort;
-          Components.myTransformer tra1(
-            UNomA=63000,
-            UNomB=20000,
-            SNom=36000,
-            R=1e-9,
-            X=1e-9)  annotation (
-            Placement(visible = true, transformation(origin={-28,66},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-          Components.myLine line1(
-            UNom=20000,
-            Imax=160,
-            R=0.9,
-            X=0.3)  annotation (
-            Placement(visible = true, transformation(origin={4,66},      extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-          Components.myTransformer tra2(
-            UNomA=20000,
-            UNomB=400,
-            SNom=250,
-            R=1e-9,
-            X=1e-9)   annotation (
-            Placement(visible = true, transformation(origin={34,66},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-          Components.mySource src(UNom=63000)   annotation (
-            Placement(visible = true, transformation(origin={-54,66},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        equation
-          connect(line1.terminalB,tra2.terminalA) annotation (
-            Line(points={{14,66},{24,66}}));
-          connect(tra1.terminalB,line1.terminalA) annotation (
-            Line(points={{-18,66},{-6,66}},       color = {0, 0, 0}));
-          connect(src.terminal,tra1.terminalA) annotation (
-            Line(points={{-54,66},{-38,66}},                 color = {0, 0, 0}));
-          connect(tra2.terminalB, terminal)
-            annotation (Line(points={{44,66},{60,66},{60,0},{-98,0}}, color={0,0,0}));
-          annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
-                coordinateSystem(preserveAspectRatio=false), graphics={
-                      Text(lineColor = {28, 108, 200}, extent={{-76,92},{-32,78}},       textStyle = {TextStyle.Bold}, fontSize = 10, textString = "RTE")}));
-        end UnboundedSource;
-
-        model UnboundedFeeder "Downstream part of the network"
-         extends Components.PartialModels.mySubNetworkOnePort;
-          Components.myLoad load1(
-            P=36000/sqrt(1.16),
-            UNom=400,
-            Q=0.4*36000/sqrt(1.16))                                                                 annotation (
-            Placement(visible = true, transformation(origin={64,58},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-          Components.myLine line2(
-            UNom=400,
-            Imax=140,
-            R=0.2,
-            X=0.2)                                                          annotation (
-            Placement(visible = true, transformation(origin={36,22},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-          Components.myLoad load2(
-            P=36000/sqrt(1.16),
-            UNom=400,
-            Q=0.4*36000/sqrt(1.16))                                                                 annotation (
-            Placement(visible = true, transformation(origin={66,0},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-          Components.myLine line4(
-            UNom=400,
-            Imax=140,
-            R=0.2,
-            X=0.2)                                                          annotation (
-            Placement(visible = true, transformation(origin={36,-22},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-          Components.myLoad load3(
-            P=36000/sqrt(1.16),
-            UNom=400,
-            Q=0.4*36000/sqrt(1.16))                                                                 annotation (
-            Placement(visible = true, transformation(origin={66,-22},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-          Components.myLine line3(
-            UNom=400,
-            Imax=140,
-            R=0.2,
-            X=0.2)                                                          annotation (
-            Placement(visible = true, transformation(origin={36,0},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-          Components.myLine line5(
-            UNom=400,
-            Imax=140,
-            R=0.2,
-            X=0.2)                                                          annotation (
-            Placement(visible = true, transformation(origin={74,22},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-          Components.myLoad load4(
-            P=36000/sqrt(1.16),
-            UNom=400,
-            Q=0.4*36000/sqrt(1.16))                                                                 annotation (
-            Placement(visible = true, transformation(origin={96,22},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        equation
-          connect(line2.terminalB,load1. terminal) annotation (
-            Line(points={{46,22},{56,22},{56,58.02},{63.96,58.02}}));
-          connect(line4.terminalB,load3. terminal) annotation (
-            Line(points={{46,-22},{56,-22},{56,-21.98},{65.96,-21.98}}));
-          connect(load2.terminal,line3. terminalB) annotation (
-            Line(points={{65.96,0.02},{56,0.02},{56,0},{46,0}},              color = {0, 0, 0}));
-          connect(line2.terminalB,line5. terminalA) annotation (
-            Line(points={{46,22},{64,22}},      color = {0, 0, 0}));
-          connect(line5.terminalB,load4. terminal) annotation (
-            Line(points={{84,22},{88,22},{88,22.02},{95.96,22.02}},             color = {0, 0, 0}));
-          connect(line3.terminalA, terminal)
-            annotation (Line(points={{26,0},{-36,0},{-36,0},{-98,0}},
-                                                       color={0,0,0}));
-          connect(line4.terminalA, terminal)
-            annotation (Line(points={{26,-22},{0,-22},{0,0},{-98,0}},  color={0,0,0}));
-          connect(line2.terminalA, terminal)
-            annotation (Line(points={{26,22},{0,22},{0,0},{-98,0}},  color={0,0,0}));
-          annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
-                coordinateSystem(preserveAspectRatio=false), graphics={
-                                Text(lineColor = {28, 108, 200}, extent={{-28,80},{48,58}},      fontSize = 10, textStyle = {TextStyle.Bold}, textString = "All residential loads
-36 kVA (Q=0.4*P)")}));
-        end UnboundedFeeder;
-      end StructuredNetwork;
     end MediumNetworks;
 
-    model FourVariableLoadsOneLVFeeder "Realistic case with three LV feeders and four variable loads"
+    package StructuredNetwork "Structured network using subnetwork components"
+      extends Icons.myExamplesPackage;
+
+      model DoubleNetworkWithLoads "Double Distribution network"
+        extends Icons.myExample;
+        Source src annotation (Placement(transformation(
+              extent={{-10,-10},{10,10}},
+              rotation=180,
+              origin={-32,30})));
+        FeederWithLoads feeder2    annotation (Placement(transformation(extent={{24,4},{44,24}})));
+        FeederWithLoads feeder1    annotation (Placement(transformation(extent={{24,34},{44,54}})));
+      equation
+        connect(src.terminal, feeder1.terminal) annotation (Line(points={{-22.2,
+                30},{0,30},{0,44},{24.2,44}},   color={0,0,0}));
+        connect(src.terminal, feeder2.terminal) annotation (Line(points={{-22.2,
+                30},{0,30},{0,14},{24.2,14}},   color={0,0,0}));
+        annotation (
+          Diagram(graphics={                                                                                                                             Text(lineColor=
+                    {28,108,200},                                                                                                                                                         extent={{
+                    -96,-12},{102,-60}},                                                                                                                                                                                    fontSize=
+                    12,
+                textString="another way to model MediumNetworks.DoubleNetwork
+using subnetwork components with loads")},
+                    coordinateSystem(initialScale = 0.1)),
+          experiment(StopTime = 1));
+      end DoubleNetworkWithLoads;
+
+      model DoubleNetworkWithVariableLoads "Double Distribution network"
+        extends Icons.myExample;
+        Source src annotation (Placement(transformation(
+              extent={{-10,-10},{10,10}},
+              rotation=180,
+              origin={-32,30})));
+        FeederWithVariableLoads feeder2    annotation (Placement(transformation(extent={{24,4},{44,24}})));
+        FeederWithVariableLoads feeder1    annotation (Placement(transformation(extent={{24,34},{44,54}})));
+      equation
+        connect(src.terminal, feeder1.terminal) annotation (Line(points={{-22.2,
+                30},{0,30},{0,44},{24.2,44}},   color={0,0,0}));
+        connect(src.terminal, feeder2.terminal) annotation (Line(points={{-22.2,
+                30},{0,30},{0,14},{24.2,14}},   color={0,0,0}));
+        annotation (
+          Diagram(graphics={                                                                                                                             Text(lineColor=
+                    {28,108,200},                                                                                                                                                         extent={{
+                    -96,-12},{102,-60}},                                                                                                                                                                                    fontSize=
+                    12,
+                textString="another way to model MediumNetworks.DoubleNetwork
+using subnetwork components with variable loads")},
+                    coordinateSystem(initialScale = 0.1)),
+          experiment(StopTime = 1));
+      end DoubleNetworkWithVariableLoads;
+
+      model DoubleNetworkWithDisengageableLoads  "Double Distribution network"
+        extends Icons.myExample;
+        Source src annotation (Placement(transformation(
+              extent={{-10,-10},{10,10}},
+              rotation=180,
+              origin={-32,30})));
+        FeederWithDisengageableLoads feeder2   annotation (Placement(transformation(extent={{24,4},{44,24}})));
+        FeederWithDisengageableLoads feeder1   annotation (Placement(transformation(extent={{24,34},{44,54}})));
+      equation
+        //Managing the global variables
+        feeder1.Supplied = true;
+        feeder2.Supplied = true;
+
+        connect(src.terminal, feeder1.terminal) annotation (Line(points={{-22.2,
+                30},{0,30},{0,44},{24.2,44}},   color={0,0,0}));
+        connect(src.terminal, feeder2.terminal) annotation (Line(points={{-22.2,
+                30},{0,30},{0,14},{24.2,14}},   color={0,0,0}));
+        annotation (
+          Diagram(graphics={                                                                                                                             Text(lineColor=
+                    {28,108,200},                                                                                                                                                         extent={{
+                    -96,-12},{102,-60}},                                                                                                                                                                                    fontSize=
+                    12,
+                textString="another way to model MediumNetworks.DoubleNetwork
+using subnetwork components with disengageable loads")},
+                    coordinateSystem(initialScale = 0.1)),
+          experiment(StopTime = 1));
+      end DoubleNetworkWithDisengageableLoads;
+
+      model Source "Upstream part of the networks"
+       extends Components.PartialModels.mySubNetworkOnePort;
+        Components.myTransformer tra1(
+          UNomA=63000,
+          UNomB=20000,
+          SNom=36000,
+          R=1e-9,
+          X=1e-9)  annotation (
+          Placement(visible = true, transformation(origin={-28,66},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLine line1(
+          UNom=20000,
+          Imax=160,
+          R=0.9,
+          X=0.3)  annotation (
+          Placement(visible = true, transformation(origin={4,66},      extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myTransformer tra2(
+          UNomA=20000,
+          UNomB=400,
+          SNom=250,
+          R=1e-9,
+          X=1e-9)   annotation (
+          Placement(visible = true, transformation(origin={34,66},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.mySource src(UNom=63000)   annotation (
+          Placement(visible = true, transformation(origin={-54,66},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      equation
+        connect(line1.terminalB,tra2.terminalA) annotation (
+          Line(points={{14,66},{24,66}}));
+        connect(tra1.terminalB,line1.terminalA) annotation (
+          Line(points={{-18,66},{-6,66}},       color = {0, 0, 0}));
+        connect(src.terminal,tra1.terminalA) annotation (
+          Line(points={{-54,66},{-38,66}},                 color = {0, 0, 0}));
+        connect(tra2.terminalB, terminal)
+          annotation (Line(points={{44,66},{60,66},{60,0},{-98,0}}, color={0,0,0}));
+        annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+              coordinateSystem(preserveAspectRatio=false), graphics={
+                    Text(lineColor = {28, 108, 200}, extent={{-76,92},{-32,78}},       textStyle = {TextStyle.Bold}, fontSize = 10, textString = "RTE")}));
+      end Source;
+
+      model FeederWithLoads "Downstream part of the networks"
+       extends Components.PartialModels.mySubNetworkOnePort;
+        Components.myLoad load1(
+          P=36000/sqrt(1.16),
+          UNom=400,
+          Q=0.4*36000/sqrt(1.16))                                                                 annotation (
+          Placement(visible = true, transformation(origin={64,58},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLine line2(
+          UNom=400,
+          Imax=140,
+          R=0.2,
+          X=0.2)                                                          annotation (
+          Placement(visible = true, transformation(origin={36,22},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLoad load2(
+          P=36000/sqrt(1.16),
+          UNom=400,
+          Q=0.4*36000/sqrt(1.16))                                                                 annotation (
+          Placement(visible = true, transformation(origin={66,0},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLine line4(
+          UNom=400,
+          Imax=140,
+          R=0.2,
+          X=0.2)                                                          annotation (
+          Placement(visible = true, transformation(origin={36,-22},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLoad load3(
+          P=36000/sqrt(1.16),
+          UNom=400,
+          Q=0.4*36000/sqrt(1.16))                                                                 annotation (
+          Placement(visible = true, transformation(origin={66,-22},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLine line3(
+          UNom=400,
+          Imax=140,
+          R=0.2,
+          X=0.2)                                                          annotation (
+          Placement(visible = true, transformation(origin={36,0},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLine line5(
+          UNom=400,
+          Imax=140,
+          R=0.2,
+          X=0.2)                                                          annotation (
+          Placement(visible = true, transformation(origin={74,22},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLoad load4(
+          P=36000/sqrt(1.16),
+          UNom=400,
+          Q=0.4*36000/sqrt(1.16))                                                                 annotation (
+          Placement(visible = true, transformation(origin={96,22},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+      equation
+        connect(line2.terminalB,load1. terminal) annotation (
+          Line(points={{46,22},{56,22},{56,57.97},{63.99,57.97}}));
+        connect(line4.terminalB,load3. terminal) annotation (
+          Line(points={{46,-22},{56,-22},{56,-22.03},{65.99,-22.03}}));
+        connect(load2.terminal,line3. terminalB) annotation (
+          Line(points={{65.99,-0.03},{56,-0.03},{56,0},{46,0}},            color = {0, 0, 0}));
+        connect(line2.terminalB,line5. terminalA) annotation (
+          Line(points={{46,22},{64,22}},      color = {0, 0, 0}));
+        connect(line5.terminalB,load4. terminal) annotation (
+          Line(points={{84,22},{88,22},{88,21.97},{95.99,21.97}},             color = {0, 0, 0}));
+        connect(line3.terminalA, terminal)    annotation (Line(points={{26,0},{-36,0},{-36,0},{-98,0}},
+                                                     color={0,0,0}));
+        connect(line4.terminalA, terminal)    annotation (Line(points={{26,-22},{0,-22},{0,0},{-98,0}},  color={0,0,0}));
+        connect(line2.terminalA, terminal)    annotation (Line(points={{26,22},{0,22},{0,0},{-98,0}},  color={0,0,0}));
+        annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+              coordinateSystem(preserveAspectRatio=false), graphics={
+                              Text(lineColor = {28, 108, 200}, extent={{-28,80},{48,58}},      fontSize = 10, textStyle = {TextStyle.Bold}, textString = "All residential loads
+36 kVA (Q=0.4*P)")}));
+      end FeederWithLoads;
+
+      model FeederWithVariableLoads "Downstream part of the networks"
+       extends Components.PartialModels.mySubNetworkOnePort;
+        Components.myVariableLoad  load1( UNom=400,switchToImpedanceMode=false)   annotation (
+          Placement(visible = true, transformation(origin={64,58},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLine line2(UNom=400,Imax=140,R=0.2,X=0.2)    annotation (
+          Placement(visible = true, transformation(origin={36,22},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myVariableLoad  load2(UNom=400,switchToImpedanceMode=false)    annotation (
+          Placement(visible = true, transformation(origin={66,0},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLine line4(UNom=400,Imax=140, R=0.2, X=0.2)   annotation (
+          Placement(visible = true, transformation(origin={36,-22},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myVariableLoad load3(UNom=400,switchToImpedanceMode=false)    annotation (
+          Placement(visible = true, transformation(origin={66,-22},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLine line3(UNom=400,Imax=140,R=0.2,X=0.2)   annotation (
+          Placement(visible = true, transformation(origin={36,0},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLine line5(UNom=400,Imax=140,R=0.2,X=0.2)    annotation (
+          Placement(visible = true, transformation(origin={74,22},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myVariableLoad  load4(UNom=400,switchToImpedanceMode=false)    annotation (
+          Placement(visible = true, transformation(origin={96,22},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Modelica.Blocks.Sources.RealExpression P(y=36000/sqrt(1.16))    annotation (Placement(transformation(extent={{-122,-64},{-62,-40}})));
+        Modelica.Blocks.Sources.RealExpression Q(y=0.4*36000/sqrt(1.16))    annotation (Placement(transformation(extent={{-122,-86},{-62,-66}})));
+
+      equation
+        connect(line2.terminalB,load1. terminal) annotation (
+          Line(points={{46,22},{56,22},{56,57.97},{63.99,57.97}}));
+        connect(line4.terminalB,load3. terminal) annotation (
+          Line(points={{46,-22},{56,-22},{56,-22.03},{65.99,-22.03}}));
+        connect(load2.terminal,line3. terminalB) annotation (
+          Line(points={{65.99,-0.03},{56,-0.03},{56,0},{46,0}},            color = {0, 0, 0}));
+        connect(line2.terminalB,line5. terminalA) annotation (
+          Line(points={{46,22},{64,22}},      color = {0, 0, 0}));
+        connect(line5.terminalB,load4. terminal) annotation (
+          Line(points={{84,22},{88,22},{88,21.97},{95.99,21.97}},             color = {0, 0, 0}));
+        connect(line3.terminalA, terminal)    annotation (Line(points={{26,0},{-36,0},{-36,0},{-98,0}},
+                                                     color={0,0,0}));
+        connect(line4.terminalA, terminal)    annotation (Line(points={{26,-22},{0,-22},{0,0},{-98,0}},  color={0,0,0}));
+        connect(line2.terminalA, terminal)    annotation (Line(points={{26,22},{0,22},{0,0},{-98,0}},  color={0,0,0}));
+        connect(P.y, load3.PInput) annotation (Line(points={{-59,-52},{0,-52},
+                {0,-48},{63.46,-48},{63.46,-30.45}}, color={0,0,127}));
+        connect(P.y, load2.PInput) annotation (Line(points={{-59,-52},{22,-52},
+                {22,-46},{94,-46},{94,-12},{63.46,-12},{63.46,-8.45}}, color=
+                {0,0,127}));
+        connect(P.y, load1.PInput) annotation (Line(points={{-59,-52},{52,-52},
+                {52,-48},{164,-48},{164,48},{90,48},{90,36},{64,36},{64,49.55},
+                {61.46,49.55}}, color={0,0,127}));
+        connect(P.y, load4.PInput) annotation (Line(points={{-59,-52},{58,-52},
+                {58,-62},{148,-62},{148,8},{93.46,8},{93.46,13.55}}, color={0,
+                0,127}));
+        connect(Q.y, load3.QInput) annotation (Line(points={{-59,-76},{8,-76},
+                {8,-78},{68.565,-78},{68.565,-30.435}}, color={0,0,127}));
+        connect(Q.y, load2.QInput) annotation (Line(points={{-59,-76},{34,-76},
+                {34,-68},{118,-68},{118,-8.435},{68.565,-8.435}}, color={0,0,
+                127}));
+        connect(Q.y, load1.QInput) annotation (Line(points={{-59,-76},{184,
+                -76},{184,40},{72,40},{72,49.565},{66.565,49.565}}, color={0,
+                0,127}));
+        connect(Q.y, load4.QInput) annotation (Line(points={{-59,-76},{54,-76},
+                {54,-72},{158,-72},{158,-2},{98.565,-2},{98.565,13.565}},
+              color={0,0,127}));
+        annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+              coordinateSystem(preserveAspectRatio=false), graphics={
+                              Text(lineColor = {28, 108, 200}, extent={{-28,80},{48,58}},      fontSize = 10, textStyle = {TextStyle.Bold}, textString = "All residential loads
+36 kVA (Q=0.4*P)")}));
+      end FeederWithVariableLoads;
+
+      model FeederWithDisengageableLoads "Downstream part of networks"
+       extends Components.PartialModels.mySubNetworkOnePort;
+        Components.myDisengageableVariableLoad  load1( UNom=400,switchToImpedanceMode=false)   annotation (
+          Placement(visible = true, transformation(origin={64,58},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLine line2(UNom=400,Imax=140,R=0.2,X=0.2)    annotation (
+          Placement(visible = true, transformation(origin={36,22},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myDisengageableVariableLoad load2(UNom=400,switchToImpedanceMode=false)    annotation (
+          Placement(visible = true, transformation(origin={66,0},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLine line4(UNom=400,Imax=140, R=0.2, X=0.2)   annotation (
+          Placement(visible = true, transformation(origin={36,-22},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myDisengageableVariableLoad load3(UNom=400,switchToImpedanceMode=false)    annotation (
+          Placement(visible = true, transformation(origin={66,-22},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLine line3(UNom=400,Imax=140,R=0.2,X=0.2)   annotation (
+          Placement(visible = true, transformation(origin={36,0},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLine line5(UNom=400,Imax=140,R=0.2,X=0.2)    annotation (
+          Placement(visible = true, transformation(origin={74,22},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myDisengageableVariableLoad  load4(UNom=400,switchToImpedanceMode=false)    annotation (
+          Placement(visible = true, transformation(origin={96,22},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Modelica.Blocks.Sources.RealExpression P(y=36000/sqrt(1.16))    annotation (Placement(transformation(extent={{-122,-64},{-62,-40}})));
+        Modelica.Blocks.Sources.RealExpression Q(y=0.4*36000/sqrt(1.16))    annotation (Placement(transformation(extent={{-122,-86},{-62,-66}})));
+        // Global variable declared for the feeder
+        inner Boolean Supplied = Supplying;
+        Modelica.Blocks.Interfaces.BooleanInput Supplying; // strange to have this declaration for the check...
+      equation
+        connect(line2.terminalB,load1. terminal) annotation (
+          Line(points={{46,22},{56,22},{56,57.97},{63.99,57.97}}));
+        connect(line4.terminalB,load3. terminal) annotation (
+          Line(points={{46,-22},{56,-22},{56,-22.03},{65.99,-22.03}}));
+        connect(load2.terminal,line3. terminalB) annotation (
+          Line(points={{65.99,-0.03},{56,-0.03},{56,0},{46,0}},            color = {0, 0, 0}));
+        connect(line2.terminalB,line5. terminalA) annotation (
+          Line(points={{46,22},{64,22}},      color = {0, 0, 0}));
+        connect(line5.terminalB,load4. terminal) annotation (
+          Line(points={{84,22},{88,22},{88,21.97},{95.99,21.97}},             color = {0, 0, 0}));
+        connect(line3.terminalA, terminal)    annotation (Line(points={{26,0},{-36,0},{-36,0},{-98,0}},
+                                                     color={0,0,0}));
+        connect(line4.terminalA, terminal)    annotation (Line(points={{26,-22},{0,-22},{0,0},{-98,0}},  color={0,0,0}));
+        connect(line2.terminalA, terminal)    annotation (Line(points={{26,22},{0,22},{0,0},{-98,0}},  color={0,0,0}));
+        connect(P.y, load3.PInput) annotation (Line(points={{-59,-52},{0,-52},
+                {0,-48},{63.46,-48},{63.46,-30.45}}, color={0,0,127}));
+        connect(P.y, load2.PInput) annotation (Line(points={{-59,-52},{22,-52},
+                {22,-46},{94,-46},{94,-12},{63.46,-12},{63.46,-8.45}}, color=
+                {0,0,127}));
+        connect(P.y, load1.PInput) annotation (Line(points={{-59,-52},{52,-52},
+                {52,-48},{164,-48},{164,48},{90,48},{90,36},{64,36},{64,49.55},
+                {61.46,49.55}}, color={0,0,127}));
+        connect(P.y, load4.PInput) annotation (Line(points={{-59,-52},{58,-52},
+                {58,-62},{148,-62},{148,8},{93.46,8},{93.46,13.55}}, color={0,
+                0,127}));
+        connect(Q.y, load3.QInput) annotation (Line(points={{-59,-76},{8,-76},
+                {8,-78},{68.565,-78},{68.565,-30.435}}, color={0,0,127}));
+        connect(Q.y, load2.QInput) annotation (Line(points={{-59,-76},{34,-76},
+                {34,-68},{118,-68},{118,-8.435},{68.565,-8.435}}, color={0,0,
+                127}));
+        connect(Q.y, load1.QInput) annotation (Line(points={{-59,-76},{184,
+                -76},{184,40},{72,40},{72,49.565},{66.565,49.565}}, color={0,
+                0,127}));
+        connect(Q.y, load4.QInput) annotation (Line(points={{-59,-76},{54,-76},
+                {54,-72},{158,-72},{158,-2},{98.565,-2},{98.565,13.565}},
+              color={0,0,127}));
+        annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+              coordinateSystem(preserveAspectRatio=false), graphics={
+                              Text(lineColor = {28, 108, 200}, extent={{-28,80},{48,58}},      fontSize = 10, textStyle = {TextStyle.Bold}, textString = "All residential loads
+36 kVA (Q=0.4*P)")}));
+      end FeederWithDisengageableLoads;
+    end StructuredNetwork;
+
+    package StructuredNetworkWithBreakers "Structured network with breakers possibly cutting the voltage"
+      extends Icons.myExamplesPackage;
+
+      model DoubleNetworkWithOneBreaker "Double Distribution network with one breaker"
+        extends Icons.myExample;
+
+        Source src annotation (Placement(transformation(
+              extent={{-10,-10},{10,10}},
+              rotation=180,
+              origin={-32,30})));
+        Feeder feeder2
+          annotation (Placement(transformation(extent={{24,4},{44,24}})));
+        Feeder feeder1
+          annotation (Placement(transformation(extent={{24,34},{44,54}})));
+        Components.mySecondBreaker brk(UNom=400) annotation (
+          Placement(transformation(extent={{-14,20},{6,40}})));
+        Modelica.Blocks.Sources.BooleanPulse cmd(width=50, period=1,startTime=0.25) annotation (Placement(transformation(extent={{-38,-4},{-24,10}})));
+      equation
+        // The breaker must be able to cut the voltage when the feeders are not supplied
+        //Managing the global variables
+        feeder1.Supplied = not
+                              (cmd.y);
+        feeder2.Supplied = not
+                              (cmd.y);
+
+        connect(src.terminal, brk.terminalA)    annotation (Line(points={{-22.2,30},{-14,30}}, color={0,0,0}));
+        connect(brk.terminalB, feeder1.terminal) annotation (Line(points={{6,30},{
+                14,30},{14,44},{24.2,44}},
+                                    color={0,0,0}));
+        connect(brk.terminalB, feeder2.terminal) annotation (Line(points={{6,30},{
+                14,30},{14,14},{24.2,14}},
+                                    color={0,0,0}));
+        connect(cmd.y, brk.BrkOpen)
+          annotation (Line(points={{-23.3,3},{-4,3},{-4,27}}, color={255,0,255}));
+          annotation (
+          Diagram(  coordinateSystem(initialScale = 0.1), graphics={                                                                                     Text(lineColor=
+                    {28,108,200},                                                                                                                                                         extent={{
+                    -96,-16},{102,-64}},                                                                                                                                                                                    fontSize=
+                    12,
+                textString="when the breaker cut the voltage
+the two feeders are not supplied")}),
+          experiment(StopTime = 1));
+      end DoubleNetworkWithOneBreaker;
+
+      model DoubleNetworkWithTwoOppositeBreakers "Double Distribution network with two opposite breakers"
+        extends Icons.myExample;
+
+        Source src1 annotation (Placement(transformation(
+              extent={{-10,-10},{10,10}},
+              rotation=180,
+              origin={-42,44})));
+        Source src2 annotation (Placement(transformation(
+              extent={{-10,-10},{10,10}},
+              rotation=180,
+              origin={-42,0})));
+        Feeder feeder2
+          annotation (Placement(transformation(extent={{24,-10},{44,10}})));
+        Feeder feeder1
+          annotation (Placement(transformation(extent={{24,34},{44,54}})));
+        Components.myBreaker brk1(UNom=400)   annotation (Placement(transformation(extent={{-22,34},{-2,54}})));
+        Components.myBreaker brk2(UNom=400)   annotation (
+          Placement(transformation(extent={{-22,-10},{-2,10}})));
+        Modelica.Blocks.Sources.BooleanPulse cmd(width=50,period=1,startTime=0.25) annotation (Placement(transformation(extent={{-102,14},{-88,28}})));
+        Modelica.Blocks.Logical.Not n  annotation (Placement(transformation(extent={{-30,-26},{-16,-12}})));
+
+      equation
+        // As breakers are opposite, feeders are permanently supplied so the breakers must simply cut the current, not the voltage
+        // Managing the global variables
+        feeder1.Supplied = true;
+        feeder2.Supplied = true;
+        connect(src1.terminal, brk1.terminalA)    annotation (Line(points={{-32.2,44},{-22,44}}, color={0,0,0}));
+        connect(brk1.terminalB, feeder1.terminal)    annotation (Line(points={{-2,44},{24.2,44}}, color={0,0,0}));
+        connect(brk1.terminalB, feeder2.terminal)    annotation (Line(points={{-2,44},{8,44},{8,0},{24.2,0}}, color={0,0,0}));
+        connect(src2.terminal, brk2.terminalA)    annotation (Line(points={{-32.2,-1.72085e-15},{-22,0}}, color={0,0,0}));
+        connect(brk2.terminalB, feeder2.terminal)    annotation (Line(points={{-2,0},{24.2,0}}, color={0,0,0}));
+        connect(brk1.terminalB, brk2.terminalB)    annotation (Line(points={{-2,44},{8,44},{8,0},{-2,0}}, color={0,0,0}));
+        connect(brk2.terminalB, feeder1.terminal)    annotation (Line(points={{-2,0},{8,0},{8,44},{24.2,44}}, color={0,0,0}));
+        connect(cmd.y, brk1.BrkOpen) annotation (Line(points={{-87.3,21},{-12,21},{-12,
+                41}}, color={255,0,255}));
+        connect(n.y, brk2.BrkOpen) annotation (Line(points={{-15.3,-19},{-12,-19},{-12,
+                -3}}, color={255,0,255}));
+        connect(n.u, brk1.BrkOpen) annotation (Line(points={{-31.4,-19},{-80,-19},{-80,
+                21},{-12,21},{-12,41}}, color={255,0,255}));
+          annotation (
+          Diagram(  coordinateSystem(initialScale = 0.1), graphics={                                                                                     Text(lineColor=
+                    {28,108,200},                                                                                                                                                         extent={{
+                    -164,-36},{166,-84}},                                                                                                                                                                                   fontSize=
+                    12,
+                textString="the two feeders are permanently supplied
+by one source or the other
+as the breakers are opposite
+(they can simply cut the current)")}),
+          experiment(StopTime = 1));
+      end DoubleNetworkWithTwoOppositeBreakers;
+
+      model Source "Upstream part of networks"
+       extends Components.PartialModels.mySubNetworkOnePort;
+        Components.myTransformer tra1(
+          UNomA=63000,
+          UNomB=20000,
+          SNom=36000,
+          R=1e-9,
+          X=1e-9)  annotation (
+          Placement(visible = true, transformation(origin={-28,66},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLine line1(
+          UNom=20000,
+          Imax=160,
+          R=0.9,
+          X=0.3)  annotation (
+          Placement(visible = true, transformation(origin={4,66},      extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myTransformer tra2(
+          UNomA=20000,
+          UNomB=400,
+          SNom=250,
+          R=1e-9,
+          X=1e-9)   annotation (
+          Placement(visible = true, transformation(origin={34,66},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.mySource src(UNom=63000)   annotation (
+          Placement(visible = true, transformation(origin={-54,66},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+
+      equation
+        connect(line1.terminalB,tra2.terminalA) annotation (
+          Line(points={{14,66},{24,66}}));
+        connect(tra1.terminalB,line1.terminalA) annotation (
+          Line(points={{-18,66},{-6,66}},       color = {0, 0, 0}));
+        connect(src.terminal,tra1.terminalA) annotation (
+          Line(points={{-54,66},{-38,66}},                 color = {0, 0, 0}));
+
+        connect(tra2.terminalB, terminal)
+          annotation (Line(points={{44,66},{60,66},{60,0},{-98,0}}, color={0,0,0}));
+        annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+              coordinateSystem(preserveAspectRatio=false), graphics={
+                    Text(lineColor = {28, 108, 200}, extent={{-76,92},{-32,78}},       textStyle = {TextStyle.Bold}, fontSize = 10, textString = "RTE")}));
+      end Source;
+
+      model Feeder "Downstream part of networks"
+       extends Components.PartialModels.mySubNetworkOnePort;
+        Components.myDisengageableVariableLoad  load1(UNom=400,switchToImpedanceMode=false)   annotation (
+          Placement(visible = true, transformation(origin={64,58},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLine line2(UNom=400,Imax=140,R=0.2,X=0.2)    annotation (
+          Placement(visible = true, transformation(origin={36,22},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myDisengageableVariableLoad load2(UNom=400,switchToImpedanceMode=false)    annotation (
+          Placement(visible = true, transformation(origin={66,0},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLine line4(UNom=400,Imax=140, R=0.2, X=0.2)   annotation (
+          Placement(visible = true, transformation(origin={36,-22},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myDisengageableVariableLoad load3(UNom=400,switchToImpedanceMode=false)    annotation (
+          Placement(visible = true, transformation(origin={66,-22},   extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLine line3(UNom=400,Imax=140,R=0.2,X=0.2)   annotation (
+          Placement(visible = true, transformation(origin={36,0},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myLine line5(UNom=400,Imax=140,R=0.2,X=0.2)    annotation (
+          Placement(visible = true, transformation(origin={74,22},    extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Components.myDisengageableVariableLoad  load4(UNom=400,switchToImpedanceMode=false)    annotation (
+          Placement(visible = true, transformation(origin={96,22},     extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+        Modelica.Blocks.Sources.RealExpression P(y=36000/sqrt(1.16))    annotation (Placement(transformation(extent={{-122,-64},{-62,-40}})));
+        Modelica.Blocks.Sources.RealExpression Q(y=0.4*36000/sqrt(1.16))    annotation (Placement(transformation(extent={{-122,-86},{-62,-66}})));
+        // Global variable declared for the feeder
+        inner Boolean Supplied = Supplying;
+        Modelica.Blocks.Interfaces.BooleanInput Supplying; // strange to have this declaration for the check...
+      equation
+        connect(line2.terminalB,load1. terminal) annotation (
+          Line(points={{46,22},{56,22},{56,57.97},{63.99,57.97}}));
+        connect(line4.terminalB,load3. terminal) annotation (
+          Line(points={{46,-22},{56,-22},{56,-22.03},{65.99,-22.03}}));
+        connect(load2.terminal,line3. terminalB) annotation (
+          Line(points={{65.99,-0.03},{56,-0.03},{56,0},{46,0}},            color = {0, 0, 0}));
+        connect(line2.terminalB,line5. terminalA) annotation (
+          Line(points={{46,22},{64,22}},      color = {0, 0, 0}));
+        connect(line5.terminalB,load4. terminal) annotation (
+          Line(points={{84,22},{88,22},{88,21.97},{95.99,21.97}},             color = {0, 0, 0}));
+        connect(line3.terminalA, terminal)    annotation (Line(points={{26,0},{-36,0},{-36,0},{-98,0}},
+                                                     color={0,0,0}));
+        connect(line4.terminalA, terminal)    annotation (Line(points={{26,-22},{0,-22},{0,0},{-98,0}},  color={0,0,0}));
+        connect(line2.terminalA, terminal)    annotation (Line(points={{26,22},{0,22},{0,0},{-98,0}},  color={0,0,0}));
+        connect(P.y, load3.PInput) annotation (Line(points={{-59,-52},{0,-52},
+                {0,-48},{63.46,-48},{63.46,-30.45}}, color={0,0,127}));
+        connect(P.y, load2.PInput) annotation (Line(points={{-59,-52},{22,-52},
+                {22,-46},{94,-46},{94,-12},{63.46,-12},{63.46,-8.45}}, color=
+                {0,0,127}));
+        connect(P.y, load1.PInput) annotation (Line(points={{-59,-52},{52,-52},
+                {52,-48},{164,-48},{164,48},{90,48},{90,36},{64,36},{64,49.55},
+                {61.46,49.55}}, color={0,0,127}));
+        connect(P.y, load4.PInput) annotation (Line(points={{-59,-52},{58,-52},
+                {58,-62},{148,-62},{148,8},{93.46,8},{93.46,13.55}}, color={0,
+                0,127}));
+        connect(Q.y, load3.QInput) annotation (Line(points={{-59,-76},{8,-76},
+                {8,-78},{68.565,-78},{68.565,-30.435}}, color={0,0,127}));
+        connect(Q.y, load2.QInput) annotation (Line(points={{-59,-76},{34,-76},
+                {34,-68},{118,-68},{118,-8.435},{68.565,-8.435}}, color={0,0,
+                127}));
+        connect(Q.y, load1.QInput) annotation (Line(points={{-59,-76},{184,
+                -76},{184,40},{72,40},{72,49.565},{66.565,49.565}}, color={0,
+                0,127}));
+        connect(Q.y, load4.QInput) annotation (Line(points={{-59,-76},{54,-76},
+                {54,-72},{158,-72},{158,-2},{98.565,-2},{98.565,13.565}},
+              color={0,0,127}));
+        annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+              coordinateSystem(preserveAspectRatio=false), graphics={
+                              Text(lineColor = {28, 108, 200}, extent={{-28,80},{48,58}},      fontSize = 10, textStyle = {TextStyle.Bold}, textString = "All residential loads
+36 kVA (Q=0.4*P)")}));
+      end Feeder;
+    end StructuredNetworkWithBreakers;
+
+    model FourVariableLoadsThreeFeeders
+      "Realistic case with three LV feeders and four variable loads"
       extends Icons.myExample;
       Components.mySource src(UNom = 63000) annotation (
         Placement(visible = true, transformation(origin = {-118, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -3297,11 +3653,11 @@ MediumNetworks.DoubleNetwork"),                                                 
       connect(MVLV.terminalA, MVline.terminalB) annotation (
         Line(points = {{-42, 0}, {-52, 0}}, color = {0, 0, 0}));
       connect(LVln11.terminalB, varLoad2.terminal) annotation (
-        Line(points = {{42, 40}, {48, 40}, {48, 40.02}, {51.96, 40.02}}, color = {0, 0, 0}));
+        Line(points={{42,40},{48,40},{48,39.97},{51.99,39.97}},          color = {0, 0, 0}));
       connect(LVln2.terminalB, varLoad3.terminal) annotation (
-        Line(points = {{28, 0}, {32, 0}, {32, 0.02}, {51.96, 0.02}}, color = {0, 0, 0}));
+        Line(points={{28,0},{32,0},{32,-0.03},{51.99,-0.03}},        color = {0, 0, 0}));
       connect(LVln3.terminalB, varLoad4.terminal) annotation (
-        Line(points = {{28, -40}, {32, -40}, {32, -39.98}, {49.96, -39.98}}, color = {0, 0, 0}));
+        Line(points={{28,-40},{32,-40},{32,-40.03},{49.99,-40.03}},          color = {0, 0, 0}));
       connect(t.y, load.u) annotation (
         Line(points = {{163, 0}, {152, 0}}, color = {0, 0, 127}));
       connect(load.y[1], gainP.u) annotation (
@@ -3325,13 +3681,13 @@ MediumNetworks.DoubleNetwork"),                                                 
       connect(gainQ.y, varLoad4.QInput) annotation (
         Line(points = {{95.4, -28}, {72, -28}, {72, -56}, {52.565, -56}, {52.565, -48.435}}, color = {0, 0, 127}));
       connect(LVln11.terminalB, varLoad1.terminal) annotation (
-        Line(points = {{42, 40}, {42, 80.02}, {53.96, 80.02}}, color = {0, 0, 0}));
+        Line(points={{42,40},{42,79.97},{53.99,79.97}},        color = {0, 0, 0}));
       annotation (
-        Diagram(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(lineColor = {28, 108, 200}, extent = {{-164, 80}, {-12, 58}}, fontSize = 12, textString = "all loads are variable
+        Diagram(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics={  Text(lineColor = {28, 108, 200}, extent = {{-164, 80}, {-12, 58}}, fontSize = 12, textString = "all loads are variable
 simulation is done for 1-year duration")}),
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}})),
         experiment(StopTime = 31532400));
-    end FourVariableLoadsOneLVFeeder;
+    end FourVariableLoadsThreeFeeders;
 
     model LargerNetwork "This model has been partly generated by a Python tool"
       extends Icons.myExample;
@@ -3521,21 +3877,21 @@ simulation is done for 1-year duration")}),
       connect(hvmv.terminalB, ln676.terminalA) annotation (
         Line(points = {{-190, 104}, {-52, 104}}, color = {0, 0, 0}));
       connect(ln676.terminalB, b11465.terminal) annotation (
-        Line(points = {{-32, 104}, {-28, 104}, {-28, 104.02}, {-20.04, 104.02}}, color = {0, 0, 0}));
+        Line(points={{-32,104},{-28,104},{-28,103.97},{-20.01,103.97}},          color = {0, 0, 0}));
       connect(ln703.terminalB, b61260.terminal) annotation (
-        Line(points = {{-8, 80}, {-2, 80}, {-2, 80.02}, {5.96, 80.02}}, color = {0, 0, 0}));
+        Line(points={{-8,80},{-2,80},{-2,79.97},{5.99,79.97}},          color = {0, 0, 0}));
       connect(ln676.terminalB, ln703.terminalA) annotation (
         Line(points = {{-32, 104}, {-32, 80}, {-28, 80}}, color = {0, 0, 0}));
       connect(ln713.terminalB, mvlv11.terminalA) annotation (
         Line(points = {{16, 56}, {26, 56}}, color = {0, 0, 0}));
       connect(ln771.terminalB, b61275.terminal) annotation (
-        Line(points = {{80, 56}, {86, 56}, {86, 56.02}, {93.96, 56.02}}, color = {0, 0, 0}));
+        Line(points={{80,56},{86,56},{86,55.97},{93.99,55.97}},          color = {0, 0, 0}));
       connect(ln770.terminalB, b61274.terminal) annotation (
-        Line(points = {{80, 34}, {93.96, 34}, {93.96, 34.02}}, color = {0, 0, 0}));
+        Line(points={{80,34},{93.99,34},{93.99,33.97}},        color = {0, 0, 0}));
       connect(ln774.terminalB, b61273.terminal) annotation (
-        Line(points = {{106, 14}, {108, 14}, {108, 14.02}, {109.96, 14.02}}, color = {0, 0, 0}));
+        Line(points={{106,14},{108,14},{108,13.97},{109.99,13.97}},          color = {0, 0, 0}));
       connect(ln769.terminalB, b61254.terminal) annotation (
-        Line(points = {{78, -6}, {84, -6}, {84, -5.98}, {91.96, -5.98}}, color = {0, 0, 0}));
+        Line(points={{78,-6},{84,-6},{84,-6.03},{91.99,-6.03}},          color = {0, 0, 0}));
       connect(mvlv11.terminalB, ln769.terminalA) annotation (
         Line(points = {{46, 56}, {46, -8}, {58, -8}, {58, -6}}, color = {0, 0, 0}));
       connect(mvlv11.terminalB, ln771.terminalA) annotation (
@@ -3545,17 +3901,17 @@ simulation is done for 1-year duration")}),
       connect(ln769.terminalB, ln772.terminalA) annotation (
         Line(points = {{78, -6}, {78, -32}, {82, -32}}, color = {0, 0, 0}));
       connect(ln772.terminalB, b11407.terminal) annotation (
-        Line(points = {{102, -32}, {112, -32}, {112, -31.98}, {117.96, -31.98}}, color = {0, 0, 0}));
+        Line(points={{102,-32},{112,-32},{112,-32.03},{117.99,-32.03}},          color = {0, 0, 0}));
       connect(ln772.terminalB, ln773.terminalA) annotation (
         Line(points = {{102, -32}, {102, -56}, {116, -56}}, color = {0, 0, 0}));
       connect(ln773.terminalB, b11403.terminal) annotation (
-        Line(points = {{136, -56}, {140, -56}, {140, -55.98}, {145.96, -55.98}}, color = {0, 0, 0}));
+        Line(points={{136,-56},{140,-56},{140,-56.03},{145.99,-56.03}},          color = {0, 0, 0}));
       connect(ln676.terminalB, ln702.terminalA) annotation (
         Line(points = {{-32, 104}, {-32, -26}}, color = {0, 0, 0}));
       connect(ln703.terminalB, ln713.terminalA) annotation (
         Line(points = {{-8, 80}, {-8, 56}, {-4, 56}}, color = {0, 0, 0}));
       connect(ln702.terminalB, b61227.terminal) annotation (
-        Line(points = {{-12, -26}, {-4, -26}, {-4, -25.98}, {-0.04, -25.98}}, color = {0, 0, 0}));
+        Line(points={{-12,-26},{-4,-26},{-4,-26.03},{-0.01,-26.03}},          color = {0, 0, 0}));
       connect(ln702.terminalB, ln712.terminalA) annotation (
         Line(points = {{-12, -26}, {-8, -26}, {-8, -58}, {-4, -58}}, color = {0, 0, 0}));
       connect(ln712.terminalB, mvlv24.terminalA) annotation (
@@ -3563,41 +3919,41 @@ simulation is done for 1-year duration")}),
       connect(mvlv24.terminalB, ln775.terminalA) annotation (
         Line(points = {{46, -58}, {54, -58}}, color = {0, 0, 0}));
       connect(ln775.terminalB, b56131.terminal) annotation (
-        Line(points = {{74, -58}, {76, -58}, {76, -57.98}, {85.96, -57.98}}, color = {0, 0, 0}));
+        Line(points={{74,-58},{76,-58},{76,-58.03},{85.99,-58.03}},          color = {0, 0, 0}));
       connect(ln775.terminalB, ln776.terminalA) annotation (
         Line(points = {{74, -58}, {74, -80}, {82, -80}}, color = {0, 0, 0}));
       connect(ln776.terminalB, b87656.terminal) annotation (
-        Line(points = {{102, -80}, {102, -79.98}, {109.96, -79.98}}, color = {0, 0, 0}));
+        Line(points={{102,-80},{102,-80.03},{109.99,-80.03}},        color = {0, 0, 0}));
       connect(ln775.terminalB, ln777.terminalA) annotation (
         Line(points = {{74, -58}, {74, -100}, {82, -100}}, color = {0, 0, 0}));
       connect(ln777.terminalB, b61106.terminal) annotation (
-        Line(points = {{102, -100}, {104, -100}, {104, -99.98}, {109.96, -99.98}}, color = {0, 0, 0}));
+        Line(points={{102,-100},{104,-100},{104,-100.03},{109.99,-100.03}},        color = {0, 0, 0}));
       connect(ln712.terminalB, ln720.terminalA) annotation (
         Line(points = {{16, -58}, {16, -84}, {20, -84}}, color = {0, 0, 0}));
       connect(ln720.terminalB, b61089.terminal) annotation (
-        Line(points = {{40, -84}, {44, -84}, {44, -83.98}, {47.96, -83.98}}, color = {0, 0, 0}));
+        Line(points={{40,-84},{44,-84},{44,-84.03},{47.99,-84.03}},          color = {0, 0, 0}));
       connect(ln677.terminalB, b61280.terminal) annotation (
-        Line(points = {{-150, 40}, {-138, 40}, {-138, 66.02}, {-130.04, 66.02}}, color = {0, 0, 0}));
+        Line(points={{-150,40},{-138,40},{-138,65.97},{-130.01,65.97}},          color = {0, 0, 0}));
       connect(ln677.terminalB, ln715.terminalA) annotation (
         Line(points = {{-150, 40}, {-140, 40}, {-140, 36}, {-132, 36}}, color = {0, 0, 0}));
       connect(ln715.terminalB, b61256.terminal) annotation (
-        Line(points = {{-112, 36}, {-106, 36}, {-106, 36.02}, {-100.04, 36.02}}, color = {0, 0, 0}));
+        Line(points={{-112,36},{-106,36},{-106,35.97},{-100.01,35.97}},          color = {0, 0, 0}));
       connect(ln718.terminalB, b11480.terminal) annotation (
-        Line(points = {{-80, 12}, {-76, 12}, {-76, 12.02}, {-72.04, 12.02}}, color = {0, 0, 0}));
+        Line(points={{-80,12},{-76,12},{-76,11.97},{-72.01,11.97}},          color = {0, 0, 0}));
       connect(ln677.terminalB, ln714.terminalA) annotation (
         Line(points = {{-150, 40}, {-150, -20}, {-142, -20}}, color = {0, 0, 0}));
       connect(ln717.terminalB, b61121.terminal) annotation (
-        Line(points = {{-82, -42}, {-74, -42}, {-74, -41.98}, {-66.04, -41.98}}, color = {0, 0, 0}));
+        Line(points={{-82,-42},{-74,-42},{-74,-42.03},{-66.01,-42.03}},          color = {0, 0, 0}));
       connect(ln716.terminalB, ln719.terminalA) annotation (
         Line(points = {{-80, -66}, {-80, -92}, {-70, -92}}, color = {0, 0, 0}));
       connect(ln719.terminalB, b87694.terminal) annotation (
-        Line(points = {{-50, -92}, {-50, -91.98}, {-40.04, -91.98}}, color = {0, 0, 0}));
+        Line(points={{-50,-92},{-50,-92.03},{-40.01,-92.03}},        color = {0, 0, 0}));
       connect(ln716.terminalB, b61232.terminal) annotation (
-        Line(points = {{-80, -66}, {-72, -66}, {-72, -65.98}, {-66.04, -65.98}}, color = {0, 0, 0}));
+        Line(points={{-80,-66},{-72,-66},{-72,-66.03},{-66.01,-66.03}},          color = {0, 0, 0}));
       connect(ln714.terminalB, ln716.terminalA) annotation (
         Line(points = {{-122, -20}, {-122, -66}, {-100, -66}}, color = {0, 0, 0}));
       connect(ln714.terminalB, b11458.terminal) annotation (
-        Line(points = {{-122, -20}, {-122, -19.98}, {-96.04, -19.98}}, color = {0, 0, 0}));
+        Line(points={{-122,-20},{-122,-20.03},{-96.01,-20.03}},        color = {0, 0, 0}));
       connect(ln714.terminalB, ln717.terminalA) annotation (
         Line(points = {{-122, -20}, {-122, -42}, {-102, -42}}, color = {0, 0, 0}));
       connect(ln770.terminalB, ln774.terminalA) annotation (
@@ -3684,8 +4040,8 @@ and can be compared to the required one")}),
     </body></html>"));
   end Information;
   annotation (
-    version = "2.1.9",
-    versionDate = "2021-05-20",
+    version = "2.2.0",
+    versionDate = "2021-06-01",
     Documentation(info = "<html><head></head><body>
     <p>Copyright © 2020-2021, EDF.</p>
     <p>The use of the PowerSysPro library is granted by EDF under the provisions of the Modelica License 2. A copy of this license can be obtained&nbsp;<a href=\"http://www.modelica.org/licenses/ModelicaLicense2\">here</a>.</p>
@@ -3694,5 +4050,5 @@ and can be compared to the required one")}),
 </body></html>"),
     Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-174, 28}, {180, -28}}, fontSize = 14, textStyle = {TextStyle.Bold}, textString = "Open electrical library
 developed at EDF Lab. Paris-Saclay")}),
-    Icon(graphics={  Text(extent = {{-208, 70}, {214, -60}}, lineColor = {28, 108, 200}, fontName = "Segoe Print", textString = "PSP")}));
+    Icon(graphics={Text(extent = {{-208, 70}, {214, -60}}, lineColor = {28, 108, 200}, fontName = "Segoe Print", textString = "PSP")}));
 end PowerSysPro;
