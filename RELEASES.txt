@@ -1,3 +1,7 @@
+Release 2.2.0 (June 01st 2021):
+* Removing unused component Ground.
+* Adding new breaker able to cut the voltage. This feature requires to use sub-networks and propagate a supplying information to new loads called disengageableLoads.
+This new feature is illustrated by some examples.
 Release 2.1.9 (May 20th 2021):
 * Adding new partial models to propose wrappers of sub-networks. May be helpful for large networks graphically edited. A new example is added to illustrate this feature.
 Release 2.1.8 (May 18th 2021):
