@@ -1,3 +1,8 @@
+Release 2.3.0 (November 26th 2021):
+* Removing deprecated component myDisengageableVariableLoad
+* Updating component myPVNode into myEmergencySource
+* Adding Diesel examples (using myEmergencySource component)
+* Adding batteries sub-package and examples
 Release 2.2.0 (June 01st 2021):
 * Removing unused component Ground.
 * Adding new breaker able to cut the voltage. This feature requires to use sub-networks and propagate a supplying information to new loads called disengageableLoads.
