@@ -4730,5 +4730,5 @@ the load is permanently supplied without any cutting")}),
     Diagram(graphics={  Text(lineColor = {28, 108, 200}, extent = {{-174, 28}, {180, -28}}, fontSize = 14, textStyle = {TextStyle.Bold}, textString = "Open electrical library
 developed at EDF Lab. Paris-Saclay")}),
     Icon(graphics={  Text(extent = {{-208, 70}, {214, -60}}, lineColor = {28, 108, 200}, fontName = "Segoe Print", textString = "PSP")}),
-    uses(Modelica(version = "4.0.0"), PowerSysProNew(version="2.3.0")));
+    uses(Modelica(version = "4.0.0")));
 end PowerSysPro;
