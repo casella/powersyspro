@@ -1,4 +1,4 @@
 PowerSysPro initial developers:
 
-* Jean-Philippe Tavella(EDF R&D Paris-Saclay Lab.)   jean-philippe.tavella@edf.fr
-* Hugo Serres (X2017)
+* >2019: Jean-Philippe Tavella(EDF R&D Paris-Saclay Lab.)   jean-philippe.tavella@edf.fr
+* 2019: Hugo Serres (X2017)
