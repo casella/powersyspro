@@ -37,7 +37,7 @@ package PowerSysPro
       end when;
       terminal.v = CM.fromPolar(coeff * UNom / sqrt(3), 0);
       annotation (
-        Icon(coordinateSystem(grid = {0.1, 0.1}, initialScale = 0.1, preserveAspectRatio = false), graphics={  Text(origin = {60.1, -63.1}, lineColor = {0, 0, 255}, extent = {{-124, 11}, {124, -11}}, textString = if OnePhaseLoad then "1" else "3", textStyle = {TextStyle.Bold}), Text(extent = {{-40.5, -6}, {41.5, -46}}, lineColor = {0, 0, 0}, textStyle = {TextStyle.Bold}, textString = "~")}),
+        Icon(coordinateSystem(grid = {0.1, 0.1}, initialScale = 0.1, preserveAspectRatio = false), graphics={  Text(origin = {60.1, -63.1}, lineColor = {0, 0, 255}, extent = {{-124, 11}, {124, -11}}, textString = if OnePhaseLoad then "1" else "3", textStyle = {TextStyle.Bold})}),
         Documentation(info = "<html>
     <p>This node prescribes the constant active power <code>P</code> entering the PV bus.</p>
     </html>"),
@@ -71,19 +71,19 @@ package PowerSysPro
       assert(SOC_start >= minCharging and SOC_start <= maxCharging, ">>> Incorrect value for SOC_start of " + getInstanceName());
       assert(battery.SOC >= minCharging, ">>> Battery " + getInstanceName() + " is empty");
       assert(battery.SOC <= maxCharging, ">>> Battery " + getInstanceName() + " is full", AssertionLevel.warning);
-// Power calculation of the battery with its inverter/rectifier component
+      // Power calculation of the battery with its inverter/rectifier component
       P = if battery.SOC >= minCharging and battery.SOC <= maxCharging then (battery.p.v - battery.n.v) / sqrt(2) * inverter.i else 0.0;
       if ChargingMode then
         3 * terminal.v * CM.conj(terminal.i) = Complex(-P, 0);
       else
         terminal.v = CM.fromPolar(UNom / sqrt(3), theta);
       end if;
-// Inverter and rectifier behaviours
+      // Inverter and rectifier behaviours
       if ChargingMode then
-// In rectifier mode (ChargingMode==true), supplied current is constant
+        // In rectifier mode (ChargingMode==true), supplied current is constant
         efficiency * inverter.i = if battery.SOC <= maxCharging then -battery.dataSet.IchCoeff * battery.dataSet.QNom * Np else 0.0;
       else
-// In inverter mode (ChargingMode==false), the current is given by the downstream
+        // In inverter mode (ChargingMode==false), the current is given by the downstream
         efficiency * inverter.i = if battery.SOC >= minCharging then 3 * I / sqrt(2) else 0.0;
       end if;
       connect(battery.n, ground.p) annotation (
@@ -401,10 +401,10 @@ and a parameter for efficiency")}));
       Integer seed;
     equation
       when {u,componentIsWorking <> pre(componentIsWorking)} then
-// Generate a new random number when initial() or each time a transition occurs
+        // Generate a new random number when initial() or each time a transition occurs
         reinit(F, 0);
         seed = Modelica.Math.Random.Utilities.initializeImpureRandom(Modelica.Math.Random.Utilities.automaticGlobalSeed()+i);
-//We force a different seed for each instance
+        //We force a different seed for each instance
         r = Modelica.Math.Random.Utilities.impureRandom(id = seed);
       end when;
       hazardRate = if componentIsWorking then failureRate else repairRate;
@@ -502,14 +502,14 @@ and a parameter for efficiency")}));
         discrete Complex Y(re(start = 0), im(start = 0)) "Shunt admittance";
         Boolean fault(start = false) "true means the fault is active";
       algorithm
-// Fault variable
+        // Fault variable
         when time > startTime then
           fault := true;
         end when;
         when time > stopTime then
           fault := false;
         end when;
-// Shunt admittance
+        // Shunt admittance
         when pre(fault) then
           Y := 1 / Complex(R, X);
         end when;
@@ -3846,10 +3846,10 @@ using subnetwork components with variable loads")}, coordinateSystem(initialScal
         Modelica.Blocks.Logical.Not n annotation (
           Placement(transformation(extent = {{-30, -26}, {-16, -12}})));
       equation
-// As breakers are opposite, feeders are permanently supplied so the breakers must simply cut the current, not the voltage
-// Managing the global variables
-//        feeder1.Supplied = true;
-//      feeder2.Supplied = true;
+        // As breakers are opposite, feeders are permanently supplied so the breakers must simply cut the current, not the voltage
+        // Managing the global variables
+        //        feeder1.Supplied = true;
+        //      feeder2.Supplied = true;
         connect(src1.terminal, brk1.terminalA) annotation (
           Line(points = {{-32.2, 44}, {-22, 44}}, color = {0, 0, 0}));
         connect(brk1.terminalB, feeder1.terminal)
@@ -4588,7 +4588,7 @@ the load is permanently supplied without any cutting")}),
           experiment(StopTime = 60, __Dymola_Algorithm = "Dassl"));
       end OneDieselRescuingOneLoad;
 
-      model OneDieselRescuingOneLoadWithFailure
+      model OneDieselRescuingOneLoadWithFailure_notFinalized
         extends Icons.myExample;
         PowerSysPro.Components.myEmergencySource diesel(Smax = 6000, UNom = 400, rampTime = 30) annotation (
           Placement(visible = true, transformation(origin = {-90, 28}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -4625,58 +4625,10 @@ the load is permanently supplied without any cutting")}),
           Line(points = {{-135.4, 12}, {-44, 12}, {-44, 25}}, color = {255, 0, 255}));
         connect(cmd.y, n.u) annotation (
           Line(points = {{-135.4, 12}, {-130, 12}, {-130, 46}, {-121.2, 46}}, color = {255, 0, 255}));
-        connect(
-          cmd.y, myFailure.u) annotation (
-          Line(points = {{-136, 12}, {-66, 12}, {-66, -6}, {-16, -6}}, color = {255, 0, 255}));
+        connect(cmd.y, myFailure.u) annotation (
+          Line(points={{-135.4,12},{-66,12},{-66,-6},{-16,-6}},        color = {255, 0, 255}));
         annotation (
           Diagram(graphics={  Text(origin = {-44, 5}, lineColor = {28, 108, 200}, extent = {{-20, 69}, {232, 41}}, textString = "P=5 kW and Q=0.1 kvar for the load
-      Pmax=6 kVA for the Diesel", fontSize = 12), Text(origin = {-17, -15}, lineColor = {28, 108, 200}, extent = {{-109, -17}, {128, -47}}, textString = "the breaker switches at 30 s
-      when the Diesel is able to deliver its maximum power
-      the load is supplied without any disturbance")}, coordinateSystem(initialScale = 0.1)),
-          experiment(StopTime = 60, __Dymola_Algorithm = "Dassl"));
-      end OneDieselRescuingOneLoadWithFailure;
-      
-      model OneDieselRescuingOneLoadWithFailure_notFinalized
-        extends Icons.myExample;
-        PowerSysPro.Components.myEmergencySource diesel(Smax = 6000, UNom = 400, rampTime = 30) annotation(
-          Placement(visible = true, transformation(origin = {-90, 28}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        PowerSysPro.Components.myLoad load(UNom = 400, P = 5000, Q = 100) annotation(
-          Placement(visible = true, transformation(origin = {18, 28}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        PowerSysPro.Components.myLine line(UNom = 400, Imax = 50, R = 0.5) annotation(
-          Placement(visible = true, transformation(origin = {-4, 28}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        PowerSysPro.Components.mySource src(UNom = 400) annotation(
-          Placement(visible = true, transformation(origin = {-90, 62}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-        PowerSysPro.Components.myBreaker brk1(BrkOpen(start = true), UNom = 400) annotation(
-          Placement(visible = true, transformation(extent = {{-66, 52}, {-46, 72}}, rotation = 0)));
-        Modelica.Blocks.Logical.Not n annotation(
-          Placement(visible = true, transformation(origin = {-114, 46}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-        PowerSysPro.Components.myBreaker brk2(BrkOpen(start = true), UNom = 400) annotation(
-          Placement(visible = true, transformation(extent = {{-54, 18}, {-34, 38}}, rotation = 0)));
-        Modelica.Blocks.Sources.BooleanStep cmd(startTime = 30, startValue = true) annotation(
-          Placement(visible = true, transformation(origin = {-142, 12}, extent = {{-6, -6}, {6, 6}}, rotation = 0)));
-        Components.myFailure myFailure annotation(
-          Placement(visible = true, transformation(origin = {-4, -6}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-      equation
-        connect(line.terminalB, load.terminal) annotation(
-          Line(points = {{6, 28}, {18, 28}, {18, 27.97}, {17.99, 27.97}}));
-        connect(src.terminal, brk1.terminalA) annotation(
-          Line(points = {{-90, 62}, {-66, 62}}));
-        connect(brk1.terminalB, line.terminalA) annotation(
-          Line(points = {{-46, 62}, {-14, 62}, {-14, 28}}));
-        connect(diesel.terminal, brk2.terminalA) annotation(
-          Line(points = {{-90, 28}, {-54, 28}}));
-        connect(line.terminalA, brk2.terminalB) annotation(
-          Line(points = {{-14, 28}, {-34, 28}}));
-        connect(n.y, brk1.BrkOpen) annotation(
-          Line(points = {{-107.4, 46}, {-56, 46}, {-56, 59}}, color = {255, 0, 255}));
-        connect(cmd.y, brk2.BrkOpen) annotation(
-          Line(points = {{-135.4, 12}, {-44, 12}, {-44, 25}}, color = {255, 0, 255}));
-        connect(cmd.y, n.u) annotation(
-          Line(points = {{-135.4, 12}, {-130, 12}, {-130, 46}, {-121.2, 46}}, color = {255, 0, 255}));
-        connect(cmd.y, myFailure.u) annotation(
-          Line(points = {{-136, 12}, {-66, 12}, {-66, -6}, {-16, -6}}, color = {255, 0, 255}));
-        annotation(
-          Diagram(graphics = {Text(origin = {-44, 5}, lineColor = {28, 108, 200}, extent = {{-20, 69}, {232, 41}}, textString = "P=5 kW and Q=0.1 kvar for the load
             Pmax=6 kVA for the Diesel", fontSize = 12), Text(origin = {-17, -15}, lineColor = {28, 108, 200}, extent = {{-109, -17}, {128, -47}}, textString = "the breaker switches at 30 s
             when the Diesel is able to deliver its maximum power
             the load is supplied without any disturbance")}, coordinateSystem(initialScale = 0.1)),
