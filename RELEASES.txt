@@ -1,3 +1,6 @@
+Release 2.3.1 (December 6th 2021):
+* Adding a example mixing a source, a battery, a Diesel and a feeder
+* Some cosmetic changes regarding previous release 2.3.0
 Release 2.3.0 (November 26th 2021):
 * Removing deprecated component myDisengageableVariableLoad
 * Updating component myPVNode into myEmergencySource
